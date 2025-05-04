@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeDogeAI Forge - Smart Contract IDE</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #1a252f;
+            color: #fff;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2b3a47;
+            padding: 10px;
+            border-right: 1px solid #444;
+        }
+        .sidebar h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+        .file-explorer ul {
+            list-style: none;
+            padding: 0;
+        }
+        .file-explorer li {
+            padding: 5px;
+            cursor: pointer;
+        }
+        .file-explorer li:hover {
+            background-color: #3a4b5a;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .editor {
+            flex: 1;
+            padding: 10px;
+        }
+        .editor textarea {
+            width: 100%;
+            height: 100%;
+            background-color: #2b3a47;
+            color: #fff;
+            border: none;
+            resize: none;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .controls {
+            background-color: #2b3a47;
+            padding: 10px;
+            border-top: 1px solid #444;
+        }
+        .controls button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            background-color: #2b3a47;
+            padding: 10px;
+            border-top: 1px solid #444;
+            height: 150px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar: Dosya Gezgini -->
+        <div class="sidebar">
+            <h3>File Explorer</h3>
+            <div class="file-explorer">
+                <ul id="fileList">
+                    <li onclick="loadFile('FDAIPresale.sol')">FDAIPresale.sol</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ana İçerik: Kod Editörü ve Kontroller -->
+        <div class="main-content">
+            <div class="editor">
+                <textarea id="codeEditor" rows="20" cols="80">pragma solidity ^0.8.17;
+
+// SPDX-License-Identifier: Unlicense
+contract FDAIPresale {
+    address public owner;
+    IERC20 public token;
+    address public receiverWallet;
+    bool public saleActive = true;
+    uint256 public rate = 459900;
+    
+    event TokensPurchased(address buyer, uint256 amount);
+    event SaleClosed();
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not owner");
+        _;
+    }
+}</textarea>
+            </div>
+            <div class="controls">
+                <button onclick="compileCode()">Compile</button>
+                <button onclick="runCode()">Run</button>
+            </div>
+            <div class="output" id="output">
+                Output will appear here...
+            </div>
+        </div>
+    </div>
+
+    <!-- Solidity Compiler (solc-js) ve JavaScript Kodları -->
+    <script src="https://cdn.jsdelivr.net/npm/solc@0.8.17/solc.min.js"></script>
+    <script>
+        let currentFile = 'FDAIPresale.sol';
+
+        function loadFile(fileName) {
+            currentFile = fileName;
+            // Burada dosya içeriğini dinamik olarak yükleyebilirsiniz.
+            // Şimdilik sadece örnek bir dosya var.
+            document.getElementById('output').innerText = `Loaded file: ${fileName}`;
+        }
+
+        function compileCode() {
+            const code = document.getElementById('codeEditor').value;
+            const output = document.getElementById('output');
+
+            try {
+                // Solidity kodunu derlemek için solc-js kullanıyoruz
+                const compiled = solc.compile(JSON.stringify({
+                    language: "Solidity",
+                    sources: {
+                        [currentFile]: {
+                            content: code
+                        }
+                    },
+                    settings: {
+                        outputSelection: {
+                            "*": {
+                                "*": ["*"]
+                            }
+                        }
+                    }
+                }));
+                const result = JSON.parse(compiled);
+                if (result.errors) {
+                    output.innerText = 'Compilation Errors:\n' + result.errors.map(err => err.formattedMessage).join('\n');
+                } else {
+                    output.innerText = 'Compilation Successful!\n' + JSON.stringify(result.contracts[currentFile], null, 2);
+                }
+            } catch (error) {
+                output.innerText = 'Error during compilation: ' + error.message;
+            }
+        }
+
+        function runCode() {
+            // Kod çalıştırma işlemi için bir Ethereum node'una bağlanmanız gerekir.
+            // Örneğin, Web3.js veya Ethers.js ile bir ağa bağlanabilirsiniz.
+            document.getElementById('output').innerText = 'Run functionality not implemented yet. Connect to an Ethereum node to deploy and run.';
+        }
+    </script>
+</body>
+</html>
