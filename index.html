@@ -87,9 +87,12 @@
         <!-- Sidebar: Dosya Gezgini -->
         <div class="sidebar">
             <h3>File Explorer</h3>
+            <div>
+                <button onclick="newFile()">New File</button>
+            </div>
             <div class="file-explorer">
                 <ul id="fileList">
-                    <li onclick="loadFile('FDAIPresale.sol')">FDAIPresale.sol</li>
+                    <!-- Dosyalar dinamik olarak eklenecek -->
                 </ul>
             </div>
         </div>
@@ -97,7 +100,25 @@
         <!-- Ana İçerik: Kod Editörü ve Kontroller -->
         <div class="main-content">
             <div class="editor">
-                <textarea id="codeEditor" rows="20" cols="80">pragma solidity ^0.8.17;
+                <textarea id="codeEditor" rows="20" cols="80"></textarea>
+            </div>
+            <div class="controls">
+                <button onclick="compileCode()">Compile</button>
+                <button onclick="deployContract()">Deploy</button>
+            </div>
+            <div class="output" id="output">
+                Output will appear here...
+            </div>
+        </div>
+    </div>
+
+    <!-- Gerekli Kütüphaneler -->
+    <script src="https://cdn.jsdelivr.net/npm/solc@0.8.17/solc.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+    <script>
+        let currentFile = null;
+        let files = JSON.parse(localStorage.getItem('files')) || {
+            'FDAIPresale.sol': `pragma solidity ^0.8.17;
 
 // SPDX-License-Identifier: Unlicense
 contract FDAIPresale {
@@ -114,36 +135,51 @@ contract FDAIPresale {
         require(msg.sender == owner, "Not owner");
         _;
     }
-}</textarea>
-            </div>
-            <div class="controls">
-                <button onclick="compileCode()">Compile</button>
-                <button onclick="runCode()">Run</button>
-            </div>
-            <div class="output" id="output">
-                Output will appear here...
-            </div>
-        </div>
-    </div>
+}`
+        };
+        let web3;
+        let compiledContract = null;
 
-    <!-- Solidity Compiler (solc-js) ve JavaScript Kodları -->
-    <script src="https://cdn.jsdelivr.net/npm/solc@0.8.17/solc.min.js"></script>
-    <script>
-        let currentFile = 'FDAIPresale.sol';
+        // Dosya Listesini Güncelle
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            Object.keys(files).forEach(fileName => {
+                const li = document.createElement('li');
+                li.innerText = fileName;
+                li.onclick = () => loadFile(fileName);
+                fileList.appendChild(li);
+            });
+            localStorage.setItem('files', JSON.stringify(files));
+        }
 
+        // Yeni Dosya Oluştur
+        function newFile() {
+            const fileName = prompt('Enter file name (e.g., Contract.sol):');
+            if (fileName && !files[fileName]) {
+                files[fileName] = `pragma solidity ^0.8.17;\n\ncontract ${fileName.replace('.sol', '')} {\n\n}`;
+                updateFileList();
+                loadFile(fileName);
+            } else if (files[fileName]) {
+                alert('File already exists!');
+            }
+        }
+
+        // Dosya Yükle
         function loadFile(fileName) {
             currentFile = fileName;
-            // Burada dosya içeriğini dinamik olarak yükleyebilirsiniz.
-            // Şimdilik sadece örnek bir dosya var.
+            document.getElementById('codeEditor').value = files[fileName];
             document.getElementById('output').innerText = `Loaded file: ${fileName}`;
         }
 
-        function compileCode() {
+        // Solidity Kodunu Derle
+        async function compileCode() {
             const code = document.getElementById('codeEditor').value;
+            files[currentFile] = code; // Dosyayı güncelle
+            localStorage.setItem('files', JSON.stringify(files));
             const output = document.getElementById('output');
 
             try {
-                // Solidity kodunu derlemek için solc-js kullanıyoruz
                 const compiled = solc.compile(JSON.stringify({
                     language: "Solidity",
                     sources: {
@@ -154,27 +190,80 @@ contract FDAIPresale {
                     settings: {
                         outputSelection: {
                             "*": {
-                                "*": ["*"]
+                                "*": ["abi", "evm.bytecode"]
                             }
                         }
                     }
                 }));
                 const result = JSON.parse(compiled);
+
                 if (result.errors) {
                     output.innerText = 'Compilation Errors:\n' + result.errors.map(err => err.formattedMessage).join('\n');
+                    compiledContract = null;
                 } else {
-                    output.innerText = 'Compilation Successful!\n' + JSON.stringify(result.contracts[currentFile], null, 2);
+                    const contractName = Object.keys(result.contracts[currentFile])[0];
+                    compiledContract = {
+                        abi: result.contracts[currentFile][contractName].abi,
+                        bytecode: result.contracts[currentFile][contractName].evm.bytecode.object
+                    };
+                    output.innerText = 'Compilation Successful!\nABI and Bytecode generated.';
                 }
             } catch (error) {
                 output.innerText = 'Error during compilation: ' + error.message;
+                compiledContract = null;
             }
         }
 
-        function runCode() {
-            // Kod çalıştırma işlemi için bir Ethereum node'una bağlanmanız gerekir.
-            // Örneğin, Web3.js veya Ethers.js ile bir ağa bağlanabilirsiniz.
-            document.getElementById('output').innerText = 'Run functionality not implemented yet. Connect to an Ethereum node to deploy and run.';
+        // Web3 ile Ethereum Ağına Bağlan ve Kontratı Dağıt
+        async function deployContract() {
+            const output = document.getElementById('output');
+            if (!compiledContract) {
+                output.innerText = 'Please compile the contract first!';
+                return;
+            }
+
+            // Web3 ile MetaMask'e bağlan
+            if (typeof window.ethereum === 'undefined') {
+                output.innerText = 'MetaMask is not installed!';
+                return;
+            }
+
+            try {
+                // MetaMask ile bağlantı kur
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                web3 = new Web3(window.ethereum);
+
+                const accounts = await web3.eth.getAccounts();
+                const account = accounts[0];
+
+                output.innerText = `Connected with account: ${account}\nDeploying contract...`;
+
+                // Kontratı dağıt
+                const contract = new web3.eth.Contract(compiledContract.abi);
+                const deployTx = contract.deploy({
+                    data: '0x' + compiledContract.bytecode
+                });
+
+                const gas = await deployTx.estimateGas({ from: account });
+                const deployedContract = await deployTx.send({
+                    from: account,
+                    gas: gas,
+                    gasPrice: await web3.eth.getGasPrice()
+                });
+
+                output.innerText += `\nContract deployed at address: ${deployedContract.options.address}`;
+            } catch (error) {
+                output.innerText = 'Error during deployment: ' + error.message;
+            }
         }
+
+        // Sayfa Yüklendiğinde Dosya Listesini Güncelle
+        window.onload = () => {
+            updateFileList();
+            if (Object.keys(files).length > 0) {
+                loadFile(Object.keys(files)[0]);
+            }
+        };
     </script>
 </body>
 </html>
