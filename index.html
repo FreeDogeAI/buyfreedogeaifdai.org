@@ -5,242 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FreeDogeAI Presale</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <style>
-        /* Stil kodları aynı kalabilir */
-    </style>
 </head>
 <body>
-    <!-- HTML kodu aynı kalabilir -->
-    
+    <div class="container">
+        <!-- Diğer HTML içeriği aynı kalacak -->
+    </div>
+
     <script>
-        // Configuration
-        const CONFIG = {
-            RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
-            TOKENS_PER_BNB: 120000000000,
-            BSC_CHAIN_ID: 56
-        };
-
-        // App state
-        let web3;
-        let userAddress = "";
-        let awaitingSignature = false;
-
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log("Page loaded, initializing...");
-
-            // Setup event listeners
-            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-            document.getElementById('buyBtn').addEventListener('click', sendBNB);
-            document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
-
-            // Check for mobile return with signature
-            checkMobileReturn();
-        });
-
-        // Check if returning from MetaMask mobile with signature
-        function checkMobileReturn() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('signed') && urlParams.has('address') && urlParams.has('signature')) {
-                console.log("Returning from MetaMask mobile with signature");
-                
-                userAddress = urlParams.get('address');
-                web3 = new Web3(window.ethereum || new Web3.providers.HttpProvider('https://bsc-dataseed.binance.org/'));
-                
-                // Verify the signature
-                verifyMobileSignature(userAddress, urlParams.get('signature'))
-                    .then(() => {
-                        updateWalletUI();
-                        // Clean the URL
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    })
-                    .catch(error => {
-                        console.error("Signature verification failed:", error);
-                        alert("Signature verification failed. Please try again.");
-                    });
+        // Mobile MetaMask bağlantısı için güncellenmiş kod
+        async function connectWallet() {
+            // Mobile kontrolü
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                try {
+                    // MetaMask'in mobil tarayıcı desteği için
+                    if (window.ethereum) {
+                        await window.ethereum.enable();
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        userAddress = accounts[0];
+                        web3 = new Web3(window.ethereum);
+                        await handleSignature();
+                    } else {
+                        // MetaMask yüklü değilse uyarı ver
+                        alert("Lütfen MetaMask uygulamasını yükleyin");
+                        window.location.href = "https://metamask.io/download.html";
+                    }
+                } catch (error) {
+                    console.error("Mobile connection error:", error);
+                    alert("Bağlantı hatası: " + error.message);
+                }
+            } else {
+                // Desktop bağlantısı
+                await connectDesktop();
             }
         }
 
-        // Verify signature from mobile
-        async function verifyMobileSignature(address, signature) {
-            const message = `Welcome to FreeDogeAI!\n\nPlease sign this message to connect your wallet.\n\nWallet Address: ${address}\nTimestamp: ${localStorage.getItem('signTimestamp')}`;
-            
+        async function handleSignature() {
+            const message = `FreeDogeAI Bağlantı Onayı\n\nAdres: ${userAddress}\nZaman: ${new Date().toISOString()}`;
             try {
-                const recoveredAddress = await web3.eth.personal.ecRecover(message, signature);
-                if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
-                    throw new Error("Signature verification failed");
-                }
-                return true;
+                const signature = await web3.eth.personal.sign(message, userAddress, '');
+                console.log("Signature received:", signature);
+                updateWalletUI();
             } catch (error) {
+                console.error("İmza hatası:", error);
                 throw error;
             }
         }
 
-        // Wallet connection handler
-        async function connectWallet() {
-            console.log("Attempting to connect wallet...");
-
-            // If on mobile, open MetaMask app with deeplink
-            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                console.log("Mobile device detected, opening MetaMask app...");
-                
-                // Prepare message to sign
-                const timestamp = Date.now();
-                const message = `Welcome to FreeDogeAI!\n\nPlease sign this message to connect your wallet.\n\nTimestamp: ${timestamp}`;
-                
-                // Store timestamp for verification
-                localStorage.setItem('signTimestamp', timestamp.toString());
-                
-                // Create deeplink URL
-                const deeplink = `https://metamask.app.link/dapp/${encodeURIComponent(window.location.href.split('?')[0])}?mobileSignRequest=true`;
-                
-                // Open MetaMask app
-                window.location.href = deeplink;
-                
-                // After a delay, check if user is still here (didn't go to MetaMask)
-                setTimeout(() => {
-                    if (!document.hidden) {
-                        // Fallback to regular connection if MetaMask app not installed
-                        connectWithMetaMask();
-                    }
-                }, 500);
-                
+        async function connectDesktop() {
+            if (!window.ethereum) {
+                alert("Lütfen MetaMask eklentisini yükleyin");
                 return;
             }
-
-            // For desktop, proceed normally
-            await connectWithMetaMask();
-        }
-
-        // Common connection logic for both desktop and mobile
-        async function connectWithMetaMask() {
+            
             try {
-                if (!window.ethereum) {
-                    throw new Error("MetaMask not installed");
-                }
-
-                console.log("Requesting accounts from MetaMask...");
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 userAddress = accounts[0];
                 web3 = new Web3(window.ethereum);
-                console.log("Accounts received, user address:", userAddress);
-
-                // Request a signature to verify the user
-                console.log("Requesting signature from user...");
-                const message = `Welcome to FreeDogeAI!\n\nPlease sign this message to connect your wallet.\n\nWallet Address: ${userAddress}\nTimestamp: ${Date.now()}`;
-                const signature = await window.ethereum.request({
-                    method: 'personal_sign',
-                    params: [message, userAddress]
-                });
-                console.log("Signature received:", signature);
-
-                // Switch to BSC network
-                await switchToBSC();
-
-                updateWalletUI();
+                await handleSignature();
             } catch (error) {
-                console.error("Connection error:", error.message);
-                alert("Failed to connect: " + error.message);
+                console.error("Desktop connection error:", error);
+                alert("Bağlantı hatası: " + error.message);
             }
         }
 
-        // Switch to BSC network
-        async function switchToBSC() {
-            try {
-                const chainId = await web3.eth.getChainId();
-                console.log("Current chain ID:", chainId);
-                if (chainId !== CONFIG.BSC_CHAIN_ID) {
-                    console.log("Switching to BSC Mainnet...");
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0x38' }] // BSC Mainnet
-                    });
-                    console.log("Switched to BSC Mainnet");
-                }
-            } catch (error) {
-                console.error("Network switch failed:", error.message);
-                throw error;
-            }
-        }
-
-        // Update UI after connection
-        function updateWalletUI() {
-            console.log("Updating wallet UI...");
-            const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-            
-            document.getElementById('walletAddress').textContent = shortAddress;
-            document.getElementById('userTokenAddress').textContent = shortAddress;
-            document.getElementById('walletInfo').style.display = 'block';
-            document.getElementById('connectWalletBtn').textContent = '✅ Connected';
-            document.getElementById('buyBtn').disabled = false;
-
-            web3.eth.getBalance(userAddress).then(balance => {
-                const bnbBalance = web3.utils.fromWei(balance, 'ether');
-                document.getElementById('bnbBalance').textContent = `${parseFloat(bnbBalance).toFixed(6)} BNB`;
-            }).catch(console.error);
-        }
-
-        // Calculate FDAI tokens
-        function calculateFDAI() {
-            const amount = parseFloat(document.getElementById('bnbAmount').value) || 0;
-            document.getElementById('fdaiAmount').textContent = (amount * CONFIG.TOKENS_PER_BNB).toLocaleString();
-        }
-
-        // Send BNB transaction
-        async function sendBNB() {
-            const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
-            
-            if (!bnbAmount || bnbAmount <= 0) {
-                alert("Please enter a valid amount!");
-                return;
-            }
-
-            if (!web3 || !userAddress) {
-                alert("Please connect your wallet first!");
-                return;
-            }
-
-            try {
-                const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
-                const tx = {
-                    from: userAddress,
-                    to: CONFIG.RECEIVE_WALLET,
-                    value: weiAmount,
-                    gas: 300000,
-                    gasPrice: await web3.eth.getGasPrice()
-                };
-
-                const receipt = await web3.eth.sendTransaction(tx);
-                alert(`✅ ${bnbAmount} BNB successfully sent!\n\nYou will receive: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
-            } catch (error) {
-                alert("Transaction failed: " + (error.message || error));
-            }
-        }
-
-        // Handle account and chain changes
-        if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
-                if (accounts.length > 0) {
-                    userAddress = accounts[0];
-                    web3 = new Web3(window.ethereum);
-                    updateWalletUI();
-                } else {
-                    disconnectWallet();
-                }
-            });
-
-            window.ethereum.on('chainChanged', () => {
-                window.location.reload();
-            });
-        }
-
-        function disconnectWallet() {
-            document.getElementById('walletInfo').style.display = 'none';
-            document.getElementById('connectWalletBtn').textContent = '🔗 Connect with MetaMask';
-            document.getElementById('buyBtn').disabled = true;
-            userAddress = "";
-            web3 = null;
-        }
+        // Diğer fonksiyonlar aynı kalacak
     </script>
 </body>
 </html>
