@@ -137,6 +137,7 @@
         // App state
         let web3;
         let userAddress = "";
+        let awaitingSignature = false;
 
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', () => {
@@ -164,27 +165,34 @@
                 console.error("ERROR: BNB Amount input not found!");
             }
 
-            // Auto-connect if already connected
-            if (window.ethereum?.selectedAddress) {
-                console.log("Auto-connecting to MetaMask...");
+            // Check if returning from MetaMask
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('signed') === 'true' && window.ethereum?.selectedAddress) {
+                console.log("Returning from MetaMask, completing connection...");
                 userAddress = window.ethereum.selectedAddress;
                 web3 = new Web3(window.ethereum);
                 updateWalletUI();
             }
         });
 
-        // Wallet connection handler with signature
+        // Wallet connection handler
         async function connectWallet() {
             console.log("Attempting to connect wallet...");
-            try {
-                // Check if MetaMask is installed
-                if (!window.ethereum) {
-                    console.log("MetaMask not detected!");
-                    alert("Please install MetaMask to continue!");
-                    return;
-                }
 
-                // Request accounts
+            // If on mobile, open MetaMask app
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                console.log("Mobile device detected, opening MetaMask app...");
+                const currentUrl = window.location.href;
+                // Add a query parameter to indicate signature request
+                const redirectUrl = `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}signed=true`;
+                // Open MetaMask app
+                window.location.href = `metamask://`;
+                awaitingSignature = true;
+                return;
+            }
+
+            // For desktop, proceed with signature in browser
+            try {
                 console.log("Requesting accounts from MetaMask...");
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 userAddress = accounts[0];
