@@ -61,6 +61,12 @@ async function connectWallet() {
         // Open MetaMask app
         window.location.href = `metamask://`;
         awaitingSignature = true;
+
+        // Show redirect message
+        const redirectMessage = document.getElementById('redirectMessage');
+        if (redirectMessage) {
+            redirectMessage.style.display = 'block';
+        }
         return;
     }
 
@@ -149,6 +155,7 @@ function updateWalletUI() {
     const walletInfoElement = document.getElementById('walletInfo');
     const connectWalletBtn = document.getElementById('connectWalletBtn');
     const buyBtn = document.getElementById('buyBtn');
+    const redirectMessage = document.getElementById('redirectMessage');
 
     if (!walletAddressElement || !userTokenAddressElement || !walletInfoElement || !connectWalletBtn || !buyBtn) {
         console.error("One or more UI elements not found!");
@@ -162,6 +169,9 @@ function updateWalletUI() {
     walletInfoElement.style.display = 'block';
     connectWalletBtn.textContent = '✅ Connected';
     buyBtn.disabled = false;
+    if (redirectMessage) {
+        redirectMessage.style.display = 'none';
+    }
 
     web3.eth.getBalance(userAddress).then(balance => {
         const bnbBalance = web3.utils.fromWei(balance, 'ether');
@@ -233,6 +243,15 @@ async function sendBNB() {
     }
 }
 
+// Handle return to site
+function returnToSite() {
+    console.log("Returning to site...");
+    const redirectUrl = localStorage.getItem('redirectUrl');
+    if (redirectUrl) {
+        window.location.href = redirectUrl;
+    }
+}
+
 // Handle account changes
 if (window.ethereum) {
     window.ethereum.on('accountsChanged', (accounts) => {
@@ -246,11 +265,15 @@ if (window.ethereum) {
             const walletInfoElement = document.getElementById('walletInfo');
             const connectWalletBtn = document.getElementById('connectWalletBtn');
             const buyBtn = document.getElementById('buyBtn');
+            const redirectMessage = document.getElementById('redirectMessage');
 
             if (walletInfoElement && connectWalletBtn && buyBtn) {
                 walletInfoElement.style.display = 'none';
                 connectWalletBtn.textContent = '🔗 Connect with MetaMask';
                 buyBtn.disabled = true;
+                if (redirectMessage) {
+                    redirectMessage.style.display = 'none';
+                }
                 userAddress = "";
                 web3 = null;
             }
@@ -261,4 +284,4 @@ if (window.ethereum) {
         console.log("Chain changed, reloading page...");
         window.location.reload();
     });
-        }
+            }
