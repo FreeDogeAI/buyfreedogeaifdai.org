@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REAL TOKEN PRESALE</title>
+  <title>DOGECOIN KILLER PRESALE</title>
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       background: #1a202c;
       color: white;
       display: flex;
@@ -23,12 +23,21 @@
       padding: 30px;
       max-width: 500px;
       width: 100%;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      border: 1px solid #f6851b;
     }
     h1 {
       color: #f6851b;
       text-align: center;
       margin-top: 0;
+      font-size: 28px;
+    }
+    .token-info {
+      background: rgba(246, 133, 27, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      text-align: center;
     }
     button {
       background: #f6851b;
@@ -41,14 +50,16 @@
       cursor: pointer;
       margin: 10px 0;
       font-weight: bold;
-      transition: background 0.3s;
+      transition: all 0.3s;
     }
     button:hover {
       background: #e2761b;
+      transform: translateY(-2px);
     }
     button:disabled {
       background: #4a5568;
       cursor: not-allowed;
+      transform: none;
     }
     input {
       width: 100%;
@@ -63,38 +74,78 @@
     }
     .status {
       margin-top: 20px;
-      padding: 10px;
+      padding: 15px;
       border-radius: 8px;
-      background: #2d3748;
+      background: rgba(0,0,0,0.2);
       text-align: center;
     }
     .connected {
       color: #48bb78;
       font-weight: bold;
     }
+    .progress-bar {
+      height: 10px;
+      background: #4a5568;
+      border-radius: 5px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      background: #f6851b;
+      width: 65%;
+    }
+    .token-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>REAL TOKEN PRESALE</h1>
+    <h1>🚀 DOGECOIN KILLER PRESALE</h1>
     
+    <div class="token-info">
+      <div class="token-stats">
+        <span>Token: DCK</span>
+        <span>Price: 1 BNB = 10,000 DCK</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+      <div class="token-stats">
+        <span>Raised: 65 BNB</span>
+        <span>Hardcap: 100 BNB</span>
+      </div>
+    </div>
+
     <div id="walletSection">
       <button id="connectButton">CONNECT METAMASK</button>
-      <div id="walletStatus" class="status">Not connected</div>
+      <div id="walletStatus" class="status">Status: Not connected</div>
     </div>
 
     <div id="presaleSection" style="display: none;">
-      <input type="number" id="bnbAmount" placeholder="Enter BNB amount" min="0.01" step="0.01">
-      <button id="buyButton">BUY TOKENS</button>
-      <div id="transactionStatus" class="status">Enter BNB amount</div>
+      <input type="number" id="bnbAmount" placeholder="Enter BNB amount (e.g. 0.1)" min="0.01" step="0.01">
+      <div class="token-info">
+        You will receive: <span id="tokenAmount">0</span> DCK
+      </div>
+      <button id="buyButton">BUY DCK TOKENS</button>
+      <div id="transactionStatus" class="status">Enter amount to continue</div>
+    </div>
+
+    <div class="token-info" style="margin-top: 30px; font-size: 14px;">
+      <strong>Contract Address:</strong> 0x8161698A74F2ea0035B9912ED60140893Ac0f39C<br>
+      <strong>Network:</strong> Binance Smart Chain (BSC)
     </div>
   </div>
 
   <script>
-    // CONFIG (KENDİ BİLGİLERİNİZİ GİRİN)
-    const PRESALE_WALLET = "0xd924e01c7d319c5B23708Cd622bD1143CD4Fb360"; // BNB'lerin gideceği cüzdan
-    const TOKEN_CONTRACT = "0x8161698A74F2ea0035B9912ED60140893Ac0f39C"; // Token kontrat adresi
-    const CHAIN_ID = 56; // 56 = BSC Mainnet, 97 = Testnet
+    // REAL CONFIG (CHANGE THESE)
+    const PRESALE_WALLET = "0xd924e01c7d319c5B23708Cd622bD1143CD4Fb360"; // Your BSC wallet
+    const TOKEN_CONTRACT = "0x8161698A74F2ea0035B9912ED60140893Ac0f39C"; // Your token contract
+    const CHAIN_ID = 56; // 56 = BSC Mainnet
+    const TOKEN_RATE = 10000; // 1 BNB = 10,000 tokens
 
     // DOM Elements
     const connectButton = document.getElementById('connectButton');
@@ -102,6 +153,7 @@
     const walletStatus = document.getElementById('walletStatus');
     const transactionStatus = document.getElementById('transactionStatus');
     const bnbAmountInput = document.getElementById('bnbAmount');
+    const tokenAmountSpan = document.getElementById('tokenAmount');
     const presaleSection = document.getElementById('presaleSection');
 
     let web3;
@@ -119,22 +171,24 @@
             updateUI();
           }
           
-          // Listen for account changes
+          // Event listeners
           window.ethereum.on('accountsChanged', (newAccounts) => {
             accounts = newAccounts;
             updateUI();
           });
           
-          // Listen for chain changes
           window.ethereum.on('chainChanged', () => {
             window.location.reload();
           });
+          
+          // Calculate tokens when amount changes
+          bnbAmountInput.addEventListener('input', calculateTokens);
           
         } catch (error) {
           console.error(error);
         }
       } else {
-        walletStatus.textContent = "MetaMask not installed!";
+        walletStatus.textContent = "Status: MetaMask not installed!";
         connectButton.disabled = true;
       }
     });
@@ -153,7 +207,7 @@
         updateUI();
         
       } catch (error) {
-        walletStatus.textContent = "Connection failed!";
+        walletStatus.textContent = "Status: Connection failed!";
         console.error(error);
       }
     });
@@ -162,13 +216,13 @@
     buyButton.addEventListener('click', async () => {
       const bnbAmount = bnbAmountInput.value;
       if (!bnbAmount || isNaN(bnbAmount) || parseFloat(bnbAmount) <= 0) {
-        transactionStatus.textContent = "Invalid BNB amount!";
+        transactionStatus.textContent = "Error: Invalid BNB amount!";
         return;
       }
 
       try {
         buyButton.disabled = true;
-        transactionStatus.textContent = "Confirm transaction in MetaMask...";
+        transactionStatus.textContent = "Please confirm transaction in MetaMask...";
         
         const amountWei = web3.utils.toWei(bnbAmount, 'ether');
         
@@ -180,16 +234,24 @@
         
         transactionStatus.innerHTML = `
           <span class="connected">SUCCESS!</span><br>
-          TX Hash: ${tx.transactionHash}
+          TX Hash: ${tx.transactionHash}<br>
+          You will receive your tokens after presale ends.
         `;
         
       } catch (error) {
-        transactionStatus.textContent = "Transaction failed!";
+        transactionStatus.textContent = "Error: Transaction failed!";
         console.error(error);
       } finally {
         buyButton.disabled = false;
       }
     });
+
+    // Calculate tokens
+    function calculateTokens() {
+      const bnbAmount = parseFloat(bnbAmountInput.value) || 0;
+      const tokens = bnbAmount * TOKEN_RATE;
+      tokenAmountSpan.textContent = tokens.toLocaleString();
+    }
 
     // Switch Network
     async function switchNetwork() {
@@ -230,7 +292,7 @@
         connectButton.style.display = 'none';
         presaleSection.style.display = 'block';
       } else {
-        walletStatus.textContent = "Not connected";
+        walletStatus.textContent = "Status: Not connected";
         connectButton.style.display = 'block';
         presaleSection.style.display = 'none';
       }
