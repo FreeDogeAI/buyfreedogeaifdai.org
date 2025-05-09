@@ -3,183 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FreeDogeAI Presale</title>
+  <title>REAL TOKEN PRESALE</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
   <style>
-    :root {
-      --primary: #f6851b;
-      --secondary: #2b6cb0;
-      --dark: #1a202c;
-      --light: #f7fafc;
-    }
     body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #1a202c, #2d3748);
+      font-family: Arial, sans-serif;
+      background: #1a202c;
       color: white;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
     .container {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
+      background: #2d3748;
+      border-radius: 15px;
       padding: 30px;
       max-width: 500px;
       width: 100%;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     h1 {
       color: #f6851b;
       text-align: center;
-      margin-bottom: 10px;
-      font-size: 28px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #a0aec0;
-      margin-bottom: 30px;
-      font-size: 16px;
-    }
-    .card {
-      background: rgba(26, 32, 44, 0.7);
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #a0aec0;
-      font-size: 14px;
-    }
-    input {
-      width: 100%;
-      padding: 12px 15px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(26, 32, 44, 0.8);
-      color: white;
-      font-size: 16px;
-    }
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    .token-receive {
-      background: rgba(246, 133, 27, 0.1);
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-      margin: 20px 0;
-      font-size: 18px;
+      margin-top: 0;
     }
     button {
-      width: 100%;
-      padding: 15px;
-      border-radius: 10px;
-      border: none;
-      background: var(--primary);
+      background: #f6851b;
       color: white;
+      border: none;
+      padding: 15px;
+      width: 100%;
+      border-radius: 8px;
       font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 10px;
+      margin: 10px 0;
+      font-weight: bold;
+      transition: background 0.3s;
     }
     button:hover {
       background: #e2761b;
-      transform: translateY(-2px);
     }
     button:disabled {
       background: #4a5568;
       cursor: not-allowed;
-      transform: none;
     }
-    .info-box {
-      background: rgba(26, 32, 44, 0.7);
-      border-left: 3px solid var(--primary);
-      padding: 15px;
-      margin-top: 30px;
-      font-size: 14px;
-      color: #a0aec0;
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #4a5568;
+      background: #1a202c;
+      color: white;
+      font-size: 16px;
+      box-sizing: border-box;
     }
-    .wallet-status {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #2d3748;
+      text-align: center;
     }
-    .wallet-connected {
+    .connected {
       color: #48bb78;
       font-weight: bold;
-    }
-    .wallet-disconnected {
-      color: #e53e3e;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>FreeDogeAI Presale</h1>
-    <p class="subtitle">Don't miss the next Doge! This opportunity won't last long.</p>
+    <h1>REAL TOKEN PRESALE</h1>
     
-    <div class="card">
-      <div class="wallet-status">
-        <span id="walletStatus" class="wallet-disconnected">Not Connected</span>
-      </div>
-      
-      <button id="connectWalletBtn">Connect with MetaMask</button>
-      
-      <div id="presaleSection" style="display: none;">
-        <div class="form-group">
-          <label for="bnbAmount">BNB Amount:</label>
-          <input type="number" id="bnbAmount" placeholder="0.1" min="0.01" step="0.01">
-        </div>
-        
-        <div class="token-receive">
-          You will receive: <span id="tokenAmount">0</span> FDA!
-        </div>
-        
-        <button id="buyTokensBtn">Buy FDA Tokens</button>
-      </div>
+    <div id="walletSection">
+      <button id="connectButton">CONNECT METAMASK</button>
+      <div id="walletStatus" class="status">Not connected</div>
     </div>
-    
-    <div class="info-box">
-      <h3>Important Information</h3>
-      <p>Please use MetaMask to complete your purchase.</p>
-      <p>To see your tokens in your wallet, add the contract address manually in MetaMask after the presale ends.</p>
-      <p>Contract Address: 0x8161698A74F2ea0035B9912ED60140893Ac0f39C</p>
+
+    <div id="presaleSection" style="display: none;">
+      <input type="number" id="bnbAmount" placeholder="Enter BNB amount" min="0.01" step="0.01">
+      <button id="buyButton">BUY TOKENS</button>
+      <div id="transactionStatus" class="status">Enter BNB amount</div>
     </div>
   </div>
 
-  <!-- Web3.js -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-  
   <script>
-    // Configuration
-    const config = {
-      presaleWallet: "0xd924e01c7d319c5B23708Cd622bD1143CD4Fb360",
-      tokenContract: "0x8161698A74F2ea0035B9912ED60140893Ac0f39C",
-      tokenDecimals: 18,
-      presaleRate: 1000, // 1 BNB = 1000 FDA
-      chainId: 56 // BSC Mainnet
-    };
+    // CONFIG (KENDİ BİLGİLERİNİZİ GİRİN)
+    const PRESALE_WALLET = "0xd924e01c7d319c5B23708Cd622bD1143CD4Fb360"; // BNB'lerin gideceği cüzdan
+    const TOKEN_CONTRACT = "0x8161698A74F2ea0035B9912ED60140893Ac0f39C"; // Token kontrat adresi
+    const CHAIN_ID = 56; // 56 = BSC Mainnet, 97 = Testnet
 
     // DOM Elements
-    const connectBtn = document.getElementById('connectWalletBtn');
-    const buyBtn = document.getElementById('buyTokensBtn');
-    const presaleSection = document.getElementById('presaleSection');
+    const connectButton = document.getElementById('connectButton');
+    const buyButton = document.getElementById('buyButton');
     const walletStatus = document.getElementById('walletStatus');
-    const bnbInput = document.getElementById('bnbAmount');
-    const tokenAmount = document.getElementById('tokenAmount');
+    const transactionStatus = document.getElementById('transactionStatus');
+    const bnbAmountInput = document.getElementById('bnbAmount');
+    const presaleSection = document.getElementById('presaleSection');
 
     let web3;
     let accounts = [];
@@ -193,15 +116,16 @@
           // Check if already connected
           accounts = await web3.eth.getAccounts();
           if (accounts.length > 0) {
-            updateUI(true);
+            updateUI();
           }
           
-          // Event listeners
+          // Listen for account changes
           window.ethereum.on('accountsChanged', (newAccounts) => {
             accounts = newAccounts;
-            updateUI(newAccounts.length > 0);
+            updateUI();
           });
           
+          // Listen for chain changes
           window.ethereum.on('chainChanged', () => {
             window.location.reload();
           });
@@ -209,81 +133,70 @@
         } catch (error) {
           console.error(error);
         }
+      } else {
+        walletStatus.textContent = "MetaMask not installed!";
+        connectButton.disabled = true;
       }
-      
-      // BNB input listener
-      bnbInput.addEventListener('input', updateTokenAmount);
     });
 
-    // Connect Wallet
-    connectBtn.addEventListener('click', async () => {
-      if (!window.ethereum) {
-        alert('Please install MetaMask!');
-        return;
-      }
-      
+    // Connect MetaMask
+    connectButton.addEventListener('click', async () => {
       try {
         accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         
         // Check network
         const chainId = await web3.eth.getChainId();
-        if (chainId != config.chainId) {
+        if (chainId != CHAIN_ID) {
           await switchNetwork();
         }
         
-        updateUI(true);
+        updateUI();
         
       } catch (error) {
-        console.error("Connection error:", error);
-        walletStatus.textContent = "Connection Failed";
-        walletStatus.className = "wallet-disconnected";
+        walletStatus.textContent = "Connection failed!";
+        console.error(error);
       }
     });
 
     // Buy Tokens
-    buyBtn.addEventListener('click', async () => {
-      const bnbAmount = bnbInput.value;
+    buyButton.addEventListener('click', async () => {
+      const bnbAmount = bnbAmountInput.value;
       if (!bnbAmount || isNaN(bnbAmount) || parseFloat(bnbAmount) <= 0) {
-        alert("Please enter a valid BNB amount");
+        transactionStatus.textContent = "Invalid BNB amount!";
         return;
       }
 
       try {
-        buyBtn.disabled = true;
-        buyBtn.textContent = "Processing...";
+        buyButton.disabled = true;
+        transactionStatus.textContent = "Confirm transaction in MetaMask...";
         
         const amountWei = web3.utils.toWei(bnbAmount, 'ether');
         
         const tx = await web3.eth.sendTransaction({
           from: accounts[0],
-          to: config.presaleWallet,
+          to: PRESALE_WALLET,
           value: amountWei
         });
         
-        alert(`Transaction successful!\nTX Hash: ${tx.transactionHash}`);
+        transactionStatus.innerHTML = `
+          <span class="connected">SUCCESS!</span><br>
+          TX Hash: ${tx.transactionHash}
+        `;
         
       } catch (error) {
-        console.error("Transaction error:", error);
-        alert("Transaction failed: " + (error.message || "Unknown error"));
+        transactionStatus.textContent = "Transaction failed!";
+        console.error(error);
       } finally {
-        buyBtn.disabled = false;
-        buyBtn.textContent = "Buy FDA Tokens";
+        buyButton.disabled = false;
       }
     });
-
-    // Update Token Amount
-    function updateTokenAmount() {
-      const bnbAmount = parseFloat(bnbInput.value) || 0;
-      const tokens = bnbAmount * config.presaleRate;
-      tokenAmount.textContent = tokens.toLocaleString();
-    }
 
     // Switch Network
     async function switchNetwork() {
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${config.chainId.toString(16)}` }],
+          params: [{ chainId: `0x${CHAIN_ID.toString(16)}` }],
         });
       } catch (switchError) {
         if (switchError.code === 4902) {
@@ -291,7 +204,7 @@
             await window.ethereum.request({
               method: 'wallet_addEthereumChain',
               params: [{
-                chainId: `0x${config.chainId.toString(16)}`,
+                chainId: `0x${CHAIN_ID.toString(16)}`,
                 chainName: 'Binance Smart Chain',
                 nativeCurrency: {
                   name: 'BNB',
@@ -305,24 +218,21 @@
           } catch (addError) {
             throw new Error("Failed to add BSC network");
           }
-        } else {
-          throw new Error("Failed to switch to BSC");
         }
+        throw new Error("Failed to switch to BSC");
       }
     }
 
     // Update UI
-    function updateUI(isConnected) {
-      if (isConnected) {
-        walletStatus.textContent = "Connected";
-        walletStatus.className = "wallet-connected";
-        connectBtn.style.display = "none";
-        presaleSection.style.display = "block";
+    function updateUI() {
+      if (accounts.length > 0) {
+        walletStatus.innerHTML = `<span class="connected">Connected: ${accounts[0].substring(0, 6)}...${accounts[0].substring(38)}</span>`;
+        connectButton.style.display = 'none';
+        presaleSection.style.display = 'block';
       } else {
-        walletStatus.textContent = "Not Connected";
-        walletStatus.className = "wallet-disconnected";
-        connectBtn.style.display = "block";
-        presaleSection.style.display = "none";
+        walletStatus.textContent = "Not connected";
+        connectButton.style.display = 'block';
+        presaleSection.style.display = 'none';
       }
     }
   </script>
