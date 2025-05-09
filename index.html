@@ -1,388 +1,168 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-lang="title">FreeDogeAI Presale</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #000000;
-            margin: 0;
-            padding: 20px;
-            color: #FFD700;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #000000;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
-        .logo-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logo-container img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        button {
-            background: #25D366;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #1DA851;
-        }
-        button:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        .wallet-info {
-            background-color: #000000;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            word-break: break-word;
-            font-family: monospace;
-            border: 1px solid #FFD700;
-            color: #FFD700;
-        }
-        .info-box {
-            background-color: #000000;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #FFD700;
-            color: #FFD700;
-            margin-top: 20px;
-        }
-        .metamask-redirect {
-            display: none;
-            background: #f6851b;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-        }
-        .download-link {
-            display: block;
-            text-align: center;
-            margin: 15px 0;
-            color: #0000FF;
-            font-size: 16px;
-            text-decoration: none;
-        }
-        .download-link:hover {
-            text-decoration: underline;
-        }
-        h1, h3, p, label {
-            color: #FFD700;
-        }
-        .calculation-result {
-            margin: 15px 0;
-            font-size: 18px;
-        }
-        .about-section, .community-section {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #000000;
-            border: 1px solid #FFD700;
-            border-radius: 8px;
-            color: #FFD700;
-        }
-        .community-section a {
-            color: #25D366;
-            text-decoration: none;
-            margin: 0 10px;
-        }
-        .community-section a:hover {
-            text-decoration: underline;
-        }
-        .language-selector {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .language-selector select {
-            padding: 8px;
-            border-radius: 5px;
-            background-color: #FFD700;
-            color: #000000;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Presale</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f1f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #f6851b;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px 0;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #e2761b;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #status {
+      margin-top: 20px;
+      color: #666;
+      font-weight: bold;
+    }
+    #userAddress {
+      word-break: break-all;
+      margin: 10px 0;
+      color: #2b6cb0;
+    }
+    input {
+      padding: 10px;
+      width: 100%;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-    <div id="metamaskRedirect" class="metamask-redirect">
-        📱 <a id="openInMetamask" style="color:white;text-decoration:underline" data-lang="open_in_metamask">MetaMask uygulamasında açmak için tıklayın</a>
+  <div class="container">
+    <h1>TOKEN PRESALE</h1>
+    <p>Connect your wallet to participate in the presale.</p>
+    
+    <button id="connectWalletBtn">Connect MetaMask</button>
+    <div id="userAddress"></div>
+    
+    <div id="presaleSection" style="display: none;">
+      <h3>Send BNB to participate</h3>
+      <p>Presale Rate: 1 BNB = 1000 Tokens</p>
+      <input type="number" id="bnbAmount" placeholder="Enter BNB amount" min="0.01" step="0.01">
+      <button id="buyTokensBtn">Buy Tokens</button>
     </div>
+    
+    <div id="status"></div>
+  </div>
 
-    <div class="container">
-        <div class="language-selector">
-            <select id="languageSelect" onchange="changeLanguage()">
-                <option value="tr">Türkçe</option>
-                <option value="en">English</option>
-                <option value="zh">中文 (Chinese)</option>
-                <option value="ja">日本語 (Japanese)</option>
-                <option value="ur">اردو (Urdu)</option>
-                <option value="ar">العربية (Arabic)</option>
-                <option value="ru">Русский (Russian)</option>
-            </select>
-        </div>
+  <!-- Web3 ve Ethers.js kütüphaneleri -->
+  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+  <script>
+    // Ayarlar
+    const PRESALE_WALLET = "0xd924e01c7d319c5B23708Cd622bD1143CD4Fb360"; // BNB'lerin gideceği adres
+    const TOKEN_CONTRACT = "0x8161698A74F2ea0035B9912ED60140893Ac0f39C"; // Token kontrat adresi
+    const CHAIN_ID = 56; // BSC Mainnet (Testnet için 97 kullanın)
 
-        <div class="logo-container">
-            <img src="logo.png" alt="FreeDogeAI Logo">
-        </div>
-        <h1 data-lang="title">FreeDogeAI Presale</h1>
-        <p data-lang="bnb_to_fdai">1 BNB = 120,000,000,000 FDAI</p>
-        <button id="connectWalletBtn" data-lang="connect_metamask">🔗 MetaMask ile Bağlan</button>
+    // DOM Elementleri
+    const connectWalletBtn = document.getElementById("connectWalletBtn");
+    const buyTokensBtn = document.getElementById("buyTokensBtn");
+    const userAddressDiv = document.getElementById("userAddress");
+    const presaleSection = document.getElementById("presaleSection");
+    const statusDiv = document.getElementById("status");
+    const bnbAmountInput = document.getElementById("bnbAmount");
 
-        <div id="walletInfo" style="display: none;">
-            <h3 data-lang="your_wallet">Your Wallet</h3>
-            <div class="wallet-info">
-                <p><strong data-lang="address">Address:</strong> <span id="walletAddress"></span></p>
-                <p><strong data-lang="bnb_balance">BNB Balance:</strong> <span id="bnbBalance"></span></p>
-            </div>
-        </div>
+    let provider;
+    let signer;
+    let userAddress;
+
+    // MetaMask Bağlantısı
+    connectWalletBtn.addEventListener("click", async () => {
+      try {
+        if (window.ethereum) {
+          // MetaMask bağlantısını iste
+          await window.ethereum.request({ method: "eth_requestAccounts" });
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+          userAddress = await signer.getAddress();
+
+          // Ağ kontrolü
+          const network = await provider.getNetwork();
+          if (network.chainId !== CHAIN_ID) {
+            statusDiv.textContent = `❌ Please switch to ${CHAIN_ID === 56 ? "BSC Mainnet" : "BSC Testnet"}`;
+            return;
+          }
+
+          // UI Güncelleme
+          userAddressDiv.textContent = `Connected: ${userAddress}`;
+          presaleSection.style.display = "block";
+          connectWalletBtn.disabled = true;
+          statusDiv.textContent = "✅ Wallet connected!";
+        } else {
+          statusDiv.textContent = "❌ MetaMask not installed!";
+        }
+      } catch (error) {
+        statusDiv.textContent = `❌ Error: ${error.message}`;
+      }
+    });
+
+    // Token Satın Alma
+    buyTokensBtn.addEventListener("click", async () => {
+      const bnbAmount = bnbAmountInput.value;
+      if (!bnbAmount || isNaN(bnbAmount) || parseFloat(bnbAmount) <= 0) {
+        statusDiv.textContent = "❌ Please enter a valid BNB amount";
+        return;
+      }
+
+      try {
+        // BNB Gönderim İşlemi
+        const tx = await signer.sendTransaction({
+          to: PRESALE_WALLET,
+          value: ethers.utils.parseEther(bnbAmount),
+        });
+
+        statusDiv.textContent = `⏳ Transaction sent: ${tx.hash}`;
         
-        <div>
-            <label for="bnbAmount"><strong data-lang="bnb_amount">BNB Amount:</strong></label>
-            <input type="number" id="bnbAmount" placeholder="0.1" step="0.01" min="0.01">
-            
-            <div class="calculation-result">
-                <strong data-lang="you_will_receive">You will receive:</strong> <span id="fdaiAmount">0</span> FDAI
-            </div>
-            
-            <button id="buyBtn" disabled data-lang="buy_fdai">🚀 Buy FDAI Tokens</button>
-        </div>
+        // Transaction onayını bekle
+        await tx.wait();
+        statusDiv.textContent = `✅ Transaction confirmed! Tokens will be sent to your address.`;
         
-        <div class="info-box">
-            <h3 data-lang="important_info">Important Information</h3>
-            <p data-lang="token_reflection">After your token purchase, your tokens will be reflected in your wallet within 24 hours. To view your token balance, you may need to manually add the token contract address using the 'Add Token' option in MetaMask.</p>
-            
-            <p><strong data-lang="fdai_recipient_address">FDAI Recipient Address:</strong> <span id="userTokenAddress"></span></p>
-            
-            <p><strong data-lang="note">NOTE:</strong> <span data-lang="manual_add_note">If FDAI tokens do not appear in your wallet after purchase, you can manually add the token using the following contract address:</span></p>
-            <div class="wallet-info" style="background-color: #000000; border: 2px dashed #FFD700; color: #00FFCC; font-weight: bold; font-size: 16px; padding: 15px; border-radius: 10px; text-align: center;">
-                0x8161698A74F2ea0035B9912ED60140893Ac0f39C
-            </div>
-        </div>
+      } catch (error) {
+        statusDiv.textContent = `❌ Error: ${error.message}`;
+      }
+    });
 
-        <div class="about-section">
-            <h3 data-lang="about_title">About FreeDogeAI</h3>
-            <p data-lang="about_text">FreeDogeAI is an innovative project combining the power of artificial intelligence with the viral appeal of meme-based cryptocurrencies. Our mission is to create a decentralized ecosystem that leverages AI to empower users, foster community engagement, and drive financial freedom. Join us in revolutionizing the future of finance with FreeDogeAI!</p>
-        </div>
-
-        <div class="community-section">
-            <h3 data-lang="community_title">Join Our Community</h3>
-            <p>
-                <a href="https://x.com/FreeDogeAI_FDAI?t=DiouMNgY14_U77f0Y5R0OQ&s=09" target="_blank" data-lang="twitter">X (Twitter)</a> |
-                <a href="https://t.me/freedogeaiFDAI" target="_blank" data-lang="telegram">Telegram</a>
-            </p>
-        </div>
-
-        <a href="FreeDogeAI_Whitepaper.pdf" class="download-link" download data-lang="download_whitepaper">Download FreeDogeAI Whitepaper</a>
-    </div>
-
-    <script>
-        // Language translations
-        const translations = {
-            tr: {
-                title: "FreeDogeAI Ön Satış",
-                bnb_to_fdai: "1 BNB = 120,000,000,000 FDAI",
-                connect_metamask: "🔗 MetaMask ile Bağlan",
-                connected: "✅ Bağlandı",
-                your_wallet: "Cüzdanınız",
-                address: "Adres:",
-                bnb_balance: "BNB Bakiyesi:",
-                bnb_amount: "BNB Miktarı:",
-                you_will_receive: "Alacağınız Miktar:",
-                buy_fdai: "🚀 FDAI Token Satın Al",
-                important_info: "Önemli Bilgiler",
-                token_reflection: "Token satın alma işleminizin ardından, tokenleriniz 24 saat içerisinde cüzdanınıza yansıtılacaktır. Token bakiyenizi görüntülemek için MetaMask uygulamasında 'Token Ekle' seçeneğini kullanarak ilgili token kontrat adresini manuel olarak eklemeniz gerekebilir.",
-                fdai_recipient_address: "FDAI Alıcı Adresi:",
-                note: "NOT:",
-                manual_add_note: "Eğer FDAI tokenları satın alma işleminden sonra cüzdanınızda görünmezse, aşağıdaki kontrat adresini kullanarak tokenı manuel olarak ekleyebilirsiniz:",
-                about_title: "FreeDogeAI Hakkında",
-                about_text: "FreeDogeAI, yapay zeka gücünü meme tabanlı kripto paraların viral çekiciliği ile birleştiren yenilikçi bir projedir. Misyonumuz, AI'yi kullanarak kullanıcıları güçlendiren, topluluk katılımını teşvik eden ve finansal özgürlüğü destekleyen merkezi olmayan bir ekosistem oluşturmaktır. FreeDogeAI ile finansın geleceğini dönüştürmeye katılın!",
-                community_title: "Topluluğumuza Katılın",
-                twitter: "X (Twitter)",
-                telegram: "Telegram",
-                download_whitepaper: "FreeDogeAI Whitepaper'ı İndir",
-                open_in_metamask: "MetaMask uygulamasında açmak için tıklayın",
-                invalid_amount: "Lütfen geçerli bir miktar girin!",
-                transaction_success: "✅ {amount} BNB başarıyla gönderildi!\n\nAlacak: {fdai} FDAI\nTX Hash: {hash}",
-                transaction_failed: "İşlem başarısız: {error}"
-            },
-            en: {
-                title: "FreeDogeAI Presale",
-                bnb_to_fdai: "1 BNB = 120,000,000,000 FDAI",
-                connect_metamask: "🔗 Connect with MetaMask",
-                connected: "✅ Connected",
-                your_wallet: "Your Wallet",
-                address: "Address:",
-                bnb_balance: "BNB Balance:",
-                bnb_amount: "BNB Amount:",
-                you_will_receive: "You will receive:",
-                buy_fdai: "🚀 Buy FDAI Tokens",
-                important_info: "Important Information",
-                token_reflection: "After your token purchase, your tokens will be reflected in your wallet within 24 hours. To view your token balance, you may need to manually add the token contract address using the 'Add Token' option in MetaMask.",
-                fdai_recipient_address: "FDAI Recipient Address:",
-                note: "NOTE:",
-                manual_add_note: "If FDAI tokens do not appear in your wallet after purchase, you can manually add the token using the following contract address:",
-                about_title: "About FreeDogeAI",
-                about_text: "FreeDogeAI is an innovative project combining the power of artificial intelligence with the viral appeal of meme-based cryptocurrencies. Our mission is to create a decentralized ecosystem that leverages AI to empower users, foster community engagement, and drive financial freedom. Join us in revolutionizing the future of finance with FreeDogeAI!",
-                community_title: "Join Our Community",
-                twitter: "X (Twitter)",
-                telegram: "Telegram",
-                download_whitepaper: "Download FreeDogeAI Whitepaper",
-                open_in_metamask: "Click to open in MetaMask app",
-                invalid_amount: "Please enter a valid amount!",
-                transaction_success: "✅ {amount} BNB successfully sent!\n\nYou will receive: {fdai} FDAI\nTX Hash: {hash}",
-                transaction_failed: "Transaction failed: {error}"
-            },
-            zh: {
-                title: "FreeDogeAI 预售",
-                bnb_to_fdai: "1 BNB = 120,000,000,000 FDAI",
-                connect_metamask: "🔗 使用 MetaMask 连接",
-                connected: "✅ 已连接",
-                your_wallet: "你的钱包",
-                address: "地址：",
-                bnb_balance: "BNB 余额：",
-                bnb_amount: "BNB 数量：",
-                you_will_receive: "你将收到：",
-                buy_fdai: "🚀 购买 FDAI 代币",
-                important_info: "重要信息",
-                token_reflection: "购买代币后，你的代币将在 24 小时内反映到你的钱包中。要查看代币余额，你可能需要在 MetaMask 中使用“添加代币”选项手动添加代币合约地址。",
-                fdai_recipient_address: "FDAI 接收地址：",
-                note: "注意：",
-                manual_add_note: "如果购买后 FDAI 代币未出现在你的钱包中，你可以使用以下合约地址手动添加代币：",
-                about_title: "关于 FreeDogeAI",
-                about_text: "FreeDogeAI 是一个创新项目，结合了人工智能的强大功能和基于模因的加密货币的病毒式吸引力。我们的使命是创建一个去中心化的生态系统，利用人工智能赋予用户权力，促进社区参与，推动财务自由。加入我们，一起用 FreeDogeAI 革新金融的未来！",
-                community_title: "加入我们的社区",
-                twitter: "X (Twitter)",
-                telegram: "Telegram",
-                download_whitepaper: "下载 FreeDogeAI 白皮书",
-                open_in_metamask: "点击在 MetaMask 应用中打开",
-                invalid_amount: "请输入有效金额！",
-                transaction_success: "✅ {amount} BNB 已成功发送！\n\n你将收到：{fdai} FDAI\n交易哈希：{hash}",
-                transaction_failed: "交易失败：{error}"
-            },
-            ja: {
-                title: "FreeDogeAI プレセール",
-                bnb_to_fdai: "1 BNB = 120,000,000,000 FDAI",
-                connect_metamask: "🔗 MetaMask で接続",
-                connected: "✅ 接続済み",
-                your_wallet: "あなたのウォレット",
-                address: "アドレス：",
-                bnb_balance: "BNB 残高：",
-                bnb_amount: "BNB 数量：",
-                you_will_receive: "受け取る金額：",
-                buy_fdai: "🚀 FDAI トークンを購入",
-                important_info: "重要な情報",
-                token_reflection: "トークン購入後、24時間以内にあなたのウォレットにトークンが反映されます。トークンの残高を確認するには、MetaMask の「トークンを追加」オプションを使用してトークン契約アドレスを手動で追加する必要がある場合があります。",
-                fdai_recipient_address: "FDAI 受信アドレス：",
-                note: "注意：",
-                manual_add_note: "購入後に FDAI トークンがウォレットに表示されない場合、以下の契約アドレスを使用してトークンを手動で追加できます：",
-                about_title: "FreeDogeAI について",
-                about_text: "FreeDogeAI は、人工知能の力とミームベースの暗号通貨のバイラルな魅力を組み合わせた革新的なプロジェクトです。私たちの使命は、AI を活用してユーザーに力を与え、コミュニティの参加を促進し、財務の自由を推進する分散型エコシステムを作り出すことです。FreeDogeAI で金融の未来を革新する旅に参加してください！",
-                community_title: "コミュニティに参加",
-                twitter: "X (Twitter)",
-                telegram: "Telegram",
-                download_whitepaper: "FreeDogeAI ホワイトペーパーをダウンロード",
-                open_in_metamask: "MetaMask アプリで開くにはクリック",
-                invalid_amount: "有効な金額を入力してください！",
-                transaction_success: "✅ {amount} BNB が正常に送信されました！\n\n受け取る金額：{fdai} FDAI\nトランザクションハッシュ：{hash}",
-                transaction_failed: "取引に失敗しました：{error}"
-            },
-            ur: {
-                title: "فری ڈوج اے آئی پری سیل",
-                bnb_to_fdai: "1 BNB = 120,000,000,000 FDAI",
-                connect_metamask: "🔗 میٹاماسک کے ساتھ کنیکٹ کریں",
-                connected: "✅ منسلک ہو گیا",
-                your_wallet: "آپ کا والٹ",
-                address: "ایڈریس:",
-                bnb_balance: "BNB بیلنس:",
-                bnb_amount: "BNB کی مقدار:",
-                you_will_receive: "آپ کو ملے گا:",
-                buy_fdai: "🚀 FDAI ٹوکن خریدیں",
-                important_info: "اہم معلومات",
-                token_reflection: "آپ کے ٹوکن کی خریداری کے بعد، آپ کے ٹوکن 24 گھنٹوں کے اندر آپ کے والٹ میں ظاہر ہو جائیں گے۔ اپنا ٹوکن بیلنس دیکھنے کے لئے، آپ کو میٹاماسک میں 'ٹوکن شامل کریں' کے اختیارات کا استعمال کرتے ہوئے ٹوکن کنٹریکٹ ایڈریس کو دستی طور پر شامل کرنے کی ضرورت ہو سکتی ہے۔",
-                fdai_recipient_address: "FDAI وصول کنندہ ایڈریس:",
-                note: "نوٹ:",
-                manual_add_note: "اگر خریداری کے بعد FDAI ٹوکن آپ کے والٹ میں ظاہر نہیں ہوتے ہیں، تو آپ درج ذیل کنٹریکٹ ایڈریس کا استعمال کرتے ہوئے ٹوکن کو دستی طور پر شامل کر سکتے ہیں:",
-                about_title: "فری ڈوج اے آئی کے بارے میں",
-                about_text: "فری ڈوج اے آئی ایک جدید منصوبہ ہے جو مصنوعی ذہانت کی طاقت کو میم پر مبنی کریپٹو کرنسیوں کی وائرل اپیل کے ساتھ ملاتا ہے۔ ہمارا مشن ایک غیر مرکزی ایکو سسٹم بنانا ہے جو AI کا فائدہ اٹھا کر صارفین کو بااختیار بناتا ہے، کمیونٹی کی شمولیت کو فروغ دیتا ہے، اور مالی آزادی کو فروغ دیتا ہے۔ فری ڈوج اے آئی کے ساتھ مالیات کے مستقبل کو تبدیل کرنے میں ہمارے ساتھ شامل ہوں!",
-                community_title: "ہماری کمیونٹی میں شامل ہوں",
-                twitter: "ایکس (ٹوئٹر)",
-                telegram: "ٹیلیگرام",
-                download_whitepaper: "فری ڈوج اے آئی وائٹ پیپر ڈاؤن لوڈ کریں",
-                open_in_metamask: "میٹاماسک ایپ میں کھولنے کے لئے کلک کریں",
-                invalid_amount: "براہ کرم ایک درست رقم درج کریں!",
-                transaction_success: "✅ {amount} BNB کامیابی کے ساتھ بھیج دیا گیا!\n\nآپ کو ملے گا: {fdai} FDAI\nTX Hash: {hash}",
-                transaction_failed: "لین دین ناکام ہو گیا: {error}"
-            },
-            ar: {
-                title: "بيع مسبق FreeDogeAI",
-                bnb_to_fdai: "1 BNB = 120,000,000,000 FDAI",
-                connect_metamask: "🔗 الاتصال بـ MetaMask",
-                connected: "✅ متصل",
-                your_wallet: "محفظتك",
-                address: "العنوان:",
-                bnb_balance: "رصيد BNB:",
-                bnb_amount: "كمية BNB:",
-                you_will_receive: "سوف تتلقى:",
-                buy_fdai: "🚀 شراء رموز FDAI",
-                important_info: "معلومات هامة",
-                token_reflection: "بعد شراء الرموز، سيتم عكس الرموز في محفظتك خلال 24 ساعة. لعرض رصيد الرموز، قد تحتاج إلى إضافة عنوان العقد الخاص بالرمز يدويًا باستخدام خيار 'إضافة رمز' في MetaMask.",
-                fdai_recipient_address: "عنوان المستلم FDAI:",
-                note: "ملاحظة:",
-                manual_add_note: "إذا لم تظهر رموز FDAI في محفظتك بعد الشراء، يمكنك إضافة الرمز يدويًا باستخدام عنوان العقد التالي:",
-                about_title: "حول FreeDogeAI",
-                about_text: "FreeDogeAI هو مشروع مبتكر يجمع بين قوة الذكاء الاصطناعي وجاذبية العملات المشفرة القائمة على الميمات. مهمتنا هي إنشاء نظام بيئي لامركزي يستفيد من الذكاء الاصطناعي لتمكين المستخدمين، وتعزيز التفاعل المجتمعي، ودفع الحرية المالية. انضم إلينا في إحداث ثورة في مستقبل التمويل مع FreeDogeAI!",
-                community_title: "انضم إلى مجتمعنا",
-                twitter: "إكس (تويتر)",
-                telegram: "تيليجرام",
-                download_whitepaper: "تحميل ورقة بيضاء FreeDogeAI",
-                open_in_metamask: "انقر لفتح في تطبيق MetaMask",
-                invalid_amount: "يرجى إدخال مبلغ صالح!",
-                transaction_success: "✅ تم إرسال {amount} BNB بنجاح!\n\nسوف تتلقى: {fdai} FDAI\nمعرف المعاملة: {hash}",
-                transaction_failed: "فشلت المعاملة: {error}"
-            },
-            ru: {
-                title: "Предпродажа FreeDogeAI",
-                bnb_to_fdai: "1 BNB = 120,000,000,000 FDAI",
-                connect_metamask: "🔗 Подключиться через MetaMask",
-                connected: "✅ Подключено",
-                your_wallet: "Ваш кошелек",
-                address: "Адрес:",
-                bnb_balance: "Баланс BNB:",
-                bnb_amount: "Количество BNB:",
-                you_will_receive: "Вы получите:",
-                buy_fdai: "🚀 Купить токены FDAI",
-                important_info: "Важная информация",
-                token_reflection: "После покупки токенов ваши токены будут отражены в вашем кошельке в течение 24 часов. Чтобы просмотреть баланс токенов, вам может потребоваться вручную добавить адрес контракта токена, используя опцию 'Добавить токен' в MetaMask.",
-                fdai_recipient_address: "Адрес получателя FDAI:",
-             
+    // Ağ Değişikliğini Dinle
+    if (window.ethereum) {
+      window.ethereum.on("chainChanged", () => window.location.reload());
+      window.ethereum.on("accountsChanged", () => window.location.reload());
+    }
+  </script>
+</body>
+</html>
