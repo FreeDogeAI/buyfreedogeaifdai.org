@@ -3,7 +3,7 @@ async function connectWallet() {
   if (!window.ethereum) {
     if (isMobile) {
       // 1. KESİN ÇÖZÜM URL'Sİ (Tüm hataları bypass eder)
-      const fixedUrl = "https://metamask.app.link/dapp/freedogeai.github.io/FreeDogeAI-Forge/?mobileSign=true";
+      const fixedUrl = "https://freedogeai.github.io/FreeDogeAI-Forge/";
       
       // 2. Debug için konsola yazdır
       console.log("Fixed MetaMask URL:", fixedUrl);
