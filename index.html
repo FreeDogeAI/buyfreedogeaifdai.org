@@ -1,87 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreeDogeAI Presale</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <style>
-        /* ARAYÜZ TAMAMEN AYNI KALDI */
-        body { font-family: 'Arial', sans-serif; background-color: #000000; margin: 0; padding: 20px; color: #FFD700; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #000000; padding: 25px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        button { background: #25D366; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
-        /* Diğer CSS kuralları aynı kaldı... */
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- ARAYÜZ AYNI KALDI -->
-        <button id="connectWalletBtn">🔗 Connect with MetaMask</button>
-        <div id="walletInfo" style="display: none;">
-            <!-- Cüzdan bilgileri -->
-        </div>
-    </div>
+<script>
+// META MASK BAĞLANTI KODU (MOBİL İMZA DESTEKLİ)
+async function connectWallet() {
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  
+  if (isMobile) {
+    try {
+      // 1. META MASK UYGULAMASINI AÇ
+      window.location.href = "metamask://";
+      
+      // 2. 1 SANİYE BEKLE (Uygulamanın açılması için)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 3. CÜZDAN BAĞLANTISI KUR
+      const accounts = await window.ethereum.request({ 
+        method: 'eth_requestAccounts' 
+      });
+      userAddress = accounts[0];
+      
+      // 4. MOBİL İMZA İSTEĞİ (EKSTRA GÜVENLİK)
+      const message = `FreeDogeAI Bağlantı Onayı\n\nAdres: ${userAddress}\nZaman: ${new Date().toLocaleString()}`;
+      const signature = await window.ethereum.request({
+        method: 'personal_sign',
+        params: [message, userAddress]
+      });
+      
+      // 5. BSC AĞINA GEÇ
+      await switchToBSC();
+      
+      // 6. UI GÜNCELLE
+      updateWalletUI();
+      
+    } catch (error) {
+      console.error("Mobile connection failed:", error);
+      alert("Bağlantı hatası: " + (error.message || "Lütfen MetaMask uygulamasında imzayı onaylayın"));
+    }
+    
+  } else {
+    // DESKTOP BAĞLANTISI
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ 
+          method: 'eth_requestAccounts' 
+        });
+        userAddress = accounts[0];
+        updateWalletUI();
+      } catch (error) {
+        console.error("Desktop connection error:", error);
+      }
+    }
+  }
+}
 
-    <script>
-        // MOBİL META MASK BAĞLANTISI
-        async function connectWallet() {
-            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            
-            if (isMobile) {
-                // 1. META MASK UYGULAMASINI AÇ
-                window.location.href = "metamask://";
-                
-                // 2. 1 SANİYE BEKLE (Uygulamanın açılması için)
-                setTimeout(async () => {
-                    try {
-                        // 3. CÜZDAN BAĞLANTISI
-                        const accounts = await window.ethereum.request({ 
-                            method: 'eth_requestAccounts' 
-                        });
-                        userAddress = accounts[0];
-                        
-                        // 4. MOBİL İMZA İSTEĞİ
-                        const message = "FreeDogeAI Bağlantı Onayı";
-                        await window.ethereum.request({
-                            method: 'personal_sign',
-                            params: [message, userAddress]
-                        });
-                        
-                        // 5. BAĞLANTI TAMAM
-                        updateWalletUI();
-                        
-                    } catch (error) {
-                        console.error("Mobile connection error:", error);
-                    }
-                }, 1000);
-                
-            } else {
-                // DESKTOP BAĞLANTISI
-                if (window.ethereum) {
-                    try {
-                        const accounts = await window.ethereum.request({ 
-                            method: 'eth_requestAccounts' 
-                        });
-                        userAddress = accounts[0];
-                        updateWalletUI();
-                    } catch (error) {
-                        console.error("Desktop connection error:", error);
-                    }
-                } else {
-                    alert("Lütfen MetaMask yükleyin");
-                }
-            }
+// BSC AĞINA GEÇİŞ
+async function switchToBSC() {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x38' }] // BSC Mainnet
+    });
+  } catch (error) {
+    console.error("Network switch failed:", error);
+  }
+}
+
+// TOKEN GÖRÜNTÜLEME
+async function addFDAToken() {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          address: '0x8161698A74F2ea0035B9912ED60140893Ac0f39C',
+          symbol: 'FDAI',
+          decimals: 18,
+          image: 'https://freedogeai.github.io/FreeDogeAI-Forge/logo.png'
         }
-        
-        // CÜZDAN BİLGİLERİNİ GÜNCELLE
-        function updateWalletUI() {
-            document.getElementById('walletInfo').style.display = 'block';
-            document.getElementById('connectWalletBtn').textContent = '✅ Connected';
-            // Diğer UI güncellemeleri...
-        }
-        
-        // BUTON EVENTİ
-        document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-    </script>
-</body>
-</html>
+      }
+    });
+  } catch (error) {
+    console.error("Token ekleme hatası:", error);
+  }
+}
+</script>
