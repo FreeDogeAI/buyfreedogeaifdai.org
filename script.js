@@ -54,6 +54,13 @@ async function connectWallet() {
     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         console.log("Mobile device detected, initiating connection...");
         try {
+            // Check if MetaMask is available
+            if (!window.ethereum) {
+                console.error("MetaMask is not available in the browser!");
+                alert("MetaMask is not available in this browser. Please ensure MetaMask is installed.");
+                return;
+            }
+
             // Request accounts to connect to MetaMask
             console.log("Requesting accounts from MetaMask...");
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -89,11 +96,12 @@ async function connectWallet() {
             // Update UI after successful signature
             updateWalletUI();
 
-            // Open MetaMask app (optional, since signature is already done)
+            // Open MetaMask app (only to show the main screen, not the browser)
             const currentUrl = window.location.href;
             const redirectUrl = `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}signed=true`;
             localStorage.setItem('redirectUrl', redirectUrl);
-            window.location.href = `metamask://`;
+            // Use a more specific deep link to open the main wallet screen
+            window.location.href = `metamask://wc?uri=wc:`; // This opens the WalletConnect screen, but we can adjust it
             awaitingSignature = true;
 
             // Show redirect message
@@ -289,4 +297,4 @@ if (window.ethereum) {
         console.log("Chain changed, reloading page...");
         window.location.reload();
     });
-    }
+        }
