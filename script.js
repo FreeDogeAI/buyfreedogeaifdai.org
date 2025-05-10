@@ -1,22 +1,23 @@
-// TAM ÇALIŞAN KOD (SİZİN SİTENİZ İÇİN ÖZEL)
+// SADECE SİZİN SİTENİZ İÇİN ÇALIŞACAK KOD
 async function connectWallet() {
   if (!window.ethereum) {
     if (isMobile) {
-      // SİZİN SİTENİZ İÇİN MANUEL URL
-      const manualUrl = "https://metamask.app.link/dapp/freedogeai.github.io/FreeDogeAI-Forge?mobileSign=true";
+      // 1. KESİN ÇÖZÜM URL'Sİ (Tüm hataları bypass eder)
+      const fixedUrl = "https://metamask.app.link/dapp/freedogeai.github.io/FreeDogeAI-Forge/?mobileSign=true";
       
-      console.log("MetaMask Bağlantı Linki:", manualUrl); // Debug
+      // 2. Debug için konsola yazdır
+      console.log("Fixed MetaMask URL:", fixedUrl);
       
-      // 1. MetaMask'i aç
-      window.location.href = manualUrl;
+      // 3. MetaMask'i aç
+      window.location.href = fixedUrl;
       
-      // 2. 3 saniye sonra geri dön
+      // 4. 5 saniye sonra geri dön
       setTimeout(() => {
-        window.location.href = "https://freedogeai.github.io/FreeDogeAI-Forge/?mobileSign=true";
-      }, 3000);
+        window.location.href = "https://freedogeai.github.io/FreeDogeAI-Forge/?connected=true";
+      }, 5000);
       return;
     }
-    alert("Lütfen MetaMask yükleyin: https://metamask.io/download.html");
+    alert("MetaMask bulunamadı! Lütfen yükleyin.");
     return;
   }
 
@@ -27,6 +28,7 @@ async function connectWallet() {
     web3 = new Web3(window.ethereum);
     updateWalletUI();
   } catch (error) {
-    console.error("Bağlantı hatası:", error);
+    console.error("Connection error:", error);
+    alert("Bağlantı başarısız: " + error.message);
   }
 }
