@@ -1,49 +1,53 @@
-// MOBILE CONNECTION FIXED VERSION
+// YENİ URL OLUŞTURMA SİSTEMİ
+function createMetaMaskDeepLink() {
+    // 1. Temel URL'yi al
+    let baseUrl = window.location.href.split('?')[0];
+    
+    // 2. Protokolü kaldır ve küçük harfe çevir
+    baseUrl = baseUrl.replace(/^https?:\/\//i, '')
+                   .toLowerCase()
+                   .replace(/\s+/g, ''); // Tüm boşlukları kaldır
+    
+    // 3. Özel karakterleri temizle
+    const cleanPath = baseUrl.split('/').map(segment => {
+        return encodeURIComponent(segment.replace(/[^a-z0-9-._~]/g, ''));
+    }).join('/');
+    
+    // 4. Son URL'yi oluştur
+    return `https://metamask.app.link/dapp/${cleanPath}?mobileSign=true`;
+}
+
+// MOBILE BAĞLANTI FONKSİYONU (GÜNCELLENMİŞ)
 async function handleMobileConnection() {
     try {
-        // 1. Önce doğrudan bağlantı deneyelim
+        // MetaMask kontrolü
+        if (!window.ethereum) {
+            const deeplink = createMetaMaskDeepLink();
+            console.log("Generated Deep Link:", deeplink);
+            
+            // URL'yi doğrulama
+            if (!deeplink.includes(' ')) {
+                window.location.href = deeplink;
+                setTimeout(() => {
+                    window.location.href = `${window.location.origin}${window.location.pathname}?mobileSign=true`;
+                }, 3000);
+            } else {
+                throw new Error("URL contains invalid characters");
+            }
+            return;
+        }
+        
+        // Normal bağlantı akışı
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         userAddress = accounts[0];
         web3 = new Web3(window.ethereum);
         
-        // 2. İmza isteği
         await signMessage();
-        
-        // 3. Ağ değişimi
         await switchToBSC();
-        
         updateWalletUI();
         
     } catch (error) {
-        console.log("Direct connection failed, using fallback...");
-        
-        // 4. DÜZGÜN URL OLUŞTURMA
-        const currentUrl = window.location.href;
-        const baseUrl = currentUrl.split('?')[0]
-            .replace(/^https?:\/\//, '') // Protokolü kaldır
-            .replace(/\s+/g, '')         // Boşlukları temizle
-            .toLowerCase();              // Küçük harfe çevir
-        
-        // 5. MetaMask Deep Link
-        const deeplink = `https://metamask.app.link/dapp/${baseUrl}?mobileSign=true`;
-        console.log("Generated Deep Link:", deeplink); // Debug için
-        
-        // 6. MetaMask'i aç
-        window.location.href = deeplink;
-        
-        // 7. 3 sn sonra geri dön
-        setTimeout(() => {
-            window.location.href = `${window.location.origin}${window.location.pathname}?mobileSign=true`;
-        }, 3000);
-    }
-}
-
-// URL DOĞRULAMA FONKSİYONU
-function validateUrl(url) {
-    try {
-        new URL(url);
-        return true;
-    } catch {
-        return false;
+        console.error("Mobile connection error:", error);
+        alert("Bağlantı hatası: Lütfen MetaMask uygulamasını elle açın");
     }
 }
