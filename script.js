@@ -42,7 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log("Returning from MetaMask, completing connection...");
         userAddress = window.ethereum.selectedAddress;
         web3 = new Web3(window.ethereum);
-        completeConnection();
+        updateWalletUI();
     }
 });
 
@@ -50,22 +50,64 @@ window.addEventListener('DOMContentLoaded', () => {
 async function connectWallet() {
     console.log("Attempting to connect wallet...");
 
-    // If on mobile, open MetaMask app
+    // If on mobile, initiate connection and signature before opening MetaMask app
     if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        console.log("Mobile device detected, opening MetaMask app...");
-        const currentUrl = window.location.href;
-        // Add a query parameter to indicate signature request
-        const redirectUrl = `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}signed=true`;
-        // Store the redirect URL in localStorage for later use
-        localStorage.setItem('redirectUrl', redirectUrl);
-        // Open MetaMask app
-        window.location.href = `metamask://`;
-        awaitingSignature = true;
+        console.log("Mobile device detected, initiating connection...");
+        try {
+            // Request accounts to connect to MetaMask
+            console.log("Requesting accounts from MetaMask...");
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            userAddress = accounts[0];
+            web3 = new Web3(window.ethereum);
+            console.log("Accounts received, user address:", userAddress);
 
-        // Show redirect message
-        const redirectMessage = document.getElementById('redirectMessage');
-        if (redirectMessage) {
-            redirectMessage.style.display = 'block';
+            // Request a signature to verify the user
+            console.log("Requesting signature from user...");
+            const message = `Welcome to FreeDogeAI!\n\nPlease sign this message to connect your wallet.\n\nWallet Address: ${userAddress}\nTimestamp: ${Date.now()}`;
+            const signature = await window.ethereum.request({
+                method: 'personal_sign',
+                params: [message, userAddress]
+            });
+            console.log("Signature received:", signature);
+
+            // Switch to BSC network
+            try {
+                const chainId = await web3.eth.getChainId();
+                console.log("Current chain ID:", chainId);
+                if (chainId !== CONFIG.BSC_CHAIN_ID) {
+                    console.log("Switching to BSC Mainnet...");
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x38' }] // BSC Mainnet
+                    });
+                    console.log("Switched to BSC Mainnet");
+                }
+            } catch (error) {
+                console.error("Network switch failed:", error.message);
+            }
+
+            // Update UI after successful signature
+            updateWalletUI();
+
+            // Open MetaMask app (optional, since signature is already done)
+            const currentUrl = window.location.href;
+            const redirectUrl = `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}signed=true`;
+            localStorage.setItem('redirectUrl', redirectUrl);
+            window.location.href = `metamask://`;
+            awaitingSignature = true;
+
+            // Show redirect message
+            const redirectMessage = document.getElementById('redirectMessage');
+            if (redirectMessage) {
+                redirectMessage.style.display = 'block';
+                // Automatically return to site after 5 seconds
+                setTimeout(() => {
+                    returnToSite();
+                }, 5000);
+            }
+        } catch (error) {
+            console.error("Connection error:", error.message);
+            alert("Failed to connect: " + error.message);
         }
         return;
     }
@@ -104,43 +146,6 @@ async function connectWallet() {
         }
 
         updateWalletUI();
-    } catch (error) {
-        console.error("Connection error:", error.message);
-        alert("Failed to connect: " + error.message);
-    }
-}
-
-// Complete connection after returning from MetaMask
-async function completeConnection() {
-    try {
-        // Request a signature to verify the user
-        console.log("Requesting signature from user...");
-        const message = `Welcome to FreeDogeAI!\n\nPlease sign this message to connect your wallet.\n\nWallet Address: ${userAddress}\nTimestamp: ${Date.now()}`;
-        const signature = await window.ethereum.request({
-            method: 'personal_sign',
-            params: [message, userAddress]
-        });
-        console.log("Signature received:", signature);
-
-        // Switch to BSC network
-        try {
-            const chainId = await web3.eth.getChainId();
-            console.log("Current chain ID:", chainId);
-            if (chainId !== CONFIG.BSC_CHAIN_ID) {
-                console.log("Switching to BSC Mainnet...");
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x38' }] // BSC Mainnet
-                });
-                console.log("Switched to BSC Mainnet");
-            }
-        } catch (error) {
-            console.error("Network switch failed:", error.message);
-        }
-
-        updateWalletUI();
-        // Clear the signed parameter from URL
-        window.history.replaceState({}, document.title, window.location.pathname);
     } catch (error) {
         console.error("Connection error:", error.message);
         alert("Failed to connect: " + error.message);
@@ -284,4 +289,4 @@ if (window.ethereum) {
         console.log("Chain changed, reloading page...");
         window.location.reload();
     });
-            }
+    }
