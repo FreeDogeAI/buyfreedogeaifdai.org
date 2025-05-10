@@ -100,8 +100,8 @@ async function connectWallet() {
             const currentUrl = window.location.href;
             const redirectUrl = `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}signed=true`;
             localStorage.setItem('redirectUrl', redirectUrl);
-            // Use a more specific deep link to open the main wallet screen
-            window.location.href = `metamask://wc?uri=wc:`; // This opens the WalletConnect screen, but we can adjust it
+            // Open MetaMask main screen (avoid browser mode)
+            window.location.href = `metamask://`;
             awaitingSignature = true;
 
             // Show redirect message
@@ -297,4 +297,4 @@ if (window.ethereum) {
         console.log("Chain changed, reloading page...");
         window.location.reload();
     });
-        }
+                        }
