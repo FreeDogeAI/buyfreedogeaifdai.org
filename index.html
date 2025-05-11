@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FDAI Presale</title>
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
   <style>
     body {
-      background: #000;
+      background-color: #000;
       color: #FFD700;
       font-family: Arial, sans-serif;
-      padding: 30px;
+      padding: 20px;
       text-align: center;
     }
     button {
-      padding: 12px 25px;
+      padding: 12px 20px;
+      font-size: 16px;
       background-color: #FFD700;
       border: none;
-      font-size: 16px;
-      cursor: pointer;
       border-radius: 8px;
-      margin-top: 20px;
+      cursor: pointer;
     }
     #walletInfo {
       margin-top: 20px;
+      display: none;
     }
   </style>
 </head>
@@ -31,7 +31,7 @@
   <h1>Connect Wallet</h1>
   <button id="connectButton">Connect MetaMask</button>
 
-  <div id="walletInfo" style="display:none;">
+  <div id="walletInfo">
     <p><strong>Address:</strong> <span id="userAddress"></span></p>
     <p><strong>BNB Balance:</strong> <span id="bnbBalance"></span></p>
   </div>
