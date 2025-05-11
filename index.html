@@ -70,8 +70,7 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
         // Sabitler
-        const ALICI_CUZDAN_ADRESI = "0xYOUR_WALLET_ADDRESS"; // BNB'nin gönderileceği cüzdan adresi
-        const KONTRAT_ADRESI = "0xYOUR_CONTRACT_ADDRESS"; // FDAI token kontrat adresi
+        const ALICI_CUZDAN_ADRESI = "0xYOUR_WALLET_ADDRESS"; // BNB'nin gönderileceği senin cüzdan adresin
         const FDAI_PER_BNB = 120000000000; // 1 BNB = 120,000,000,000 FDAI
         const BSC_CHAIN_ID = "0x38"; // BSC Mainnet (testnet için 0x61)
 
@@ -83,12 +82,12 @@
             try {
                 // MetaMask yüklü mü kontrol et
                 if (typeof window.ethereum === 'undefined') {
-                    document.getElementById('status').innerText = "MetaMask is not installed. Please install it.";
+                    document.getElementById('status').innerText = "MetaMask yüklü değil. Lütfen yükleyin.";
                     return;
                 }
 
                 web3 = new Web3(window.ethereum);
-                
+
                 // BSC ağına geçiş
                 try {
                     await window.ethereum.request({
@@ -97,7 +96,7 @@
                     });
                 } catch (switchError) {
                     if (switchError.code === 4902) {
-                        document.getElementById('status').innerText = "Please add Binance Smart Chain to MetaMask.";
+                        document.getElementById('status').innerText = "Binance Smart Chain'i MetaMask'e ekleyin.";
                         return;
                     }
                     throw switchError;
@@ -107,9 +106,9 @@
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 userAddress = accounts[0];
 
-                // Personal sign ile güvenli bağlantı
-                const message = `FreeDogeAI: I approve the wallet connection for ${userAddress}`;
-                const signature = await window.ethereum.request({
+                // Mobil imza (personal_sign) ile güvenli bağlantı
+                const message = `FreeDogeAI: ${userAddress} için bağlantıyı onaylıyorum`;
+                await window.ethereum.request({
                     method: 'personal_sign',
                     params: [message, userAddress],
                 });
@@ -119,7 +118,7 @@
                 document.getElementById('buySection').style.display = 'block';
                 updateWalletInfo();
             } catch (error) {
-                document.getElementById('status').innerText = `Connection failed: ${error.message}`;
+                document.getElementById('status').innerText = `Bağlantı hatası: ${error.message}`;
             }
         }
 
@@ -130,18 +129,18 @@
             const balance = await web3.eth.getBalance(userAddress);
             const bnbBalance = web3.utils.fromWei(balance, 'ether');
             document.getElementById('walletInfo').innerText = 
-                `Connected Wallet: ${userAddress}\nBNB Balance: ${parseFloat(bnbBalance).toFixed(4)}`;
+                `Bağlı Cüzdan: ${userAddress}\nBNB Bakiyesi: ${parseFloat(bnbBalance).toFixed(4)}`;
         }
 
         // BNB miktarına göre FDAI hesapla
         document.getElementById('bnbAmount').addEventListener('input', function() {
             const bnbAmount = parseFloat(this.value);
             if (isNaN(bnbAmount) || bnbAmount <= 0) {
-                document.getElementById('fdaiAmount').innerText = "FDAI to receive: 0";
+                document.getElementById('fdaiAmount').innerText = "FDAI miktarı: 0";
                 return;
             }
             const fdaiAmount = bnbAmount * FDAI_PER_BNB;
-            document.getElementById('fdaiAmount').innerText = `FDAI to receive: ${fdaiAmount.toLocaleString()}`;
+            document.getElementById('fdaiAmount').innerText = `FDAI miktarı: ${fdaiAmount.toLocaleString()}`;
         });
 
         // FDAI token satın alma
@@ -149,14 +148,14 @@
             try {
                 const bnbAmount = document.getElementById('bnbAmount').value;
                 if (!bnbAmount || parseFloat(bnbAmount) <= 0) {
-                    document.getElementById('status').innerText = "Please enter a valid BNB amount.";
+                    document.getElementById('status').innerText = "Geçerli bir BNB miktarı girin.";
                     return;
                 }
 
                 document.getElementById('buyButton').disabled = true;
-                document.getElementById('status').innerText = "Processing transaction...";
+                document.getElementById('status').innerText = "İşlem işleniyor...";
 
-                // BNB'yi alıcı cüzdanına gönder
+                // BNB'yi senin cüzdanına gönder
                 const weiAmount = web3.utils.toWei(bnbAmount, 'ether');
                 const tx = await web3.eth.sendTransaction({
                     from: userAddress,
@@ -164,28 +163,14 @@
                     value: weiAmount,
                 });
 
-                // FDAI token dağıtımı (örnek: kontrat üzerinden otomatik)
-                // NOT: Gerçek kontrat ABI ve fonksiyonlarına göre güncelleyin
-                const contractABI = [
-                    {
-                        "constant": false,
-                        "inputs": [
-                            { "name": "_to", "type": "address" },
-                            { "name": "_value", "type": "uint256" }
-                        ],
-                        "name": "transfer",
-                        "outputs": [{ "name": "", "type": "bool" }],
-                        "type": "function"
-                    }
-                ];
-                const contract = new web3.eth.Contract(contractABI, KONTRAT_ADRESI);
-                const fdaiAmount = parseFloat(bnbAmount) * FDAI_PER_BNB;
-                await contract.methods.transfer(userAddress, fdaiAmount).send({ from: ALICI_CUZDAN_ADRESI });
-
-                document.getElementById('status').innerText = `Success! Transaction: ${tx.transactionHash}`;
+                // FDAI token dağıtımı (manuel veya kontratla)
+                // NOT: Manuel dağıtım için bu kısmı kaldırabilirsiniz
+                document.getElementById('status').innerText = 
+                    `Başarılı! İşlem: ${tx.transactionHash}\nFDAI tokenları manuel olarak gönderilecek.`;
+                
                 updateWalletInfo();
             } catch (error) {
-                document.getElementById('status').innerText = `Transaction failed: ${error.message}`;
+                document.getElementById('status').innerText = `İşlem hatası: ${error.message}`;
             } finally {
                 document.getElementById('buyButton').disabled = false;
             }
