@@ -8,7 +8,6 @@ const CONFIG = {
 // State
 let web3;
 let userAddress = "";
-const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 // Initialize
 window.addEventListener('DOMContentLoaded', init);
@@ -18,16 +17,20 @@ function init() {
   checkExistingConnection();
 }
 
-// 1. CÜZDAN BAĞLANTISI
+// 1. CÜZDAN BAĞLANTISI (MOBİL UYUMLU)
 async function connectWallet() {
   try {
     if (!window.ethereum) {
-      if (isMobile) {
-        alert("Lütfen bu sayfayı MetaMask tarayıcısında açın");
-        return;
+      // Direkt MetaMask uygulamasını aç
+      window.location.href = "metamask://";
+      
+      // 1 saniye bekle (uygulamanın açılması için)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Tekrar kontrol et
+      if (!window.ethereum) {
+        throw new Error("MetaMask uygulamasında sayfayı açın");
       }
-      alert("Lütfen MetaMask yükleyin!");
-      return;
     }
 
     // MetaMask bağlantı isteği
@@ -37,14 +40,12 @@ async function connectWallet() {
     userAddress = accounts[0];
     web3 = new Web3(window.ethereum);
 
-    // Mobilde imza isteği
-    if (isMobile) {
-      const message = `FreeDogeAI Presale Onayı\n\nAdres: ${userAddress}`;
-      await window.ethereum.request({
-        method: 'personal_sign',
-        params: [message, userAddress]
-      });
-    }
+    // Mobilde imza isteği (ZORUNLU)
+    const message = `FreeDogeAI Presale Onayı\n\nAdres: ${userAddress}`;
+    await window.ethereum.request({
+      method: 'personal_sign',
+      params: [message, userAddress]
+    });
 
     // BSC ağına geçiş
     await switchToBSC();
@@ -54,7 +55,7 @@ async function connectWallet() {
 
   } catch (error) {
     console.error("Bağlantı hatası:", error);
-    showStatus(`Bağlantı başarısız: ${error.message}`, false);
+    alert(`Bağlantı başarısız: ${error.message}`);
   }
 }
 
@@ -70,13 +71,11 @@ async function sendBNB() {
   const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
   
   if (!bnbAmount || bnbAmount <= 0) {
-    showStatus("Lütfen geçerli BNB miktarı girin", false);
+    alert("Lütfen geçerli BNB miktarı girin");
     return;
   }
 
   try {
-    showStatus("İşlem işleniyor...", true);
-
     const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
     const tx = {
       from: userAddress,
@@ -88,31 +87,24 @@ async function sendBNB() {
 
     const receipt = await web3.eth.sendTransaction(tx);
     
-    // 4. BİLGİLENDİRME
-    showStatus(
-      `✅ Başarılı! ${bnbAmount} BNB gönderildi. ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI alacaksınız. TX Hash: ${receipt.transactionHash}`,
-      true
-    );
+    alert(`✅ Başarılı! ${bnbAmount} BNB gönderildi. ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI alacaksınız.`);
 
     // Bakiye güncelleme
     updateWalletBalance();
 
   } catch (error) {
     console.error("İşlem hatası:", error);
-    showStatus(`İşlem başarısız: ${error.message}`, false);
+    alert(`İşlem başarısız: ${error.message}`);
   }
 }
 
 // YARDIMCI FONKSİYONLAR
 async function switchToBSC() {
   try {
-    const chainId = await web3.eth.getChainId();
-    if (chainId !== CONFIG.BSC_CHAIN_ID) {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x38' }] // BSC Mainnet
-      });
-    }
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x38' }]
+    });
   } catch (error) {
     console.error("Ağ değiştirme hatası:", error);
   }
@@ -134,16 +126,6 @@ async function updateWalletBalance() {
     `${parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(6)} BNB`;
 }
 
-function showStatus(message, isSuccess) {
-  const statusElement = document.getElementById('statusMessage');
-  statusElement.textContent = message;
-  statusElement.style.display = 'block';
-  statusElement.style.backgroundColor = isSuccess ? '#1DA851' : '#FF0000';
-  setTimeout(() => {
-    statusElement.style.display = 'none';
-  }, 10000);
-}
-
 // EVENT LISTENERS
 function setupEventListeners() {
   document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
@@ -159,7 +141,7 @@ function checkExistingConnection() {
   }
 }
 
-// 5. MOBİL UYUMLULUK ve GÜVENLİK
+// MOBİL UYUMLULUK
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', (accounts) => {
     if (accounts.length > 0) {
@@ -181,4 +163,4 @@ function disconnectWallet() {
   document.getElementById('buyBtn').disabled = true;
   userAddress = "";
   web3 = null;
-      }
+}
