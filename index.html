@@ -1,311 +1,166 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreeDogeAI Presale</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #000000;
-            margin: 0;
-            padding: 20px;
-            color: #FFD700;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #000000;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
-        button {
-            background: #25D366;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #1DA851;
-        }
-        button:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        .wallet-info {
-            background-color: #000000;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            word-break: break-word;
-            font-family: monospace;
-            border: 1px solid #FFD700;
-            color: #FFD700;
-        }
-        .info-box {
-            background-color: #000000;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #FFD700;
-            color: #FFD700;
-            margin-top: 20px;
-        }
-        h1, h3, p, label {
-            color: #FFD700;
-        }
-        .calculation-result {
-            margin: 15px 0;
-            font-size: 18px;
-        }
-        .status-message {
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            background-color: #1DA851;
-            color: white;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="logo-container">
-            <img src="logo.png" alt="FreeDogeAI Logo" width="150">
-        </div>
-        <h1>FreeDogeAI Presale</h1>
-        <p>1 BNB = 120,000,000,000 FDAI</p>
-        
-        <button id="connectWalletBtn">🔗 Connect with MetaMask</button>
-        
-        <div id="walletInfo" style="display: none;">
-            <h3>Your Wallet</h3>
-            <div class="wallet-info">
-                <p><strong>Address:</strong> <span id="walletAddress"></span></p>
-                <p><strong>BNB Balance:</strong> <span id="bnbBalance"></span></p>
-            </div>
-        </div>
-        
-        <div>
-            <label for="bnbAmount"><strong>BNB Amount:</strong></label>
-            <input type="number" id="bnbAmount" placeholder="0.1" step="0.01" min="0.01">
-            
-            <div class="calculation-result">
-                <strong>You will receive:</strong> <span id="fdaiAmount">0</span> FDAI
-            </div>
-            
-            <button id="buyBtn" disabled>🚀 Buy FDAI Tokens</button>
-        </div>
-        
-        <div class="status-message" id="statusMessage"></div>
-        
-        <div class="info-box">
-            <h3>Important Information</h3>
-            <p>After purchase, your FDAI tokens will be sent to your wallet within 24 hours.</p>
-            <p><strong>FDAI Contract Address:</strong></p>
-            <div class="wallet-info" style="text-align: center;">
-                0x8161698A74F2ea0035B9912ED60140893Ac0f39C
-            </div>
-        </div>
-    </div>
+// Config
+const CONFIG = {
+  RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
+  TOKENS_PER_BNB: 120000000000,
+  BSC_CHAIN_ID: 56
+};
 
-    <script>
-        // Configuration
-        const CONFIG = {
-            RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
-            TOKENS_PER_BNB: 120000000000,
-            BSC_CHAIN_ID: 56
-        };
+// State
+let web3;
+let userAddress = "";
 
-        // App state
-        let web3;
-        let userAddress = "";
-        let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+// Initialize
+window.addEventListener('DOMContentLoaded', init);
 
-        // Initialize
-        window.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            checkExistingConnection();
-        });
+function init() {
+  setupEventListeners();
+  checkExistingConnection();
+}
 
-        function setupEventListeners() {
-            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-            document.getElementById('buyBtn').addEventListener('click', sendBNB);
-            document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
-        }
+// 1. CÜZDAN BAĞLANTISI (MOBİL UYUMLU)
+async function connectWallet() {
+  try {
+    if (!window.ethereum) {
+      // Direkt MetaMask uygulamasını aç
+      window.location.href = "metamask://";
+      
+      // 1 saniye bekle (uygulamanın açılması için)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Tekrar kontrol et
+      if (!window.ethereum) {
+        throw new Error("MetaMask uygulamasında sayfayı açın");
+      }
+    }
 
-        function checkExistingConnection() {
-            if (window.ethereum && window.ethereum.selectedAddress) {
-                userAddress = window.ethereum.selectedAddress;
-                web3 = new Web3(window.ethereum);
-                updateWalletUI();
-            }
-        }
+    // MetaMask bağlantı isteği
+    const accounts = await window.ethereum.request({ 
+      method: 'eth_requestAccounts' 
+    });
+    userAddress = accounts[0];
+    web3 = new Web3(window.ethereum);
 
-        // 1. CÜZDAN BAĞLANTISI
-        async function connectWallet() {
-            try {
-                if (!window.ethereum) {
-                    if (isMobile) {
-                        alert("Please open this page in MetaMask browser");
-                        return;
-                    }
-                    alert("Please install MetaMask!");
-                    return;
-                }
+    // Mobilde imza isteği (ZORUNLU)
+    const message = `FreeDogeAI Presale Onayı\n\nAdres: ${userAddress}`;
+    await window.ethereum.request({
+      method: 'personal_sign',
+      params: [message, userAddress]
+    });
 
-                // MetaMask'ı aç ve bağlantı iste
-                const accounts = await window.ethereum.request({ 
-                    method: 'eth_requestAccounts' 
-                });
-                userAddress = accounts[0];
-                web3 = new Web3(window.ethereum);
+    // BSC ağına geçiş
+    await switchToBSC();
+    
+    // UI güncelleme
+    updateWalletUI();
 
-                // Mobilde imza iste
-                if (isMobile) {
-                    const message = `FreeDogeAI Presale Authorization\n\nAddress: ${userAddress}`;
-                    await window.ethereum.request({
-                        method: 'personal_sign',
-                        params: [message, userAddress]
-                    });
-                }
+  } catch (error) {
+    console.error("Bağlantı hatası:", error);
+    alert(`Bağlantı başarısız: ${error.message}`);
+  }
+}
 
-                // BSC ağına geç
-                await switchToBSC();
-                
-                // UI güncelle
-                updateWalletUI();
+// 2. BNB HESAPLAMA
+function calculateFDAI() {
+  const amount = parseFloat(document.getElementById('bnbAmount').value) || 0;
+  document.getElementById('fdaiAmount').textContent = 
+    (amount * CONFIG.TOKENS_PER_BNB).toLocaleString();
+}
 
-            } catch (error) {
-                console.error("Connection error:", error);
-                showStatus(`Connection failed: ${error.message}`, false);
-            }
-        }
+// 3. TOKEN SATIN ALMA
+async function sendBNB() {
+  const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
+  
+  if (!bnbAmount || bnbAmount <= 0) {
+    alert("Lütfen geçerli BNB miktarı girin");
+    return;
+  }
 
-        // 2. BNB MİKTAR HESAPLAMA
-        function calculateFDAI() {
-            const amount = parseFloat(document.getElementById('bnbAmount').value) || 0;
-            document.getElementById('fdaiAmount').textContent = 
-                (amount * CONFIG.TOKENS_PER_BNB).toLocaleString();
-        }
+  try {
+    const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
+    const tx = {
+      from: userAddress,
+      to: CONFIG.RECEIVE_WALLET,
+      value: weiAmount,
+      gas: 300000,
+      gasPrice: await web3.eth.getGasPrice()
+    };
 
-        // 3. TOKEN SATIN ALMA
-        async function sendBNB() {
-            const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
-            
-            if (!bnbAmount || bnbAmount <= 0) {
-                showStatus("Please enter a valid BNB amount", false);
-                return;
-            }
+    const receipt = await web3.eth.sendTransaction(tx);
+    
+    alert(`✅ Başarılı! ${bnbAmount} BNB gönderildi. ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI alacaksınız.`);
 
-            try {
-                showStatus("Processing transaction...", true);
+    // Bakiye güncelleme
+    updateWalletBalance();
 
-                const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
-                const tx = {
-                    from: userAddress,
-                    to: CONFIG.RECEIVE_WALLET,
-                    value: weiAmount,
-                    gas: 300000,
-                    gasPrice: await web3.eth.getGasPrice()
-                };
+  } catch (error) {
+    console.error("İşlem hatası:", error);
+    alert(`İşlem başarısız: ${error.message}`);
+  }
+}
 
-                const receipt = await web3.eth.sendTransaction(tx);
-                
-                // 4. BİLGİLENDİRME MESAJI
-                showStatus(
-                    `✅ Success! Sent ${bnbAmount} BNB. You will receive ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI. TX Hash: ${receipt.transactionHash}`,
-                    true
-                );
+// YARDIMCI FONKSİYONLAR
+async function switchToBSC() {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x38' }]
+    });
+  } catch (error) {
+    console.error("Ağ değiştirme hatası:", error);
+  }
+}
 
-                // Bakiye güncelle
-                updateWalletBalance();
+function updateWalletUI() {
+  const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+  document.getElementById('walletAddress').textContent = shortAddress;
+  document.getElementById('walletInfo').style.display = 'block';
+  document.getElementById('connectWalletBtn').textContent = '✅ Bağlandı';
+  document.getElementById('buyBtn').disabled = false;
+  updateWalletBalance();
+}
 
-            } catch (error) {
-                console.error("Transaction error:", error);
-                showStatus(`Transaction failed: ${error.message}`, false);
-            }
-        }
+async function updateWalletBalance() {
+  if (!userAddress) return;
+  const balance = await web3.eth.getBalance(userAddress);
+  document.getElementById('bnbBalance').textContent = 
+    `${parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(6)} BNB`;
+}
 
-        // YARDIMCI FONKSİYONLAR
-        async function switchToBSC() {
-            try {
-                const chainId = await web3.eth.getChainId();
-                if (chainId !== CONFIG.BSC_CHAIN_ID) {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0x38' }]
-                    });
-                }
-            } catch (error) {
-                console.error("Network switch failed:", error);
-            }
-        }
+// EVENT LISTENERS
+function setupEventListeners() {
+  document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+  document.getElementById('buyBtn').addEventListener('click', sendBNB);
+  document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
+}
 
-        function updateWalletUI() {
-            const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-            document.getElementById('walletAddress').textContent = shortAddress;
-            document.getElementById('walletInfo').style.display = 'block';
-            document.getElementById('connectWalletBtn').textContent = '✅ Connected';
-            document.getElementById('buyBtn').disabled = false;
-            updateWalletBalance();
-        }
+function checkExistingConnection() {
+  if (window.ethereum && window.ethereum.selectedAddress) {
+    userAddress = window.ethereum.selectedAddress;
+    web3 = new Web3(window.ethereum);
+    updateWalletUI();
+  }
+}
 
-        async function updateWalletBalance() {
-            if (!userAddress) return;
-            const balance = await web3.eth.getBalance(userAddress);
-            document.getElementById('bnbBalance').textContent = 
-                `${parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(6)} BNB`;
-        }
+// MOBİL UYUMLULUK
+if (window.ethereum) {
+  window.ethereum.on('accountsChanged', (accounts) => {
+    if (accounts.length > 0) {
+      userAddress = accounts[0];
+      updateWalletUI();
+    } else {
+      disconnectWallet();
+    }
+  });
 
-        function showStatus(message, isSuccess) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.textContent = message;
-            statusElement.style.display = 'block';
-            statusElement.style.backgroundColor = isSuccess ? '#1DA851' : '#FF0000';
-            setTimeout(() => {
-                statusElement.style.display = 'none';
-            }, 10000);
-        }
+  window.ethereum.on('chainChanged', () => {
+    window.location.reload();
+  });
+}
 
-        // 5. MOBİL UYUMLULUK ve GÜVENLİK
-        if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
-                if (accounts.length > 0) {
-                    userAddress = accounts[0];
-                    updateWalletUI();
-                } else {
-                    disconnectWallet();
-                }
-            });
-
-            window.ethereum.on('chainChanged', () => {
-                window.location.reload();
-            });
-        }
-
-        function disconnectWallet() {
-            document.getElementById('walletInfo').style.display = 'none';
-            document.getElementById('connectWalletBtn').textContent = '🔗 Connect with MetaMask';
-            document.getElementById('buyBtn').disabled = true;
-            userAddress = "";
-            web3 = null;
-        }
-    </script>
-</body>
-</html>
+function disconnectWallet() {
+  document.getElementById('walletInfo').style.display = 'none';
+  document.getElementById('connectWalletBtn').textContent = '🔗 MetaMask ile Bağlan';
+  document.getElementById('buyBtn').disabled = true;
+  userAddress = "";
+  web3 = null;
+}
