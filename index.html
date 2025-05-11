@@ -3,246 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreeDogeAI Presale</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <title>FreeDogeAI Token Sale</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #000;
-            color: #FFD700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
+            background-color: #f0f0f0;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #111;
+            background: white;
             padding: 20px;
             border-radius: 10px;
-            border: 1px solid #FFD700;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
         }
         button {
-            background: #25D366;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #28a745;
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            width: 100%;
-            margin: 10px 0;
-            font-size: 16px;
         }
         button:disabled {
-            background: #555;
+            background-color: #ccc;
             cursor: not-allowed;
         }
         input {
-            width: 100%;
-            padding: 12px;
+            padding: 10px;
             margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #FFD700;
-            background: #222;
-            color: white;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-        .wallet-info {
-            background: #111;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border: 1px solid #FFD700;
+        #status {
+            color: red;
+            margin-top: 10px;
+        }
+        #walletInfo {
+            margin: 10px 0;
             word-break: break-all;
-        }
-        .info-box {
-            background: #111;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border: 1px solid #FFD700;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>FreeDogeAI Presale</h1>
-        <p>1 BNB = 120,000,000,000 FDAI</p>
-        
-        <button id="connectWalletBtn">🔗 Connect with MetaMask</button>
-        
-        <div id="walletInfo" style="display:none">
-            <h3>Your Wallet</h3>
-            <div class="wallet-info">
-                <p><strong>Address:</strong> <span id="walletAddress"></span></p>
-                <p><strong>BNB Balance:</strong> <span id="bnbBalance"></span></p>
-            </div>
+        <h2>FreeDogeAI Token Sale</h2>
+        <div id="walletInfo"></div>
+        <button id="connectButton" onclick="connectWallet()">Connect with MetaMask</button>
+        <div id="buySection" style="display: none;">
+            <input type="number" id="bnbAmount" placeholder="Enter BNB amount" step="0.01" min="0">
+            <p id="fdaiAmount">FDAI to receive: 0</p>
+            <button id="buyButton" onclick="buyFDAI()">Buy FDAI Tokens</button>
         </div>
-        
-        <div>
-            <label for="bnbAmount"><strong>BNB Amount:</strong></label>
-            <input type="number" id="bnbAmount" placeholder="0.1" step="0.01" min="0.01">
-            
-            <div style="margin:15px 0;font-size:18px">
-                <strong>You will receive:</strong> <span id="fdaiAmount">0</span> FDAI
-            </div>
-            
-            <button id="buyBtn" disabled>🚀 Buy FDAI Tokens</button>
-        </div>
-        
-        <div class="info-box">
-            <h3>Important Information</h3>
-            <p>After purchase, your FDAI tokens will be sent to your wallet within 24 hours.</p>
-            <p><strong>FDAI Contract Address:</strong></p>
-            <div class="wallet-info" style="text-align:center">
-                0x8161698A74F2ea0035B9912ED60140893Ac0f39C
-            </div>
-        </div>
+        <div id="status"></div>
     </div>
 
+    <!-- Web3.js kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
-        // Config
-        const CONFIG = {
-            RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
-            TOKENS_PER_BNB: 120000000000,
-            BSC_CHAIN_ID: 56
-        };
+        // Sabitler
+        const ALICI_CUZDAN_ADRESI = "0xYOUR_WALLET_ADDRESS"; // BNB'nin gönderileceği cüzdan adresi
+        const KONTRAT_ADRESI = "0xYOUR_CONTRACT_ADDRESS"; // FDAI token kontrat adresi
+        const FDAI_PER_BNB = 120000000000; // 1 BNB = 120,000,000,000 FDAI
+        const BSC_CHAIN_ID = "0x38"; // BSC Mainnet (testnet için 0x61)
 
-        // State
         let web3;
-        let userAddress = "";
+        let userAddress;
 
-        // Initialize
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-            document.getElementById('buyBtn').addEventListener('click', sendBNB);
-            document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
-            
-            // Check if already connected
-            if (window.ethereum?.selectedAddress) {
-                userAddress = window.ethereum.selectedAddress;
-                web3 = new Web3(window.ethereum);
-                updateWalletUI();
-            }
-        });
-
-        // 1. CÜZDAN BAĞLANTISI
+        // MetaMask bağlantısı
         async function connectWallet() {
             try {
-                // Direkt MetaMask uygulamasını aç
-                window.location.href = "metamask://";
-                
-                // 1 saniye bekle (uygulamanın açılması için)
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // MetaMask kontrolü
-                if (!window.ethereum) {
-                    throw new Error("MetaMask not detected");
+                // MetaMask yüklü mü kontrol et
+                if (typeof window.ethereum === 'undefined') {
+                    document.getElementById('status').innerText = "MetaMask is not installed. Please install it.";
+                    return;
                 }
-                
-                // Bağlantı isteği
-                const accounts = await window.ethereum.request({ 
-                    method: 'eth_requestAccounts' 
-                });
-                userAddress = accounts[0];
+
                 web3 = new Web3(window.ethereum);
                 
-                // MOBİL İMZA İSTEĞİ (ZORUNLU)
-                const message = `FreeDogeAI Authorization\n\nAddress: ${userAddress}`;
-                await window.ethereum.request({
+                // BSC ağına geçiş
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: BSC_CHAIN_ID }],
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        document.getElementById('status').innerText = "Please add Binance Smart Chain to MetaMask.";
+                        return;
+                    }
+                    throw switchError;
+                }
+
+                // Cüzdan bağlantısı iste
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                userAddress = accounts[0];
+
+                // Personal sign ile güvenli bağlantı
+                const message = `FreeDogeAI: I approve the wallet connection for ${userAddress}`;
+                const signature = await window.ethereum.request({
                     method: 'personal_sign',
-                    params: [message, userAddress]
+                    params: [message, userAddress],
                 });
-                
-                // BSC ağına geç
-                await switchToBSC();
-                
-                // UI güncelle
-                updateWalletUI();
-                
+
+                // Başarılı bağlantı
+                document.getElementById('connectButton').style.display = 'none';
+                document.getElementById('buySection').style.display = 'block';
+                updateWalletInfo();
             } catch (error) {
-                console.error("Connection error:", error);
-                alert("Connection failed: " + error.message);
+                document.getElementById('status').innerText = `Connection failed: ${error.message}`;
             }
         }
 
-        // 2. BNB HESAPLAMA
-        function calculateFDAI() {
-            const amount = parseFloat(document.getElementById('bnbAmount').value) || 0;
-            document.getElementById('fdaiAmount').textContent = 
-                (amount * CONFIG.TOKENS_PER_BNB).toLocaleString();
+        // Cüzdan bilgilerini güncelle
+        async function updateWalletInfo() {
+            if (!web3 || !userAddress) return;
+
+            const balance = await web3.eth.getBalance(userAddress);
+            const bnbBalance = web3.utils.fromWei(balance, 'ether');
+            document.getElementById('walletInfo').innerText = 
+                `Connected Wallet: ${userAddress}\nBNB Balance: ${parseFloat(bnbBalance).toFixed(4)}`;
         }
 
-        // 3. TOKEN SATIN ALMA
-        async function sendBNB() {
-            const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
-            
-            if (!bnbAmount || bnbAmount <= 0) {
-                alert("Please enter valid BNB amount");
+        // BNB miktarına göre FDAI hesapla
+        document.getElementById('bnbAmount').addEventListener('input', function() {
+            const bnbAmount = parseFloat(this.value);
+            if (isNaN(bnbAmount) || bnbAmount <= 0) {
+                document.getElementById('fdaiAmount').innerText = "FDAI to receive: 0";
                 return;
             }
+            const fdaiAmount = bnbAmount * FDAI_PER_BNB;
+            document.getElementById('fdaiAmount').innerText = `FDAI to receive: ${fdaiAmount.toLocaleString()}`;
+        });
 
+        // FDAI token satın alma
+        async function buyFDAI() {
             try {
-                const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
-                const tx = {
+                const bnbAmount = document.getElementById('bnbAmount').value;
+                if (!bnbAmount || parseFloat(bnbAmount) <= 0) {
+                    document.getElementById('status').innerText = "Please enter a valid BNB amount.";
+                    return;
+                }
+
+                document.getElementById('buyButton').disabled = true;
+                document.getElementById('status').innerText = "Processing transaction...";
+
+                // BNB'yi alıcı cüzdanına gönder
+                const weiAmount = web3.utils.toWei(bnbAmount, 'ether');
+                const tx = await web3.eth.sendTransaction({
                     from: userAddress,
-                    to: CONFIG.RECEIVE_WALLET,
+                    to: ALICI_CUZDAN_ADRESI,
                     value: weiAmount,
-                    gas: 300000,
-                    gasPrice: await web3.eth.getGasPrice()
-                };
-
-                const receipt = await web3.eth.sendTransaction(tx);
-                alert(`✅ Success! ${bnbAmount} BNB sent. You will receive ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI.`);
-                
-                updateWalletBalance();
-            } catch (error) {
-                console.error("Transaction error:", error);
-                alert("Transaction failed: " + error.message);
-            }
-        }
-
-        // YARDIMCI FONKSİYONLAR
-        async function switchToBSC() {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x38' }]
                 });
+
+                // FDAI token dağıtımı (örnek: kontrat üzerinden otomatik)
+                // NOT: Gerçek kontrat ABI ve fonksiyonlarına göre güncelleyin
+                const contractABI = [
+                    {
+                        "constant": false,
+                        "inputs": [
+                            { "name": "_to", "type": "address" },
+                            { "name": "_value", "type": "uint256" }
+                        ],
+                        "name": "transfer",
+                        "outputs": [{ "name": "", "type": "bool" }],
+                        "type": "function"
+                    }
+                ];
+                const contract = new web3.eth.Contract(contractABI, KONTRAT_ADRESI);
+                const fdaiAmount = parseFloat(bnbAmount) * FDAI_PER_BNB;
+                await contract.methods.transfer(userAddress, fdaiAmount).send({ from: ALICI_CUZDAN_ADRESI });
+
+                document.getElementById('status').innerText = `Success! Transaction: ${tx.transactionHash}`;
+                updateWalletInfo();
             } catch (error) {
-                console.error("Network switch error:", error);
+                document.getElementById('status').innerText = `Transaction failed: ${error.message}`;
+            } finally {
+                document.getElementById('buyButton').disabled = false;
             }
         }
 
-        function updateWalletUI() {
-            const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-            document.getElementById('walletAddress').textContent = shortAddress;
-            document.getElementById('walletInfo').style.display = 'block';
-            document.getElementById('connectWalletBtn').textContent = '✅ Connected';
-            document.getElementById('buyBtn').disabled = false;
-            updateWalletBalance();
-        }
-
-        async function updateWalletBalance() {
-            const balance = await web3.eth.getBalance(userAddress);
-            document.getElementById('bnbBalance').textContent = 
-                `${parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(6)} BNB`;
-        }
-
-        // Event listeners for account changes
-        if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
+        // Sayfa yüklendiğinde cüzdan durumunu kontrol et
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                const accounts = await web3.eth.getAccounts();
                 if (accounts.length > 0) {
                     userAddress = accounts[0];
-                    updateWalletUI();
-                } else {
-                    document.getElementById('walletInfo').style.display = 'none';
-                    document.getElementById('connectWalletBtn').textContent = '🔗 Connect with MetaMask';
-                    document.getElementById('buyBtn').disabled = true;
-                    userAddress = "";
+                    document.getElementById('connectButton').style.display = 'none';
+                    document.getElementById('buySection').style.display = 'block';
+                    updateWalletInfo();
                 }
-            });
-
-            window.ethereum.on('chainChanged', () => window.location.reload());
-        }
+            }
+        });
     </script>
 </body>
 </html>
