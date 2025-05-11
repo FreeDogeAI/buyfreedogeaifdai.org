@@ -1,105 +1,41 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreeDogeAI - Resmi Ön Satış</title>
-    <style>
-        :root {
-            --primary: #7B2BF9;
-            --secondary: #00D1B2;
-            --dark: #0F0C29;
-            --light: #FFFFFF;
-        }
-        body {
-            background: var(--dark);
-            color: var(--light);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 2rem auto;
-            padding: 2rem;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .btn {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 1rem;
-            transition: transform 0.3s;
-        }
-        .btn:hover {
-            transform: translateY(-3px);
-        }
-        .address-box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 1rem;
-            border-radius: 12px;
-            word-break: break-all;
-            font-family: monospace;
-            margin: 1rem 0;
-            position: relative;
-        }
-        .copy-btn {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FDAI Presale</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+  <style>
+    body {
+      background: #000;
+      color: #FFD700;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    button {
+      padding: 12px 25px;
+      background-color: #FFD700;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    #walletInfo {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>FreeDogeAI (FDAI) Ön Satış</h1>
-        
-        <div class="address-box">
-            <strong>BNB Gönderim Adresi:</strong>
-            <div id="bnbAddress">0xd924e01c7d319c5b23708cd622bd1143cd4fb360</div>
-            <button class="copy-btn" onclick="copyAddress()">Kopyala</button>
-        </div>
+  <h1>Connect Wallet</h1>
+  <button id="connectButton">Connect MetaMask</button>
 
-        <button class="btn" onclick="connectWallet()">CÜZDANLA KATIL</button>
-        
-        <p><small>Token Kontrat: 0x8161698A74F2ea0035B9912ED60140893Ac0f39C</small></p>
-    </div>
+  <div id="walletInfo" style="display:none;">
+    <p><strong>Address:</strong> <span id="userAddress"></span></p>
+    <p><strong>BNB Balance:</strong> <span id="bnbBalance"></span></p>
+  </div>
 
-    <script>
-        // MetaMask Bağlantısı
-        async function connectWallet() {
-            if (window.ethereum) {
-                try {
-                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                    alert(`Bağlantı başarılı: ${accounts[0]}\n\nBNB'yı yukarıdaki adrese gönderin.`);
-                } catch (error) {
-                    alert("Bağlantı reddedildi: " + error.message);
-                }
-            } else {
-                alert("Lütfen MetaMask yükleyin!");
-            }
-        }
-
-        // Adres Kopyalama
-        function copyAddress() {
-            navigator.clipboard.writeText("0xd924e01c7d319c5b23708cd622bd1143cd4fb360");
-            alert("BNB adresi kopyalandı!");
-        }
-    </script>
+  <script src="script.js"></script>
 </body>
 </html>
