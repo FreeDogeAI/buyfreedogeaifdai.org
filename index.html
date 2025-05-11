@@ -3,73 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreeDogeAI Resmi Ön Satış</title>
+    <title>FreeDogeAI - Resmi Ön Satış</title>
     <style>
         :root {
-            --primary: #6e3bff;
-            --secondary: #00d1b2;
-            --dark: #0f0c29;
-            --light: #f8f9fa;
+            --primary: #7B2BF9;
+            --secondary: #00D1B2;
+            --dark: #0F0C29;
+            --light: #FFFFFF;
         }
         body {
-            background: linear-gradient(135deg, var(--dark) 0%, #24243e 100%);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            min-height: 100vh;
-            padding: 0;
             margin: 0;
+            padding: 0;
         }
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 600px;
+            margin: 2rem auto;
             padding: 2rem;
-        }
-        .card {
+            border-radius: 20px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .btn {
-            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
+            padding: 1rem;
+            border-radius: 12px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 1.1rem;
             width: 100%;
             margin-top: 1rem;
-            transition: all 0.3s ease;
+            transition: transform 0.3s;
         }
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(110, 59, 255, 0.4);
-        }
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-        input {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 10px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
         }
         .address-box {
             background: rgba(0, 0, 0, 0.3);
             padding: 1rem;
-            border-radius: 10px;
+            border-radius: 12px;
             word-break: break-all;
             font-family: monospace;
-            position: relative;
             margin: 1rem 0;
+            position: relative;
         }
         .copy-btn {
             position: absolute;
@@ -78,123 +59,46 @@
             background: var(--primary);
             border: none;
             color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 5px;
+            padding: 0.5rem;
+            border-radius: 6px;
             cursor: pointer;
-        }
-        .status {
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 10px;
-            display: none;
-        }
-        .success {
-            background: rgba(0, 209, 178, 0.2);
-            border: 1px solid var(--secondary);
-            display: block;
-        }
-        .error {
-            background: rgba(255, 71, 87, 0.2);
-            border: 1px solid #ff4757;
-            display: block;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <h1 style="text-align: center; margin-bottom: 2rem;">🚀 FreeDogeAI Ön Satış</h1>
-            
-            <div class="input-group">
-                <label for="bnbAmount">BNB Miktarı</label>
-                <input type="number" id="bnbAmount" placeholder="Örneğin: 0.1">
-            </div>
-            
-            <div class="input-group">
-                <label>Alacağınız FDAI Miktarı</label>
-                <input type="text" id="tokenAmount" readonly>
-            </div>
-            
-            <div class="address-box">
-                BNB Gönderim Adresi:
-                <div id="presaleAddress">0xd924e01c7d319c5b23708cd622bd1143cd4fb360</div>
-                <button class="copy-btn" onclick="copyAddress()">Kopyala</button>
-            </div>
-            
-            <button class="btn" onclick="sendBNB()">BNB GÖNDER</button>
-            
-            <div id="statusMessage" class="status"></div>
-            
-            <div style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.8;">
-                <p>Token Kontrat Adresi: 0x8161698A74F2ea0035B9912ED60140893Ac0f39C</p>
-                <p>Tokenlar otomatik olarak cüzdanınıza gönderilecektir (24 saat içinde).</p>
-            </div>
+        <h1>FreeDogeAI (FDAI) Ön Satış</h1>
+        
+        <div class="address-box">
+            <strong>BNB Gönderim Adresi:</strong>
+            <div id="bnbAddress">0xd924e01c7d319c5b23708cd622bd1143cd4fb360</div>
+            <button class="copy-btn" onclick="copyAddress()">Kopyala</button>
         </div>
+
+        <button class="btn" onclick="connectWallet()">CÜZDANLA KATIL</button>
+        
+        <p><small>Token Kontrat: 0x8161698A74F2ea0035B9912ED60140893Ac0f39C</small></p>
     </div>
 
     <script>
-        // Token hesaplama
-        document.getElementById('bnbAmount').addEventListener('input', function() {
-            const bnbAmount = parseFloat(this.value) || 0;
-            const tokenAmount = bnbAmount * 120000000000;
-            document.getElementById('tokenAmount').value = tokenAmount.toLocaleString();
-        });
-
-        // Adres kopyalama
-        function copyAddress() {
-            const address = document.getElementById('presaleAddress').innerText;
-            navigator.clipboard.writeText(address).then(() => {
-                showStatus("BNB adresi panoya kopyalandı!", "success");
-            });
-        }
-
-        // BNB gönder butonu işlevi
-        function sendBNB() {
-            const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
-            
-            if (!bnbAmount || bnbAmount <= 0) {
-                showStatus("Lütfen geçerli bir BNB miktarı girin", "error");
-                return;
-            }
-            
-            const address = document.getElementById('presaleAddress').innerText;
-            
-            if (typeof window.ethereum !== 'undefined') {
-                // MetaMask ile işlem
-                window.ethereum.request({ 
-                    method: 'eth_sendTransaction',
-                    params: [{
-                        from: ethereum.selectedAddress,
-                        to: address,
-                        value: web3.utils.toWei(bnbAmount.toString(), 'ether'),
-                        gas: '21000'
-                    }]
-                })
-                .then(txHash => {
-                    showStatus(`İşlem başarılı! TX Hash: ${txHash}`, "success");
-                    // Burada backend'e bildirim gönderebilirsiniz
-                })
-                .catch(err => {
-                    showStatus(`Hata: ${err.message}`, "error");
-                });
+        // MetaMask Bağlantısı
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    alert(`Bağlantı başarılı: ${accounts[0]}\n\nBNB'yı yukarıdaki adrese gönderin.`);
+                } catch (error) {
+                    alert("Bağlantı reddedildi: " + error.message);
+                }
             } else {
-                // MetaMask yoksa manuel gönderim talimatı
-                showStatus(`
-                    <p>BNB göndermek için:</p>
-                    <ol>
-                        <li>${bnbAmount} BNB'yı yukarıdaki adrese gönderin</li>
-                        <li>İşlem hash'ini kaydedin</li>
-                        <li>Tokenlar 24 saat içinde gönderilecektir</li>
-                    </ol>
-                `, "success");
+                alert("Lütfen MetaMask yükleyin!");
             }
         }
 
-        // Durum mesajı göster
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.innerHTML = message;
-            statusElement.className = 'status ' + type;
+        // Adres Kopyalama
+        function copyAddress() {
+            navigator.clipboard.writeText("0xd924e01c7d319c5b23708cd622bd1143cd4fb360");
+            alert("BNB adresi kopyalandı!");
         }
     </script>
 </body>
