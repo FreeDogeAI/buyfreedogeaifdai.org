@@ -35,6 +35,7 @@ function initWeb3Modal() {
 async function connectWallet() {
   try {
     const provider = await web3Modal.connect();
+    await provider.enable(); // mobilde uygulamayı tetikler
     web3 = new Web3(provider);
 
     const accounts = await web3.eth.getAccounts();
