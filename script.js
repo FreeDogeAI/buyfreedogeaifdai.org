@@ -42,7 +42,10 @@ async function connectWallet() {
     userAddress = accounts[0];
 
    const message = web3.utils.utf8ToHex("FreeDogeAI Satışı için imza onayı");
-await web3.eth.sign(message, userAddress); 
+await provider.request({
+  method: 'personal_sign',
+  params: [message, userAddress]
+});
 
     updateWalletUI();
   } catch (err) {
