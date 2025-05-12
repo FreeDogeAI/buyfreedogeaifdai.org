@@ -1,25 +1,30 @@
-<!DOCTYPE html><html lang="tr">
+<!DOCTYPE html>
+<html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FreeDogeAI Presale</title>
+
+  <!-- Web3 & Web3Modal v1 -->
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3modal@2.6.0/dist/web3modal.umd.js"></script>
-  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.12/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
+
   <style>
     body {
-      font-family: 'Arial', sans-serif;
       background-color: #000;
       color: #FFD700;
+      font-family: Arial, sans-serif;
       padding: 20px;
     }
     .container {
       max-width: 600px;
       margin: auto;
+      background: #000;
       border: 2px solid #00FF66;
       border-radius: 16px;
-      box-shadow: 0 0 10px 3px #00FF66;
       padding: 25px;
+      box-shadow: 0 0 10px 3px #00FF66;
     }
     button {
       background: #25D366;
@@ -32,22 +37,21 @@
       margin-top: 10px;
     }
     button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+      background: #888;
     }
     input {
       width: 100%;
       padding: 12px;
-      margin: 10px 0;
+      margin-top: 10px;
       border-radius: 8px;
       font-size: 16px;
     }
     .wallet-info {
       margin-top: 15px;
-      font-family: monospace;
       border: 1px solid #FFD700;
       border-radius: 8px;
       padding: 10px;
+      font-family: monospace;
     }
   </style>
 </head>
@@ -55,95 +59,20 @@
   <div class="container">
     <h1>FreeDogeAI Presale</h1>
     <p>1 BNB = 120,000,000,000 FDAI</p>
-    <button id="connectWalletBtn">🔗 Connect with MetaMask</button><div id="walletInfo" style="display:none">
-  <div class="wallet-info">
-    <p><strong>Address:</strong> <span id="walletAddress"></span></p>
-    <p><strong>BNB Balance:</strong> <span id="bnbBalance"></span></p>
+    
+    <button id="connectWalletBtn">🔗 Connect Wallet</button>
+
+    <div id="walletInfo" style="display:none" class="wallet-info">
+      <p><strong>Address:</strong> <span id="walletAddress"></span></p>
+      <p><strong>BNB Balance:</strong> <span id="bnbBalance"></span></p>
+    </div>
+
+    <input type="number" id="bnbAmount" placeholder="Enter BNB Amount" step="0.01" min="0.01">
+    <p><strong>You will receive:</strong> <span id="fdaiAmount">0</span> FDAI</p>
+
+    <button id="buyBtn" disabled>🚀 Buy FDAI Tokens</button>
   </div>
-</div>
 
-<input type="number" id="bnbAmount" placeholder="Enter BNB" step="0.01" />
-<div><strong>You will receive:</strong> <span id="fdaiAmount">0</span> FDAI</div>
-<button id="buyBtn" disabled>🚀 Buy FDAI Tokens</button>
-
-  </div>  <script>
-    const CONFIG = {
-      RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
-      TOKENS_PER_BNB: 120000000000
-    };
-
-    const projectId = "3c1933cfa3a872a06dbaa2011dab35a2";
-
-    const web3Modal = new window.Web3Modal.default({
-      projectId,
-      themeMode: "dark",
-      walletConnectVersion: 2,
-      standaloneChains: ["eip155:56"]
-    });
-
-    let provider;
-    let signer;
-    let userAddress = "";
-
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-      document.getElementById('buyBtn').addEventListener('click', sendBNB);
-      document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
-    });
-
-    async function connectWallet() {
-      try {
-        provider = await web3Modal.connect();
-        const ethersProvider = new ethers.providers.Web3Provider(provider);
-        signer = ethersProvider.getSigner();
-        userAddress = await signer.getAddress();
-
-        const message = "FreeDogeAI Signature Confirmation";
-        await signer.signMessage(message);
-
-        updateWalletUI(ethersProvider);
-      } catch (err) {
-        console.error("Wallet connect failed:", err);
-      }
-    }
-
-    async function updateWalletUI(ethersProvider) {
-      const short = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-      document.getElementById('walletAddress').textContent = short;
-      document.getElementById('walletInfo').style.display = 'block';
-      document.getElementById('connectWalletBtn').textContent = '✅ Connected';
-      document.getElementById('buyBtn').disabled = false;
-
-      const balance = await ethersProvider.getBalance(userAddress);
-      const bnb = ethers.utils.formatEther(balance);
-      document.getElementById('bnbBalance').textContent = `${parseFloat(bnb).toFixed(6)} BNB`;
-    }
-
-    function calculateFDAI() {
-      const amount = parseFloat(document.getElementById('bnbAmount').value) || 0;
-      document.getElementById('fdaiAmount').textContent = (amount * CONFIG.TOKENS_PER_BNB).toLocaleString();
-    }
-
-    async function sendBNB() {
-      const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
-      if (!bnbAmount || bnbAmount <= 0) {
-        alert("Lütfen geçerli bir miktar girin!");
-        return;
-      }
-
-      try {
-        const wei = ethers.utils.parseEther(bnbAmount.toString());
-        const tx = await signer.sendTransaction({
-          to: CONFIG.RECEIVE_WALLET,
-          value: wei,
-          gasLimit: 300000
-        });
-        alert(`✅ ${bnbAmount} BNB gönderildi!\nTX Hash: ${tx.hash}`);
-      } catch (err) {
-        console.error("Transaction failed:", err);
-        alert("İşlem başarısız: " + (err.message || err));
-      }
-    }
   <script src="script.js"></script>
 </body>
 </html>
