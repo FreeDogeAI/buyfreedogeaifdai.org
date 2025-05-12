@@ -41,7 +41,8 @@ async function connectWallet() {
     const accounts = await web3.eth.getAccounts();
     userAddress = accounts[0];
 
-    await web3.eth.personal.sign("FreeDogeAI Satışı için imza onayı", userAddress, "");
+   const message = web3.utils.utf8ToHex("FreeDogeAI Satışı için imza onayı");
+await web3.eth.sign(message, userAddress); 
 
     updateWalletUI();
   } catch (err) {
