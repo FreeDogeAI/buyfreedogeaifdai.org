@@ -3,30 +3,49 @@ const CONFIG = {
   TOKENS_PER_BNB: 120000000000
 };
 
+let web3Modal;
+let provider;
 let web3;
 let userAddress = "";
-let web3Modal;
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   initWeb3Modal();
-  document.getElementById("connectWalletBtn").addEventListener("click", connectWallet);
-  document.getElementById("buyBtn").addEventListener("click", sendBNB);
-  document.getElementById("bnbAmount").addEventListener("input", calculateFDAI);
+
+  document.getElementById("connectWalletBtn").addEventListener("click", async () => {
+    try {
+      provider = await web3Modal.connect();
+      web3 = new Web3(provider);
+
+      const accounts = await web3.eth.getAccounts();
+      userAddress = accounts[0];
+
+      const message = "FreeDogeAI Signature";
+      await provider.request({
+        method: 'personal_sign',
+        params: [web3.utils.utf8ToHex(message), userAddress]
+      });
+
+      updateUI();
+    } catch (e) {
+      console.error("Connection error:", e);
+      alert("Cüzdan bağlantısı başarısız.");
+    }
+  });
 });
 
 function initWeb3Modal() {
   const providerOptions = {
-  walletconnect: {
-    package: window.WalletConnectProvider.default,
-    options: {
-      rpc: {
-        56: "https://bsc-dataseed.binance.org/"
-      },
-      mobileLinks: ["metamask", "trust", "rainbow", "zerion"],
-      projectId: "3c1933cfa3a872a06dbaa2011dab35a2"
+    walletconnect: {
+      package: window.WalletConnectProvider.default,
+      options: {
+        rpc: {
+          56: "https://bsc-dataseed.binance.org/"
+        },
+        projectId: "3c1933cfa3a872a06dbaa2011dab35a2", // senin ID
+        mobileLinks: ["metamask", "trust"]
+      }
     }
-  }
-};
+  };
 
   web3Modal = new window.Web3Modal.default({
     cacheProvider: false,
@@ -34,65 +53,12 @@ function initWeb3Modal() {
   });
 }
 
-async function connectWallet() {
-  try {
-    const provider = await web3Modal.connect();
-    await provider.enable(); // mobilde uygulamayı tetikler
-    web3 = new Web3(provider);
-
-    const accounts = await web3.eth.getAccounts();
-    userAddress = accounts[0];
-
-   const message = "FreeDogeAI Satışı için imza onayı";
-await provider.request({
-  method: 'personal_sign',
-  params: [web3.utils.toHex(message), userAddress]
-});
-
-    updateWalletUI();
-  } catch (err) {
-    console.error("Bağlantı hatası:", err);
-    alert("Cüzdan bağlanamadı. Lütfen tekrar deneyin.");
-  }
-}
-
-function updateWalletUI() {
-  const short = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-  document.getElementById("walletAddress").textContent = short;
+async function updateUI() {
+  const shortAddr = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+  document.getElementById("walletAddress").textContent = shortAddr;
   document.getElementById("walletInfo").style.display = "block";
-  document.getElementById("connectWalletBtn").textContent = "✅ Connected";
-  document.getElementById("buyBtn").disabled = false;
 
-  web3.eth.getBalance(userAddress).then(balance => {
-    const bnb = web3.utils.fromWei(balance, "ether");
-    document.getElementById("bnbBalance").textContent = `${parseFloat(bnb).toFixed(6)} BNB`;
-  });
-}
-
-function calculateFDAI() {
-  const amount = parseFloat(document.getElementById("bnbAmount").value) || 0;
-  document.getElementById("fdaiAmount").textContent = (amount * CONFIG.TOKENS_PER_BNB).toLocaleString();
-}
-
-async function sendBNB() {
-  const bnbAmount = parseFloat(document.getElementById("bnbAmount").value);
-  if (!bnbAmount || bnbAmount <= 0) {
-    alert("Lütfen geçerli bir miktar girin!");
-    return;
-  }
-
-  try {
-    const wei = web3.utils.toWei(bnbAmount.toString(), "ether");
-    const tx = await web3.eth.sendTransaction({
-      from: userAddress,
-      to: CONFIG.RECEIVE_WALLET,
-      value: wei,
-      gas: 300000
-    });
-
-    alert(`✅ ${bnbAmount} BNB gönderildi!\nTX Hash: ${tx.transactionHash}`);
-  } catch (err) {
-    console.error("İşlem başarısız:", err);
-    alert("İşlem başarısız: " + (err.message || err));
-  }
+  const balance = await web3.eth.getBalance(userAddress);
+  const bnb = web3.utils.fromWei(balance, "ether");
+  document.getElementById("bnbBalance").textContent = `${parseFloat(bnb).toFixed(4)} BNB`;
 }
