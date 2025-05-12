@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FreeDogeAI Presale</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <!-- WalletConnect kütüphanesini güncelliyoruz -->
+    <script src="https://unpkg.com/@walletconnect/web3-provider@2.10.0/dist/umd/index.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #000000; /* Black background */
+            background-color: #000000;
             margin: 0;
             padding: 20px;
-            color: #FFD700; /* Gold text */
+            color: #FFD700;
         }
         .container {
             max-width: 600px;
@@ -30,7 +31,7 @@
         .logo-container img {
             width: 150px;
             height: 150px;
-            border-radius: 50%; /* Rounded logo */
+            border-radius: 50%;
             object-fit: cover;
         }
         button {
@@ -91,7 +92,7 @@
             display: block;
             text-align: center;
             margin: 15px 0;
-            color: #0000FF; /* Blue text for PDF link */
+            color: #0000FF;
             font-size: 16px;
             text-decoration: none;
         }
@@ -99,7 +100,7 @@
             text-decoration: underline;
         }
         h1, h3, p, label {
-            color: #FFD700; /* Gold text for headings, paragraphs, and labels */
+            color: #FFD700;
         }
         .calculation-result {
             margin: 15px 0;
@@ -162,7 +163,7 @@
                 Please make sure you are connected to the <span style="color:#00ffff;">BSC (Binance Smart Chain)</span> network in your MetaMask application.<br>
                 Otherwise, your purchased tokens may not be visible in your wallet.
             </div>
-            </strong> <span id="userTokenAddress"></span></p>
+            <p><strong>Your Wallet Address:</strong> <span id="userTokenAddress"></span></p>
             
             <p><strong>NOTE:</strong> If FDAI tokens do not appear in your wallet after purchase, you can manually add the token using the following contract address:</p>
             <div class="wallet-info" style="background-color: #000000; border: 2px dashed #FFD700; color: #00FFCC; font-weight: bold; font-size: 16px; padding: 15px; border-radius: 10px; text-align: center;">
@@ -263,7 +264,7 @@
         // App state
         let web3;
         let userAddress = "";
-        let walletProvider = null; // WalletConnect veya MetaMask provider’ını tutmak için
+        let walletProvider = null;
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
@@ -294,15 +295,15 @@
                 // Mobil cihaz kontrolü
                 if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                     // WalletConnect ile bağlantı
-                    if (typeof WalletConnectWeb3Provider === "undefined") {
-                        console.error("WalletConnectWeb3Provider tanımlı değil. Kütüphane yüklenmedi mi?");
-                        alert("WalletConnect kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin veya MetaMask uygulamasını manuel olarak kullanın.");
+                    if (typeof window.WalletConnectProvider === "undefined") {
+                        console.error("WalletConnectProvider tanımlı değil. Kütüphane yüklenmedi mi?");
+                        alert("WalletConnect kütüphanesi yüklenemedi. Lütfen MetaMask uygulamasını manuel olarak kullanın veya sayfayı yenileyin.");
                         return;
                     }
 
-                    const provider = new WalletConnectWeb3Provider({
+                    const provider = new window.WalletConnectProvider({
                         rpc: {
-                            56: "https://bsc-dataseed.binance.org/" // BSC Mainnet RPC
+                            56: "https://bsc-dataseed.binance.org/"
                         },
                         chainId: 56
                     });
@@ -349,7 +350,7 @@
                     if (chainId !== CONFIG.BSC_CHAIN_ID) {
                         await window.ethereum.request({
                             method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x38' }] // BSC Mainnet
+                            params: [{ chainId: '0x38' }]
                         });
                     }
                 } catch (error) {
@@ -387,17 +388,14 @@
 
         // Update UI after connection
         function updateWalletUI() {
-            // Format address display
             const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
             document.getElementById('walletAddress').textContent = shortAddress;
             document.getElementById('userTokenAddress').textContent = shortAddress;
 
-            // Show wallet info and enable buy button
             document.getElementById('walletInfo').style.display = 'block';
             document.getElementById('connectWalletBtn').textContent = '✅ Connected';
             document.getElementById('buyBtn').disabled = false;
 
-            // Get and display balance
             web3.eth.getBalance(userAddress).then(balance => {
                 const bnbBalance = web3.utils.fromWei(balance, 'ether');
                 document.getElementById('bnbBalance').textContent = `${parseFloat(bnbBalance).toFixed(6)} BNB`;
@@ -441,4 +439,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
