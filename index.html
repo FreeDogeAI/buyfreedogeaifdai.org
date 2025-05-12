@@ -287,21 +287,57 @@
             }
         });
 
-        // Wallet connection handler
-        async function connectWallet() {
-            try {
-                // Check if MetaMask is installed
-                if (!window.ethereum) {
-                    // Mobile redirect
-                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                        const currentUrl = window.location.href.replace(/^https?:\/\//, '');
-                        window.location.href = `https://metamask.app.link/dapp/${currentUrl}`;
-                    } else {
-                        // Desktop - open MetaMask download page
-                        window.open("https://metamask.io/download.html", "_blank");
-                    }
-                    return;
-                }
+      async function connectWallet() {
+    try {
+        // Mobil cihaz kontrolü
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            // WalletConnect ile bağlantı
+            const provider = new WalletConnectWeb3Provider({
+                rpc: {
+                    56: "https://bsc-dataseed.binance.org/" // BSC Mainnet RPC
+                },
+                chainId: 56
+            });
+
+            // WalletConnect ile cüzdan bağlantısını başlat
+            await provider.enable(); // Bu, MetaMask uygulamasını açar ve imza ister
+            web3 = new Web3(provider);
+            const accounts = await web3.eth.getAccounts();
+            userAddress = accounts[0];
+
+            updateWalletUI();
+            return;
+        }
+
+        // Masaüstü için MetaMask kontrolü
+        if (!window.ethereum) {
+            window.open("https://metamask.io/download.html", "_blank");
+            return;
+        }
+
+        // MetaMask yüklüyse, cüzdan bağlantısını başlat
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        userAddress = accounts[0];
+        web3 = new Web3(window.ethereum);
+
+        // BSC ağına geçiş
+        try {
+            const chainId = await web3.eth.getChainId();
+            if (chainId !== CONFIG.BSC_CHAIN_ID) {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x38' }] // BSC Mainnet
+                });
+            }
+        } catch (error) {
+            console.log("Network switch failed:", error);
+        }
+
+        updateWalletUI();
+    } catch (error) {
+        console.log("Connection error:", error);
+    }
+    }
                 
                 // Request accounts
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
