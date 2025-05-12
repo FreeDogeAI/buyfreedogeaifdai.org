@@ -40,11 +40,12 @@ async function connectWallet() {
     const accounts = await web3.eth.getAccounts();
     userAddress = accounts[0];
 
-    await web3.eth.personal.sign("FreeDogeAI Signature", userAddress, "");
+    await web3.eth.personal.sign("FreeDogeAI Satışı için imza onayı", userAddress, "");
 
     updateWalletUI();
   } catch (err) {
     console.error("Bağlantı hatası:", err);
+    alert("Cüzdan bağlanamadı. Lütfen tekrar deneyin.");
   }
 }
 
