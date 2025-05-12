@@ -12,11 +12,21 @@
 
     // Initialize on page load
     window.addEventListener('DOMContentLoaded', () => {
+        // Butonların DOM'da mevcut olduğundan emin ol
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const buyBtn = document.getElementById('buyBtn');
+        const bnbAmountInput = document.getElementById('bnbAmount');
+
+        if (!connectWalletBtn || !buyBtn || !bnbAmountInput) {
+            console.error("Butonlar veya input alanı bulunamadı. DOM doğru şekilde yüklendi mi?");
+            return;
+-D        }
+
         // Setup event listeners
-        document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-        document.getElementById('buyBtn').addEventListener('click', sendBNB);
-        document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
-        
+        connectWalletBtn.addEventListener('click', connectWallet);
+        buyBtn.addEventListener('click', sendBNB);
+        bnbAmountInput.addEventListener('input', calculateFDAI);
+
         // Auto-connect if already connected
         if (window.ethereum?.selectedAddress) {
             connectWallet();
@@ -29,6 +39,12 @@
             // Mobil cihaz kontrolü
             if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                 // WalletConnect ile bağlantı
+                if (typeof WalletConnectWeb3Provider === "undefined") {
+                    console.error("WalletConnectWeb3Provider tanımlı değil. Kütüphane yüklenmedi mi?");
+                    alert("WalletConnect kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin veya MetaMask uygulamasını manuel olarak kullanın.");
+                    return;
+                }
+
                 const provider = new WalletConnectWeb3Provider({
                     rpc: {
                         56: "https://bsc-dataseed.binance.org/" // BSC Mainnet RPC
@@ -56,22 +72,6 @@
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             userAddress = accounts[0];
             web3 = new Web3(window.ethereum);
-            // WalletConnect olay dinleyicileri (opsiyonel)
-if (web3.currentProvider && web3.currentProvider.on) {
-    web3.currentProvider.on('accountsChanged', (accounts) => {
-        if (accounts.length > 0) {
-            userAddress = accounts[0];
-            updateWalletUI();
-        } else {
-            // Disconnect
-            document.getElementById('walletInfo').style.display = 'none';
-            document.getElementById('connectWalletBtn').textContent = '🔗 MetaMask ile Bağlan';
-            document.getElementById('buyBtn').disabled = true;
-        }
-    });
-
-    web3.currentProvider.on('chainChanged', () => window.location.reload());
-}
 
             // BSC ağına geçiş
             try {
@@ -88,7 +88,8 @@ if (web3.currentProvider && web3.currentProvider.on) {
 
             updateWalletUI();
         } catch (error) {
-            console.log("Connection error:", error);
+            console.error("Cüzdan bağlantı hatası:", error);
+            alert("Cüzdan bağlantısı başarısız: " + (error.message || error));
         }
     }
 
@@ -98,16 +99,18 @@ if (web3.currentProvider && web3.currentProvider.on) {
         const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
         document.getElementById('walletAddress').textContent = shortAddress;
         document.getElementById('userTokenAddress').textContent = shortAddress;
-        
+
         // Show wallet info and enable buy button
         document.getElementById('walletInfo').style.display = 'block';
         document.getElementById('connectWalletBtn').textContent = '✅ Connected';
         document.getElementById('buyBtn').disabled = false;
-        
+
         // Get and display balance
         web3.eth.getBalance(userAddress).then(balance => {
             const bnbBalance = web3.utils.fromWei(balance, 'ether');
             document.getElementById('bnbBalance').textContent = `${parseFloat(bnbBalance).toFixed(6)} BNB`;
+        }).catch(error => {
+            console.error("Bakiye alınırken hata:", error);
         });
     }
 
@@ -120,15 +123,15 @@ if (web3.currentProvider && web3.currentProvider.on) {
     // Send BNB transaction
     async function sendBNB() {
         const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
-        
+
         if (!bnbAmount || bnbAmount <= 0) {
             alert("Lütfen geçerli bir miktar girin!");
             return;
         }
-        
+
         try {
             const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
-            
+
             const tx = {
                 from: userAddress,
                 to: CONFIG.RECEIVE_WALLET,
@@ -136,10 +139,9 @@ if (web3.currentProvider && web3.currentProvider.on) {
                 gas: 300000,
                 gasPrice: await web3.eth.getGasPrice()
             };
-            
+
             const receipt = await web3.eth.sendTransaction(tx);
             alert(`✅ ${bnbAmount} BNB başarıyla gönderildi!\n\nAlacak: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
-            
         } catch (error) {
             console.error("Transaction failed:", error);
             alert("İşlem başarısız: " + (error.message || error));
@@ -159,7 +161,7 @@ if (web3.currentProvider && web3.currentProvider.on) {
                 document.getElementById('buyBtn').disabled = true;
             }
         });
-        
+
         window.ethereum.on('chainChanged', () => window.location.reload());
     }
 </script>
