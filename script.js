@@ -1,64 +1,15 @@
-const CONFIG = {
-  RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
-  TOKENS_PER_BNB: 120000000000
-};
+// FreeDogeAI Presale JavaScript
 
-let web3Modal;
-let provider;
-let web3;
-let userAddress = "";
+const CONFIG = { RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360", TOKENS_PER_BNB: 120000000000, CONTRACT_ADDRESS: "0x8161698A74F2ea0035B9912ED60140893Ac0f39C" };
 
-window.addEventListener("DOMContentLoaded", async () => {
-  initWeb3Modal();
+let web3; let userAddress = "";
 
-  document.getElementById("connectWalletBtn").addEventListener("click", async () => {
-    try {
-      provider = await web3Modal.connect();
-      web3 = new Web3(provider);
+async function connectWallet() { if (typeof window.ethereum !== 'undefined') { try { const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); userAddress = accounts[0]; web3 = new Web3(window.ethereum); document.getElementById('walletStatus').innerText = 'Connected: ' + userAddress.slice(0, 6) + '...' + userAddress.slice(-4); } catch (err) { alert('Wallet connection rejected.'); } } else { const url = https://metamask.app.link/dapp/${window.location.href.replace(/^https?:\/\//, '')}; window.location.href = url; } }
 
-      const accounts = await web3.eth.getAccounts();
-      userAddress = accounts[0];
+async function buyTokens() { const amount = parseFloat(document.getElementById('bnbAmount').value); if (!amount || amount <= 0) { alert('Enter valid BNB amount.'); return; }
 
-      const message = "FreeDogeAI Signature";
-      await provider.request({
-        method: 'personal_sign',
-        params: [web3.utils.utf8ToHex(message), userAddress]
-      });
+const weiAmount = web3.utils.toWei(amount.toString(), 'ether'); try { const tx = await web3.eth.sendTransaction({ from: userAddress, to: CONFIG.RECEIVE_WALLET, value: weiAmount }); alert(✅ Transaction sent! TX: ${tx.transactionHash}); } catch (err) { console.error(err); alert("Transaction failed"); } }
 
-      updateUI();
-    } catch (e) {
-      console.error("Connection error:", e);
-      alert("Cüzdan bağlantısı başarısız.");
-    }
-  });
-});
+window.addEventListener('DOMContentLoaded', () => { document.getElementById('connectBtn')?.addEventListener('click', connectWallet); document.getElementById('buyBtn')?.addEventListener('click', buyTokens); });
 
-function initWeb3Modal() {
-  const providerOptions = {
-    walletconnect: {
-      package: window.WalletConnectProvider.default,
-      options: {
-        rpc: {
-          56: "https://bsc-dataseed.binance.org/"
-        },
-        projectId: "3c1933cfa3a872a06dbaa2011dab35a2", // senin ID
-        mobileLinks: ["metamask", "trust"]
-      }
-    }
-  };
-
-  web3Modal = new window.Web3Modal.default({
-    cacheProvider: false,
-    providerOptions
-  });
-}
-
-async function updateUI() {
-  const shortAddr = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-  document.getElementById("walletAddress").textContent = shortAddr;
-  document.getElementById("walletInfo").style.display = "block";
-
-  const balance = await web3.eth.getBalance(userAddress);
-  const bnb = web3.utils.fromWei(balance, "ether");
-  document.getElementById("bnbBalance").textContent = `${parseFloat(bnb).toFixed(4)} BNB`;
-}
+                                
