@@ -1,81 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MetaMask Bağlantısı</title>
+    <title>Çoklu Ağ Desteği</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .network-list { margin: 20px; }
+        button { margin: 5px; padding: 10px; }
+    </style>
 </head>
 <body>
-    <button id="connectBtn">MetaMask ile Bağlan</button>
-    <p id="status">Durum: Bağlantı bekleniyor...</p>
+    <div class="network-list">
+        <h3>Ağları Seçin:</h3>
+        <button onclick="switchNetwork('arbitrum')">Arbitrum One</button>
+        <button onclick="switchNetwork('bsc')">BNB Smart Chain</button>
+        <button onclick="switchNetwork('polygon')">Polygon</button>
+        <!-- Diğer ağlar için buton ekleyebilirsiniz -->
+    </div>
+    <p id="status"></p>
 
     <script>
-        // HTML Elementlerini Seç
-        const connectBtn = document.getElementById('connectBtn');
-        const statusEl = document.getElementById('status');
-
-        // MetaMask Bağlantı Fonksiyonu
-        async function connectToMetaMask() {
-            statusEl.textContent = "MetaMask bağlantısı kuruluyor...";
-
-            // MetaMask Uzantısı Kontrolü (Masaüstü)
-            if (window.ethereum && window.ethereum.isMetaMask) {
-                try {
-                    // Cüzdan Adresini İste
-                    const accounts = await window.ethereum.request({ 
-                        method: 'eth_requestAccounts' 
-                    });
-                    onSuccess(accounts[0]); // Başarılı bağlantı
-                } catch (error) {
-                    onError(error); // Hata durumu
-                }
-            } 
-            // Mobil Cihaz Kontrolü
-            else if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-                // MetaMask Deep Link'i Oluştur
-                const dappUrl = encodeURIComponent(window.location.href);
-                const metamaskAppLink = `https://metamask.app.link/dapp/${dappUrl}`;
-                
-                // Mobil Uygulamayı Aç
-                window.location.href = metamaskAppLink;
-                
-                // Mobilde İşlem Tamamlandığında Dinle
-                window.addEventListener('message', (event) => {
-                    if (event.data.type === 'METAMASK_CONNECTED') {
-                        onSuccess(event.data.address);
-                    }
-                });
-            } 
-            // MetaMask Bulunamadı
-            else {
-                statusEl.textContent = "Lütfen MetaMask kurun!";
+        const networks = {
+            arbitrum: {
+                chainId: '0xA4B1',
+                rpcUrl: 'https://arb1.arbitrum.io/rpc',
+                chainName: 'Arbitrum One',
+                nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
+                blockExplorerUrl: 'https://arbiscan.io'
+            },
+            bsc: {
+                chainId: '0x38',
+                rpcUrl: 'https://bsc-dataseed.binance.org/',
+                chainName: 'BNB Smart Chain',
+                nativeCurrency: { name: 'BNB', decimals: 18, symbol: 'BNB' },
+                blockExplorerUrl: 'https://bscscan.com'
+            },
+            polygon: {
+                chainId: '0x89',
+                rpcUrl: 'https://polygon-rpc.com',
+                chainName: 'Polygon Mainnet',
+                nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
+                blockExplorerUrl: 'https://polygonscan.com'
             }
-        }
+        };
 
-        // Başarılı Bağlantı
-        async function onSuccess(walletAddress) {
-            statusEl.textContent = `Bağlı Cüzdan: ${walletAddress}`;
-            
-            // İmza İste (Örnek Mesaj)
+        async function switchNetwork(networkKey) {
+            if (!window.ethereum) {
+                alert('Lütfen MetaMask yükleyin!');
+                return;
+            }
+
             try {
-                const message = "Bu işlemi onaylayın: #" + Date.now();
-                const signature = await window.ethereum.request({
-                    method: 'personal_sign',
-                    params: [message, walletAddress]
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [networks[networkKey]]
                 });
                 
-                statusEl.innerHTML += `<br>İmza: <code>${signature.slice(0, 20)}...</code>`;
+                document.getElementById('status').textContent = `${networks[networkKey].chainName} bağlandı!`;
+                
+                // Mobil imza istememesi için otomatik onay (Sadece önceden eklenmiş ağlarda)
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if(accounts.length === 0) {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                }
+                
             } catch (error) {
-                onError(error);
+                document.getElementById('status').textContent = `Hata: ${error.message}`;
             }
         }
-
-        // Hata Yönetimi
-        function onError(error) {
-            statusEl.textContent = `Hata: ${error.message || "Kullanıcı reddetti!"}`;
-        }
-
-        // Butona Tıklanınca Tetikle
-        connectBtn.addEventListener('click', connectToMetaMask);
     </script>
 </body>
 </html>
