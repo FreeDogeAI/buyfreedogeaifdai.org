@@ -16,14 +16,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function initWeb3Modal() {
   const providerOptions = {
-    walletconnect: {
-      package: window.WalletConnectProvider.default,
-      options: {
-        rpc: {
-          56: "https://bsc-dataseed.binance.org/"
-        }
-      }
-    }
+    const providerOptions = {
+  injected: {
+    display: {
+      name: "MetaMask",
+      description: "Connect with MetaMask"
+    },
+    package: null
+  }
+};
   };
 
   web3Modal = new window.Web3Modal.default({
