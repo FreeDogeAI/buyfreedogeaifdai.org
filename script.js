@@ -56,6 +56,22 @@
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             userAddress = accounts[0];
             web3 = new Web3(window.ethereum);
+            // WalletConnect olay dinleyicileri (opsiyonel)
+if (web3.currentProvider && web3.currentProvider.on) {
+    web3.currentProvider.on('accountsChanged', (accounts) => {
+        if (accounts.length > 0) {
+            userAddress = accounts[0];
+            updateWalletUI();
+        } else {
+            // Disconnect
+            document.getElementById('walletInfo').style.display = 'none';
+            document.getElementById('connectWalletBtn').textContent = '🔗 MetaMask ile Bağlan';
+            document.getElementById('buyBtn').disabled = true;
+        }
+    });
+
+    web3.currentProvider.on('chainChanged', () => window.location.reload());
+}
 
             // BSC ağına geçiş
             try {
