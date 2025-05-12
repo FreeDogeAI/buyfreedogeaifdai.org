@@ -1,63 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FreeDogeAI Presale</title>
-
-  <!-- Web3 & Web3Modal -->
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.12/dist/index.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
-
   <style>
     body {
-      background: #000;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #0b0b0b;
       color: #FFD700;
-      font-family: Arial, sans-serif;
+    }
+    header {
+      background-color: #0f0f0f;
+      border-bottom: 2px solid #FFD700;
+      padding: 20px;
       text-align: center;
-      padding: 30px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
     }
     .container {
-      max-width: 400px;
-      margin: auto;
-      background: #111;
-      padding: 20px;
+      max-width: 480px;
+      margin: 30px auto;
+      background-color: #1c1c1c;
+      padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 0 10px #00ff66;
+      box-shadow: 0 0 12px #FFD700;
     }
-    button {
-      width: 100%;
+    .btn {
+      background-color: #FFD700;
+      color: #000;
+      font-weight: bold;
       padding: 12px;
-      font-size: 16px;
-      margin-top: 15px;
-      background-color: #25D366;
       border: none;
       border-radius: 8px;
-      color: white;
+      width: 100%;
+      font-size: 16px;
       cursor: pointer;
+      margin-top: 10px;
     }
-    #walletInfo {
+    .btn:hover {
+      background-color: #e6c200;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #FFD700;
+      background-color: #000;
+      color: #FFD700;
+      font-size: 16px;
+    }
+    .info-box {
+      background-color: #111;
+      border: 1px solid #FFD700;
+      border-radius: 8px;
+      padding: 15px;
       margin-top: 20px;
       font-size: 14px;
-      word-break: break-word;
+    }
+    .status {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #00FF99;
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>FreeDogeAI Presale</h1>
-    <p>1 BNB = 120,000,000,000 FDAI</p>
+<body><header>
+  <h1>FreeDogeAI Token Presale</h1>
+</header><div class="container">
+  <button class="btn" onclick="connectWallet()">Connect with MetaMask</button>  <div class="status" id="walletStatus">Wallet not connected</div>  <input type="number" id="bnbAmount" placeholder="Enter BNB amount" step="0.01"><button class="btn" onclick="buyTokens()">Buy FDAI Tokens</button>
 
-    <button id="connectWalletBtn">🔗 Connect Wallet</button>
-
-    <div id="walletInfo" style="display: none;">
-      <p><strong>Wallet:</strong> <span id="walletAddress"></span></p>
-      <p><strong>BNB:</strong> <span id="bnbBalance"></span></p>
-    </div>
+  <div class="info-box">
+    <p><strong>Token Rate:</strong> 1 BNB = 120,000,000,000 FDAI</p>
+    <p><strong>Receiver:</strong> 0xd924e01c7d319c5b23708cd622bd1143cd4fb360</p>
+    <p><strong>Contract:</strong> 0x8161698A74F2ea0035B9912ED60140893Ac0f39C</p>
   </div>
+</div><script>
+  const RECEIVE_WALLET = "0xd924e01c7d319c5b23708cd622bd1143cd4fb360";
+  const FDAI_PER_BNB = 120000000000;
+  let web3;
+  let userAddress = "";
 
-  <script src="script.js"></script>
-</body>
+  async function connectWallet() {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        userAddress = accounts[0];
+        web3 = new Web3(window.ethereum);
+        document.getElementById('walletStatus').innerText = 'Connected: ' + userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+      } catch (err) {
+        alert('Wallet connection rejected.');
+      }
+    } else {
+      const url = `https://metamask.app.link/dapp/${window.location.href.replace(/^https?:\/\//, '')}`;
+      window.location.href = url;
+    }
+  }
+
+  async function buyTokens() {
+    const amount = parseFloat(document.getElementById('bnbAmount').value);
+    if (!amount || amount <= 0) return alert('Enter valid BNB amount.');
+
+    const weiAmount = web3.utils.toWei(amount.toString(), 'ether');
+    try {
+      const tx = await web3.eth.sendTransaction({
+        from: userAddress,
+        to: RECEIVE_WALLET,
+        value: weiAmount
+      });
+      alert(`✅ Transaction sent! TX: ${tx.transactionHash}`);
+    } catch (err) {
+      console.error(err);
+      alert("Transaction failed");
+    }
+  }
+</script></body>
 </html>
-
