@@ -89,22 +89,33 @@
   let userAddress = "";
 
   async function connectWallet() {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile && !window.ethereum) {
+      const dappUrl = 'freedogeai.github.io';
+      window.location.href = `https://metamask.app.link/dapp/${dappUrl}?sign=true`;
+      return;
+    }
+
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       userAddress = accounts[0];
       web3 = new Web3(window.ethereum);
 
-      await window.ethereum.request({
-        method: 'personal_sign',
-        params: [
-          web3.utils.utf8ToHex("FreeDogeAI presale katılım onayı."),
-          userAddress
-        ]
-      });
+      if (window.location.search.includes('sign=true')) {
+        await new Promise(res => setTimeout(res, 300));
+        await window.ethereum.request({
+          method: 'personal_sign',
+          params: [
+            web3.utils.utf8ToHex("FreeDogeAI presale katılım onayı."),
+            userAddress
+          ]
+        });
+      }
 
       document.getElementById('walletStatus').innerText = 'Connected: ' + userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
     } catch (err) {
-      alert('Connection or signature rejected.');
+      // Silent fail, no alert
     }
   }
 
@@ -117,7 +128,6 @@
   async function buyTokens() {
     const amount = parseFloat(document.getElementById('bnbAmount').value);
     if (!amount || amount <= 0) {
-      alert('Enter valid BNB amount.');
       return;
     }
 
@@ -131,7 +141,6 @@
       alert(`✅ Transaction sent! TX: ${tx.transactionHash}`);
     } catch (err) {
       console.error(err);
-      alert("Transaction failed");
     }
   }
 
@@ -139,6 +148,10 @@
     document.getElementById('connectBtn')?.addEventListener('click', connectWallet);
     document.getElementById('buyBtn')?.addEventListener('click', buyTokens);
     document.getElementById('bnbAmount')?.addEventListener('input', calculateFDAI);
+
+    if (window.location.search.includes('sign=true')) {
+      connectWallet();
+    }
   });
 </script></body>
 </html>
