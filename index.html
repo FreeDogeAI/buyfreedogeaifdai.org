@@ -16,18 +16,10 @@
       border-bottom: 2px solid #FFD700;
       padding: 20px;
       text-align: center;
-      position: relative;
     }
     header h1 {
       margin: 0;
       font-size: 28px;
-    }
-    .icon-doge {
-      position: absolute;
-      left: 20px;
-      top: 10px;
-      width: 50px;
-      height: 50px;
     }
     .container {
       max-width: 480px;
@@ -78,7 +70,6 @@
   </style>
 </head>
 <body><header>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Dogecoin_Logo.png/768px-Dogecoin_Logo.png" class="icon-doge" alt="Winged Doge Icon">
   <h1>FreeDogeAI Token Presale</h1>
 </header><div class="container">
   <button class="btn" id="connectBtn">Connect with MetaMask</button>
@@ -98,17 +89,8 @@
   let userAddress = "";
 
   async function connectWallet() {
-    if (!window.ethereum) {
-      const currentUrl = window.location.href.replace(/^https?:\/\//, '');
-      window.location.href = `https://metamask.app.link/dapp/${currentUrl}`;
-      return;
-    }
-
     try {
-      const accounts = await new Promise(resolve => setTimeout(() => {
-        resolve(window.ethereum.request({ method: 'eth_requestAccounts' }));
-      }, 300));
-
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       userAddress = accounts[0];
       web3 = new Web3(window.ethereum);
 
