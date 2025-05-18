@@ -40,5 +40,11 @@ window.addEventListener('load', () => {
 
 // 4️⃣ MOBİLDE META MASK'A YÖNLENDİRME BUTONU (Chrome/Safari için)
 document.getElementById("connectButton").onclick = () => {
-  window.location.href = "metamask://browser?url=" + encodeURIComponent(window.location.href);
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    // Mobil cihazdaysa MetaMask DApp browser'da siteyi otomatik aç
+    window.location.href = "https://metamask.app.link/dapp/buyfreedogeai.org";
+  } else {
+    // Masaüstü kullanıcıları için uyarı
+    alert("Please use MetaMask mobile app to connect.");
+  }
 };
