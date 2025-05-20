@@ -5,7 +5,6 @@ function isInMetaMaskBrowser() {
   return navigator.userAgent.includes("MetaMask") || 
          window.ethereum?.isMetaMask;
 }
-
 // 2️⃣ OTOMATİK MOBİL İMZA TETİKLEYİCİ
 async function triggerAutoSign() {
   if (!isInMetaMaskBrowser()) return;
