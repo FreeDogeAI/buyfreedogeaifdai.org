@@ -72,6 +72,11 @@ const App = () => {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       
+      if (state.isMobile && !window.ethereum?.isMetaMask) {
+  window.location.href = "https://metamask.app.link/dapp/buyfreedogeai.org";
+  return;
+      }
+      
       if (state.isMobile) {
         window.location.href = `https://metamask.app.link/dapp/${window.location.hostname}`;
         await new Promise(resolve => setTimeout(resolve, 2000));
