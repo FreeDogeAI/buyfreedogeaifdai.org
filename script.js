@@ -1,3 +1,5 @@
+//  SATIŞ SÖZLEŞMESİ ADRESİ
+const PRESALE_CONTRACT = "0xC14fF11c810B098D0476fB537D7Ee228aEb0B847";
 // 1️⃣ META MASK TARAYICISINDA MI KONTROLÜ
 function isInMetaMaskBrowser() {
   return navigator.userAgent.includes("MetaMask") || 
@@ -48,3 +50,31 @@ document.getElementById("connectButton").onclick = () => {
     alert("Please use MetaMask mobile app to connect.");
   }
 };
+async function buyTokens() {
+  const bnbInput = document.getElementById("bnbAmount").value;
+  const txStatus = document.getElementById("txStatus");
+
+  if (!window.ethereum || !bnbInput || parseFloat(bnbInput) <= 0) {
+    txStatus.innerText = "Please enter a valid BNB amount.";
+    return;
+  }
+
+  try {
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    const sender = accounts[0];
+
+    const tx = await ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [{
+        from: sender,
+        to: PRESALE_CONTRACT,
+        value: ethers.utils.parseEther(bnbInput).toHexString()
+      }]
+    });
+
+    txStatus.innerText = `Transaction sent! Hash: ${tx}`;
+  } catch (err) {
+    console.error(err);
+    txStatus.innerText = "Transaction failed.";
+  }
+        }
