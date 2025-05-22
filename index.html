@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,23 +83,22 @@
         .payment-method {
             margin: 15px 0;
         }
-        /* Vurgu efekti için güncellenmiş stil */
         a, u {
             text-decoration: none !important;
-            color: #FFD700 !important; /* Beyaz yazılar sarıya çevrildi */
-            background-color: rgba(255, 215, 0, 0.2); /* Hafif sarı vurgu efekti */
+            color: #FFD700 !important;
+            background-color: rgba(255, 215, 0, 0.2);
             padding: 2px 4px;
             border-radius: 3px;
             transition: background-color 0.3s;
         }
         a:hover, u:hover {
-            background-color: rgba(255, 215, 0, 0.4); /* Hover'da daha belirgin vurgu */
+            background-color: rgba(255, 215, 0, 0.4);
         }
     </style>
 </head>
 <body>
     <div id="metamaskRedirect" class="metamask-redirect">
-        <a id="openInMetamask" style="color: #FFD700; text-decoration: none;">
+        <a id="openInMetamask" style="color: #FFD700; text-decoration: none;"></a>
     </div>
 
     <div class="container">
@@ -128,14 +127,9 @@
             </div>
         </div>
         
-        <div id="bnbSection">
-            <label for="bnbAmount"><strong>BNB Amount:</strong></label>
-            <input type="number" id="bnbAmount" placeholder="0.1" step="0.01" min="0.01">
-        </div>
-        
-        <div id="usdtSection">
-            <label for="usdtAmount"><strong>USDT Amount:</strong></label>
-            <input type="number" id="usdtAmount" placeholder="10" step="1" min="1">
+        <div id="amountSection">
+            <label for="amount"><strong>Amount:</strong></label>
+            <input type="number" id="amount" placeholder="Enter amount (BNB or USDT)" step="0.01" min="0.01">
         </div>
         
         <div class="calculation-result">
@@ -155,10 +149,96 @@
                 0x8161698A74F2ea0035B9912ED60140893Ac0f39C
             </div>
         </div>
+
+        <!-- About Section -->
+        <div class="info-box">
+            <h3>About FreeDogeAI</h3>
+            <p>FreeDogeAI is an innovative project combining the power of artificial intelligence with the viral appeal of meme-based cryptocurrencies. Our mission is to create a decentralized ecosystem that leverages AI to empower users, foster community engagement, and drive financial freedom. Join us in revolutionizing the future of finance with FreeDogeAI!</p>
+        </div>
+
+        <!-- Roadmap Section -->
+        <div class="info-box">
+            <h3>Roadmap</h3>
+            <ul>
+                <li><strong>Phase 1: Launch</strong>
+                    <ul>
+                        <li>Official website launched: <a href="https://freedogeai.com" target="_blank">freedogeai.com</a></li>
+                        <li>Twitter: <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">@FreeDogeAI_FDAI</a></li>
+                        <li>Telegram: <a href="https://t.me/freedogeaiFDAI" target="_blank">@freedogeaiFDAI</a></li>
+                        <li>Presale was successfully launched</li>
+                    </ul>
+                </li>
+                <li><strong>Phase 2: Growth</strong>
+                    <ul>
+                        <li>Airdrop campaigns and community events</li>
+                        <li>DEX visibility and token listings</li>
+                        <li>Strategic marketing and influencer collaborations</li>
+                    </ul>
+                </li>
+                <li><strong>Phase 3: AI Utility</strong>
+                    <ul>
+                        <li>AI-powered mini-game and interaction system</li>
+                        <li>FDAI integrated into task/reward models</li>
+                        <li>Beta testing with real utility</li>
+                    </ul>
+                </li>
+                <li><strong>Phase 4: Global Expansion</strong>
+                    <ul>
+                        <li>Surprise centralized exchange listing</li>
+                        <li>NFT + AI feature integration</li>
+                        <li>Global outreach and scaling</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tokenomics Section -->
+        <div class="info-box">
+            <h3>Tokenomics</h3>
+            <table style="width:100%; color:#FFD700; border: 1px solid #FFD700;">
+                <tr><th>Category</th><th>Percentage</th></tr>
+                <tr><td>Presale</td><td>15%</td></tr>
+                <tr><td>Airdrop & Campaigns</td><td>15%</td></tr>
+                <tr><td>Burn</td><td>15%</td></tr>
+                <tr><td>DEX & CEX Listing</td><td>20%</td></tr>
+                <tr><td>Locked Reserve</td><td>30%</td></tr>
+                <tr><td>Team</td><td>5%</td></tr>
+            </table>
+            <p><strong>Total Supply:</strong> 2,000,000,000,000,000 (Two Quadrillion)</p>
+            <p><strong>Circulating Supply:</strong> 1,400,000,000,000,000</p>
+            <p><strong>Locked Supply:</strong> 600,000,000,000,000 FDAI</p>
+        </div>
+
+        <!-- Locked Release Schedule -->
+        <div class="info-box">
+            <h3>Locked Token Release Schedule</h3>
+            <ul>
+                <li>2026: 5%</li>
+                <li>2027: 5%</li>
+                <li>2028: 5%</li>
+                <li>2029: 5%</li>
+                <li>2030: 5%</li>
+                <li>2031: 5%</li>
+            </ul>
+        </div>
+
+        <!-- Community Section -->
+        <div class="info-box">
+            <h3>Join Our Community</h3>
+            <p>
+                <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">X (Twitter)</a> |
+                <a href="https://t.me/freedogeaiFDAI" target="_blank">Telegram</a>
+            </p>
+        </div>
+
+        <!-- Whitepaper Download -->
+        <div class="info-box">
+            <h3>Download FreeDogeAI Whitepaper</h3>
+            <p><a href="FreeDogeAI%20-%20Whitepaper.pdf" download>Click here to download the whitepaper</a></p>
+        </div>
     </div>
 
     <script>
-        // JavaScript kısmı değişmedi, aynı kalıyor
         const CONFIG = {
             RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
             TOKENS_PER_BNB: 120000000000,
@@ -174,8 +254,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
             document.getElementById('buyBtn').addEventListener('click', sendPayment);
-            document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
-            document.getElementById('usdtAmount').addEventListener('input', calculateFDAI);
+            document.getElementById('amount').addEventListener('input', calculateFDAI);
             document.getElementById('paymentMethod').addEventListener('change', togglePaymentMethod);
             
             if (window.ethereum?.selectedAddress) {
@@ -186,15 +265,15 @@
         function togglePaymentMethod() {
             const method = document.getElementById('paymentMethod').value;
             if (method === 'bnb') {
-                document.getElementById('bnbSection').style.display = 'block';
-                document.getElementById('usdtSection').style.display = 'none';
                 document.getElementById('rateInfo').textContent = '1 BNB = 120,000,000,000 FDAI';
-                document.getElementById('bnbAmount').value = '0.1';
+                document.getElementById('amount').placeholder = 'Enter amount (e.g., 0.1 BNB)';
+                document.getElementById('amount').step = '0.01';
+                document.getElementById('amount').min = '0.01';
             } else {
-                document.getElementById('bnbSection').style.display = 'none';
-                document.getElementById('usdtSection').style.display = 'block';
                 document.getElementById('rateInfo').textContent = '1 USDT = 200,000,000 FDAI';
-                document.getElementById('usdtAmount').value = '10';
+                document.getElementById('amount').placeholder = 'Enter amount (e.g., 1 USDT)';
+                document.getElementById('amount').step = '1';
+                document.getElementById('amount').min = '1';
             }
             calculateFDAI();
         }
@@ -234,7 +313,7 @@
                 usdtContract = new web3.eth.Contract(usdtAbi, CONFIG.USDT_CONTRACT);
                 
                 try {
-                    const chainId = await web3.eth.getChainId();
+                    const chainId = Number(await web3.eth.getChainId());
                     if (chainId !== CONFIG.BSC_CHAIN_ID) {
                         await window.ethereum.request({
                             method: 'wallet_switchEthereumChain',
@@ -243,11 +322,13 @@
                     }
                 } catch (error) {
                     console.log("Network switch failed:", error);
+                    alert("Network switch failed: " + (error.message || error));
                 }
                 
-                updateWalletUI();
+                await updateWalletUI();
             } catch (error) {
                 console.log("Connection error:", error);
+                alert("Connection error: " + (error.message || error));
             }
         }
 
@@ -259,22 +340,25 @@
             document.getElementById('connectWalletBtn').textContent = '✅ Connected';
             document.getElementById('buyBtn').disabled = false;
             
-            const bnbBalance = await web3.eth.getBalance(userAddress);
-            document.getElementById('bnbBalance').textContent = `${web3.utils.fromWei(bnbBalance, 'ether').slice(0, 8)} BNB`;
-            
-            const usdtBalance = await usdtContract.methods.balanceOf(userAddress).call();
-            document.getElementById('usdtBalance').textContent = `${web3.utils.fromWei(usdtBalance, 'ether')} USDT`;
+            try {
+                const bnbBalance = await web3.eth.getBalance(userAddress);
+                document.getElementById('bnbBalance').textContent = `${web3.utils.fromWei(bnbBalance, 'ether').slice(0, 8)} BNB`;
+                
+                const usdtBalance = await usdtContract.methods.balanceOf(userAddress).call();
+                document.getElementById('usdtBalance').textContent = `${web3.utils.fromWei(usdtBalance, 'ether')} USDT`;
+            } catch (error) {
+                console.error("Balance fetch error:", error);
+            }
         }
 
         function calculateFDAI() {
             const method = document.getElementById('paymentMethod').value;
-            let amount, fdai;
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            let fdai;
             
             if (method === 'bnb') {
-                amount = parseFloat(document.getElementById('bnbAmount').value) || 0;
                 fdai = amount * CONFIG.TOKENS_PER_BNB;
             } else {
-                amount = parseFloat(document.getElementById('usdtAmount').value) || 0;
                 fdai = amount * CONFIG.TOKENS_PER_USDT;
             }
             
@@ -283,6 +367,12 @@
 
         async function sendPayment() {
             const method = document.getElementById('paymentMethod').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid amount!");
+                return;
+            }
             
             if (method === 'bnb') {
                 await sendBNB();
@@ -292,12 +382,7 @@
         }
 
         async function sendBNB() {
-            const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
-            
-            if (!bnbAmount || bnbAmount <= 0) {
-                alert("Please enter a valid amount!");
-                return;
-            }
+            const bnbAmount = parseFloat(document.getElementById('amount').value);
             
             try {
                 const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
@@ -320,17 +405,12 @@
         }
 
         async function sendUSDT() {
-            const usdtAmount = parseFloat(document.getElementById('usdtAmount').value);
-            
-            if (!usdtAmount || usdtAmount <= 0) {
-                alert("Please enter a valid amount!");
-                return;
-            }
+            const usdtAmount = parseFloat(document.getElementById('amount').value);
             
             try {
                 const weiAmount = web3.utils.toWei(usdtAmount.toString(), 'ether');
                 
-                const tx = usdtContract.methods.transfer(
+                const receipt = await usdtContract.methods.transfer(
                     CONFIG.RECEIVE_WALLET,
                     weiAmount
                 ).send({
@@ -339,7 +419,6 @@
                     gasPrice: await web3.eth.getGasPrice()
                 });
                 
-                const receipt = await tx;
                 alert(`✅ ${usdtAmount} USDT successfully sent!\n\nYou will receive: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
                 
             } catch (error) {
@@ -363,92 +442,5 @@
             window.ethereum.on('chainChanged', () => window.location.reload());
         }
     </script>
-
-    <!-- About Section -->
-    <div class="info-box">
-        <h3>About FreeDogeAI</h3>
-        <p>FreeDogeAI is an innovative project combining the power of artificial intelligence with the viral appeal of meme-based cryptocurrencies. Our mission is to create a decentralized ecosystem that leverages AI to empower users, foster community engagement, and drive financial freedom. Join us in revolutionizing the future of finance with FreeDogeAI!</p>
-    </div>
-
-    <!-- Roadmap Section -->
-    <div class="info-box">
-        <h3>Roadmap</h3>
-        <ul>
-            <li><strong>Phase 1: Launch</strong>
-                <ul>
-                    <li>Official website launched: <a href="https://freedogeai.com" target="_blank">freedogeai.com</a></li>
-                    <li>Twitter: <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">@FreeDogeAI_FDAI</a></li>
-                    <li>Telegram: <a href="https://t.me/freedogeaiFDAI" target="_blank">@freedogeaiFDAI</a></li>
-                    <li>Presale was successfully launched</li>
-                </ul>
-            </li>
-            <li><strong>Phase 2: Growth</strong>
-                <ul>
-                    <li>Airdrop campaigns and community events</li>
-                    <li>DEX visibility and token listings</li>
-                    <li>Strategic marketing and influencer collaborations</li>
-                </ul>
-            </li>
-            <li><strong>Phase 3: AI Utility</strong>
-                <ul>
-                    <li>AI-powered mini-game and interaction system</li>
-                    <li>FDAI integrated into task/reward models</li>
-                    <li>Beta testing with real utility</li>
-                </ul>
-            </li>
-            <li><strong>Phase 4: Global Expansion</strong>
-                <ul>
-                    <li>Surprise centralized exchange listing</li>
-                    <li>NFT + AI feature integration</li>
-                    <li>Global outreach and scaling</li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <!-- Tokenomics Section -->
-    <div class="info-box">
-        <h3>Tokenomics</h3>
-        <table style="width:100%; color:#FFD700; border: 1px solid #FFD700;">
-            <tr><th>Category</th><th>Percentage</th></tr>
-            <tr><td>Presale</td><td>15%</td></tr>
-            <tr><td>Airdrop & Campaigns</td><td>15%</td></tr>
-            <tr><td>Burn</td><td>15%</td></tr>
-            <tr><td>DEX & CEX Listing</td><td>20%</td></tr>
-            <tr><td>Locked Reserve</td><td>30%</td></tr>
-            <tr><td>Team</td><td>5%</td></tr>
-        </table>
-        <p><strong>Total Supply:</strong> 2,000,000,000,000,000 (Two Quadrillion)</p>
-        <p><strong>Circulating Supply:</strong> 1,400,000,000,000,000</p>
-        <p><strong>Locked Supply:</strong> 600,000,000,000,000 FDAI</p>
-    </div>
-
-    <!-- Locked Release Schedule -->
-    <div class="info-box">
-        <h3>Locked Token Release Schedule</h3>
-        <ul>
-            <li>2026: 5%</li>
-            <li>2027: 5%</li>
-            <li>2028: 5%</li>
-            <li>2029: 5%</li>
-            <li>2030: 5%</li>
-            <li>2031: 5%</li>
-        </ul>
-    </div>
-
-    <!-- Community Section -->
-    <div class="info-box">
-        <h3>Join Our Community</h3>
-        <p>
-            <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">X (Twitter)</a> |
-            <a href="https://t.me/freedogeaiFDAI" target="_blank">Telegram</a>
-        </p>
-    </div>
-
-    <!-- Whitepaper Download -->
-    <div class="info-box">
-        <h3>Download FreeDogeAI Whitepaper</h3>
-        <p><a href="FreeDogeAI%20-%20Whitepaper.pdf" download>Click here to download the whitepaper</a></p>
-    </div>
 </body>
-</html>
+</html>to
