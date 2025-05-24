@@ -1,240 +1,556 @@
-const CONFIG = {
-    RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
-    TOKENS_PER_BNB: 120000000000,
-    TOKENS_PER_USDT: 200000000,
-    BSC_CHAIN_ID: 56,
-    USDT_CONTRACT: "0x55d398326f99059fF775485246999027B3197955"
-};
-
-let web3;
-let userAddress = "";
-let usdtContract;
-
-window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-    document.getElementById('buyBtn').addEventListener('click', sendPayment);
-    document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
-    document.getElementById('usdtAmount').addEventListener('input', calculateFDAI);
-    document.getElementById('paymentMethod').addEventListener('change', togglePaymentMethod);
-    
-    // Başlangıçta ödeme yöntemi seçilmemiş, buton pasif
-    document.getElementById('buyBtn').disabled = true;
-    
-    if (window.ethereum?.selectedAddress) {
-        connectWallet();
-    }
-});
-
-function togglePaymentMethod() {
-    const method = document.getElementById('paymentMethod').value;
-    if (method === 'bnb') {
-        document.getElementById('bnbSection').style.display = 'block';
-        document.getElementById('usdtSection').style.display = 'none';
-        document.getElementById('rateInfo').textContent = '1 BNB = 120,000,000,000 FDAI';
-        document.getElementById('bnbAmount').value = '0.1';
-        document.getElementById('usdtAmount').value = ''; // USDT alanını sıfırla
-    } else {
-        document.getElementById('bnbSection').style.display = 'none';
-        document.getElementById('usdtSection').style.display = 'block';
-        document.getElementById('rateInfo').textContent = '1 USDT = 200,000,000 FDAI';
-        document.getElementById('usdtAmount').value = '10';
-        document.getElementById('bnbAmount').value = ''; // BNB alanını sıfırla
-    }
-    calculateFDAI();
-}
-
-async function connectWallet() {
-    try {
-        if (!window.ethereum) {
-            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                const currentUrl = window.location.href.replace(/^https?:\/\//, '');
-                window.location.href = "https://metamask.app.link/dapp/buyfreedogeaifdai.org";
-            } else {
-                window.open("https://metamask.io/download.html", "_blank");
-            }
-            return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Doge AI Token Pre-sale</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000000;
+            margin: 0;
+            padding: 20px;
+            color: #FFD700;
         }
-        
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        userAddress = accounts[0];
-        web3 = new Web3(window.ethereum);
-        // Eğer ikinci denemede bağlanırsa, bağlantı kontrolü aktif kalsın
-if (retryTimer) clearInterval(retryTimer);
-retryTimer = setInterval(() => {
-    if (window.ethereum.selectedAddress === userAddress) {
-        clearInterval(retryTimer);
-        updateWalletUI();
-    }
-}, 1000);
-        setTimeout(() => {
-    if (!window.ethereum?.selectedAddress) {
-        const currentUrl = window.location.href.replace(/^https?:\/\//, '');
-        window.location.href = `https://metamask.app.link/dapp/${currentUrl}`;
-    }
-}, 60000);
-        
-        const usdtAbi = [{
-            "constant": true,
-            "inputs": [{"name": "_owner", "type": "address"}],
-            "name": "balanceOf",
-            "outputs": [{"name": "balance", "type": "uint256"}],
-            "type": "function"
-        }, {
-            "constant": false,
-            "inputs": [
-                {"name": "_to", "type": "address"},
-                {"name": "_value", "type": "uint256"}
-            ],
-            "name": "transfer",
-            "outputs": [{"name": "", "type": "bool"}],
-            "type": "function"
-        }];
-        usdtContract = new web3.eth.Contract(usdtAbi, CONFIG.USDT_CONTRACT);
-        
-        try {
-            const chainId = Number(await web3.eth.getChainId());
-            if (chainId !== CONFIG.BSC_CHAIN_ID) {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x38' }]
-                });
-            }
-        } catch (error) {
-            console.log("Ağ değiştirme hatası:", error);
-            alert("Ağ değiştirme hatası: " + (error.message || error));
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #000000;
+            padding: 25px;
+            border-radius: 16px;
+            border: 2px solid #00FF66;
+            box-shadow: 0 0 10px 3px #00FF66;
         }
-        
-        await updateWalletUI();
-    } catch (error) {
-        console.log("Bağlantı hatası:", error);
-        alert("Bağlantı hatası: " + (error.message || error));
-    }
-}
-
-async function updateWalletUI() {
-    const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-    document.getElementById('walletAddress').textContent = shortAddress;
-    
-    document.getElementById('walletInfo').style.display = 'block';
-    document.getElementById('connectWalletBtn').textContent = '✅ Bağlandı';
-    document.getElementById('buyBtn').disabled = false; // Cüzdan bağlandığında buton aktif olabilir
-    
-    try {
-        const bnbBalance = await web3.eth.getBalance(userAddress);
-        document.getElementById('bnbBalance').textContent = `${web3.utils.fromWei(bnbBalance, 'ether').slice(0, 8)} BNB`;
-        
-        const usdtBalance = await usdtContract.methods.balanceOf(userAddress).call();
-        document.getElementById('usdtBalance').textContent = `${web3.utils.fromWei(usdtBalance, 'ether')} USDT`;
-    } catch (error) {
-        console.error("Bakiye alma hatası:", error);
-    }
-}
-
-function calculateFDAI() {
-    const method = document.getElementById('paymentMethod').value;
-    let fdai = 0;
-    
-    if (method === 'bnb') {
-        const bnbAmount = parseFloat(document.getElementById('bnbAmount').value) || 0;
-        fdai = bnbAmount * CONFIG.TOKENS_PER_BNB;
-    } else if (method === 'usdt') {
-        const usdtAmount = parseFloat(document.getElementById('usdtAmount').value) || 0;
-        fdai = usdtAmount * CONFIG.TOKENS_PER_USDT;
-    }
-    
-    document.getElementById('fdaiAmount').textContent = fdai.toLocaleString();
-}
-
-async function sendPayment() {
-    const method = document.getElementById('paymentMethod').value;
-    
-    if (!method) {
-        alert("Lütfen bir ödeme yöntemi seçin!");
-        return;
-    }
-    
-    if (method === 'bnb') {
-        const bnbAmount = parseFloat(document.getElementById('bnbAmount').value) || 0;
-        if (!bnbAmount || bnbAmount <= 0) {
-            alert("Lütfen geçerli bir BNB miktarı girin!");
-            return;
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
         }
-        await sendBNB();
-    } else if (method === 'usdt') {
-        const usdtAmount = parseFloat(document.getElementById('usdtAmount').value) || 0;
-        if (!usdtAmount || usdtAmount <= 0) {
-            alert("Lütfen geçerli bir USDT miktarı girin!");
-            return;
+        .logo-container img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
         }
-        await sendUSDT();
-    }
-}
+        button {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #1DA851;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #222;
+            color: #FFD700;
+        }
+        .wallet-info {
+            background-color: #000000;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            word-break: break-word;
+            font-family: monospace;
+            border: 1px solid #FFD700;
+            color: #FFD700;
+        }
+        .info-box {
+            background-color: #000000;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #FFD700;
+            color: #FFD700;
+            margin-top: 20px;
+        }
+        .payment-method {
+            margin: 15px 0;
+        }
+        a, u {
+            text-decoration: none !important;
+            color: #FFD700 !important;
+            background-color: rgba(255, 215, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        a:hover, u:hover {
+            background-color: rgba(255, 215, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div id="metamaskRedirect" class="metamask-redirect">
+        <a id="openInMetamask" style="color: #FFD700; text-decoration: none;"></a>
+    </div>
 
-async function sendBNB() {
-    const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
-    
-    if (!bnbAmount || bnbAmount <= 0) {
-        alert("Lütfen geçerli bir BNB miktarı girin!");
-        return;
-    }
-    
-    try {
-        const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
+    <div class="container">
+        <div class="logo-container">
+            <img src="logo.png" alt="FreeDogeAI Logo">
+        </div>
+        <h1>FreeDogeAI Presale</h1>
         
-        const tx = {
-            from: userAddress,
-            to: CONFIG.RECEIVE_WALLET,
-            value: weiAmount,
-            gas: 300000,
-            gasPrice: await web3.eth.getGasPrice()
+        <div class="payment-method">
+            <label for="paymentMethod"><strong>Payment Method:</strong></label>
+            <select id="paymentMethod">
+                <option value="bnb">BNB</option>
+                <option value="usdt">USDT (BEP-20)</option>
+            </select>
+        </div>
+        
+        <p id="rateInfo">1 BNB = 120,000,000,000 FDAI</p>
+        <button id="connectWalletBtn">🔗 Connect with MetaMask</button>
+
+        <div id="walletInfo" style="display: none;">
+            <h3>Your Wallet</h3>
+            <div class="wallet-info">
+                <p><strong>Address:</strong> <span id="walletAddress"></span></p>
+                <p><strong>BNB Balance:</strong> <span id="bnbBalance"></span></p>
+                <p><strong>USDT Balance:</strong> <span id="usdtBalance"></span></p>
+            </div>
+        </div>
+        
+        <div id="amountSection">
+            <label for="amount"><strong>Amount:</strong></label>
+            <input type="number" id="amount" placeholder="Enter amount (BNB or USDT)" step="0.01" min="0.01">
+        </div>
+        
+        <div class="calculation-result">
+            <strong>You will receive:</strong> <span id="fdaiAmount">0</span> FDAI
+        </div>
+        
+        <button id="buyBtn" disabled>🚀 Buy FDAI Tokens</button>
+        
+        <div class="info-box">
+            <h3>Important Information</h3>
+            <p>After your token purchase, your tokens will be reflected in your wallet within 24 hours.</p>
+            <div style="background-color:#001f3f; color:#00ccff; border: 2px solid #00ccff; border-radius: 10px; padding: 15px; text-align: center; font-weight: bold; margin-top: 20px;">
+                Please make sure you are connected to the <span style="color:#00ffff;">BSC (Binance Smart Chain)</span> network.
+            </div>
+            <p><strong>NOTE:</strong> If FDAI tokens do not appear, add this contract address:</p>
+            <div class="wallet-info" style="background-color: #000000; border: 2px dashed #FFD700; color: #00FFCC; font-weight: bold; font-size: 16px; padding: 15px; border-radius: 10px; text-align: center;">
+                0x8161698A74F2ea0035B9912ED60140893Ac0f39C
+            </div>
+        </div>
+
+      <!-- FDAI DEV BAŞLIK -->
+<h3 style="color: #00BFFF; font-size: 1.8rem; margin-top: 2rem; text-align: center;">
+  About $FDAI
+</h3>
+  <p>FDAI Has Begun!</p>
+<p>This is not just another token.</p>
+<p>
+  An innovative project powered by artificial intelligence, inspired by Elon Musk's interest in Dogecoin.
+</p>
+<p>Combining the energy of meme culture with the strength of AI, this is a movement you don’t want to miss.</p>
+<p>Join the transformation before FDAI gets listed on major exchanges.</p>
+  
+
+        <section style="max-width: 900px; margin: auto; padding: 2rem; font-family: sans-serif; line-height: 1.6;">
+  <style>
+    .blue-title {
+      color: #00BFFF;
+      font-size: 1.5rem;
+      margin-top: 2rem;
+    }
+    p, li {
+      color: #FFD700;
+    }
+  </style>
+
+  <h3 class="blue-title">What is Free Doge AI?</h3>
+  <p>Free Doge AI isn’t just a meme coin. It’s a utility-driven crypto project powered by artificial intelligence, designed to offer smarter, safer, and faster blockchain interactions. While it embraces the fun spirit of meme tokens, it also delivers real functionality and long-term vision—setting it apart from typical meme coins.</p>
+
+  <h3 class="blue-title">Why Should You Join?</h3>
+  <p>The presale gives early supporters access to FDAI at a significantly lower price before it launches on major platforms. Early buyers receive more tokens per dollar and gain the opportunity to shape the project's future as part of its founding community.</p>
+
+  <h3 class="blue-title">How to Join the Presale</h3>
+  <p>Participation is simple. Connect your wallet using the MetaMask link on our official website and complete your purchase with ease.</p>
+  <p>The presale will end once the allocated token amount is fully sold. Only 15% of the total token supply is dedicated to this early phase. After the presale is complete, tokens will become tradable on decentralized exchanges (DEXs).</p>
+
+  <h3 class="blue-title">Key Advantages</h3>
+  <ul>
+    <li>Buy tokens at early-bird prices</li>
+    <li>Get exclusive early-stage benefits</li>
+    <li>Contribute to community growth</li>
+    <li>Enjoy AI-powered smart functionality</li>
+    <li><strong>FDAI Early Investor Bonus Structure:</strong></li>
+    <ul>
+      <li>First 100 participants: 15% extra FDAI</li>
+      <li>Next 400: 10% bonus</li>
+      <li>Next 500: 5% bonus</li>
+    </ul>
+  </ul>
+
+  <h3 class="blue-title">What Makes Free Doge AI Unique?</h3>
+  <p>Unlike typical meme coins, Free Doge AI is backed by real technology. Its AI integration ensures faster transactions, better security, and a seamless user experience. The project is built on transparency and actively shaped by community feedback—fostering long-term trust and sustainability.</p>
+
+  <h3 class="blue-title">Getting Ready</h3>
+  <p>Simply connect your MetaMask wallet via the official website, follow the steps, and claim your spot in the presale. Don’t forget to stay updated on exclusive announcements and limited-time offers.</p>
+
+  <h3 class="blue-title">Our Vision</h3>
+  <p>The Free Doge AI team aims to build a powerful, tech-enabled community that blends entertainment with purpose. It’s not just about buying a token—it’s about joining a movement shaped by its users and powered by innovation.</p>
+
+  <h3 class="blue-title">Final Words</h3>
+  <p>FDAI presale is your chance to get in early on a bold, AI-driven meme revolution. With limited supply, exclusive bonuses, and a clear roadmap, this is your opportunity to help shape the future of crypto—don’t miss it.</p>
+        </section>
+        <!-- Roadmap Section -->
+        <section id="roadmap" style="max-width: 900px; margin: auto; padding: 2rem; font-family: sans-serif; line-height: 1.6;">
+  <style>
+    #roadmap h2 {
+      color: #00BFFF;
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    #roadmap h3 {
+      color: #00BFFF;
+      margin-top: 2rem;
+    }
+    #roadmap p, #roadmap li {
+      color: #FFD700;
+    }
+  </style>
+
+  <h2>Roadmap</h2>
+
+  <h3>Phase 1: Launch</h3>
+  <ul>
+    <li>Official website launched: <strong>freedogeai.com</strong></li>
+    <li>Social media accounts activated:
+      <ul>
+        <li>Twitter: @FreeDogeAI_FDAI</li>
+        <li>Telegram: @freedogeaiFDAI</li>
+      </ul>
+    </li>
+    <li>Presale successfully launched.</li>
+  </ul>
+
+  <h3>Phase 2: Growth</h3>
+  <ul>
+    <li>Airdrop campaigns and community engagement activities</li>
+    <li>DEX listings and increased token visibility</li>
+    <li>Strategic influencer marketing and partnerships</li>
+  </ul>
+
+  <h3>Phase 3: AI Utility</h3>
+  <ul>
+    <li>Launch of FDAI-powered mini-game and interactive system</li>
+    <li>Integration of token into task/reward model</li>
+    <li>Beta testing with real-world use cases</li>
+  </ul>
+
+  <h3>Phase 4: Global Expansion & AI Breakthrough</h3>
+  <ul>
+    <li>Surprise centralized exchange (CEX) listings</li>
+    <li>NFT and AI integrations</li>
+    <li>Global reach and scaling objective</li>
+    <li><strong>Development of a community-driven and revolutionary AI system that aims to surpass models like Grok and ChatGPT.</strong></li>
+  </ul>
+        </section>
+
+        <!-- Important Notice Box -->
+<div style="border: 2px solid #00BFFF; border-radius: 8px; padding: 12px; margin: 2rem auto; max-width: 800px;
+             box-shadow: 0 0 12px rgba(0, 191, 255, 0.4); text-align: center; font-family: sans-serif;">
+  <h2 style="margin: 0; color: #00BFFF;">⚠️ Important Notes</h2>
+</div>
+
+<!-- How to Join the Presale Section -->
+<section id="how-to-join" style="max-width: 900px; margin: auto; padding: 2rem; font-family: sans-serif; line-height: 1.6;">
+  <style>
+    #how-to-join h2 {
+      color: #00BFFF;
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    #how-to-join h3 {
+      color: #00BFFF;
+      margin-top: 2rem;
+    }
+    #how-to-join p, #how-to-join li {
+      color: #FFD700;
+    }
+  </style>
+
+  <h2>How to Join the Presale?</h2>
+
+  <h3>1. Switch to BNB Smart Chain</h3>
+  <p>Open MetaMask and switch the network to <strong>BNB Smart Chain</strong> from the top-left.</p>
+
+  <h3>2. MetaMask Only</h3>
+  <p>Token purchases can only be made via <strong>MetaMask</strong>.<br>
+  Supported trading pairs: <strong>BNB/FDAI</strong> and <strong>USDT/FDAI</strong>.</p>
+
+  <h3>3. How to Connect Wallet on Mobile?</h3>
+  <p>When you tap the “Connect Wallet” button on mobile, you’ll be redirected to our site inside the <strong>MetaMask browser</strong>.<br>
+  Once the site loads there, you need to tap “Connect Wallet” again:</p>
+  <ul>
+    <li><strong>First tap:</strong> redirects to MetaMask browser.</li>
+    <li><strong>Second tap:</strong> opens the mobile signature screen. Approve it to complete the connection.</li>
+  </ul>
+
+  <h3>4. What If Auto-Redirect Fails?</h3>
+  <p>If MetaMask opens slowly or the password is entered late, the redirect might time out.<br>
+  Make sure the MetaMask app is running in the background, return to our site, and tap “Connect Wallet” again.</p>
+
+  <h3>5. Purchasing Tokens</h3>
+  <p>Once connected, simply choose <strong>BNB</strong> or <strong>USDT</strong>, enter the amount, and complete your transaction easily.</p>
+
+  <h3>6. Making Tokens Visible</h3>
+  <p>After purchasing, add the contract address manually to MetaMask using “<strong>Import Tokens > Custom Token</strong>” to see your FDAI tokens.</p>
+
+  <h3>7. Limited Supply & Big Vision</h3>
+  <p>
+<strong>Free Doge AI</strong> has a much more limited supply than other meme coins — only <strong>2 quadrillion tokens</strong> in total.
+30% of the total supply is locked and will be gradually released according to our roadmap.
+A surprise <strong>CEX listing</strong> is also part of our upcoming plans.
+  </p>
+
+<!-- Çeviriye karşı koruma için aşağıdaki stil eklenecek -->
+<style>
+  .notranslate {
+    translate: no;
+  }
+</style>
+
+        <!-- Tokenomics Section -->
+       <section id="tokenomics" style="max-width: 900px; margin: auto; padding: 2rem; font-family: sans-serif;">
+
+  <style>
+    #tokenomics h2 {
+      color: #00BFFF;
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .token-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: auto;
+      color: #FFD700;
+    }
+
+    .token-table th, .token-table td {
+      border: 1px solid #00BFFF;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .token-table th {
+      background-color: #000814;
+      color: #00BFFF;
+    }
+
+    .token-info {
+      color: #FFD700;
+      margin-top: 2rem;
+      font-size: 1.05rem;
+    }
+
+    @media (max-width: 600px) {
+      .token-table th, .token-table td {
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+    }
+  </style>
+
+  <h2>Tokenomics</h2>
+
+  <table class="token-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Percentage (%)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Presale</td>
+        <td>15%</td>
+      </tr>
+      <tr>
+        <td>Airdrop & Campaigns</td>
+        <td>15%</td>
+      </tr>
+      <tr>
+        <td>Burn</td>
+        <td>15%</td>
+      </tr>
+      <tr>
+        <td>DEX & CEX Listings</td>
+        <td>20%</td>
+      </tr>
+      <tr>
+        <td>Locked Reserve</td>
+        <td>30%</td>
+      </tr>
+      <tr>
+        <td>Team</td>
+        <td>5%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="token-info">
+    <p><strong style="color:#00BFFF;">Total Supply:</strong> 2,000,000,000,000,000 (Two Quadrillion)</p>
+    <p><strong style="color:#00BFFF;">Circulating Supply:</strong> 1,400,000,000,000,000</p>
+    <p><strong style="color:#00BFFF;">Locked Supply:</strong> 600,000,000,000,000 FDAI</p>
+  </div>
+
+       </section> 
+
+        <!-- Locked Release Schedule -->
+        <section id="extras" style="max-width: 900px; margin: auto; padding: 2rem; font-family: sans-serif;">
+
+  <style>
+    .blue-box {
+      border: 2px solid #00BFFF;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+      color: #FFD700;
+    }
+
+    .blue-box h3 {
+      margin-top: 0;
+      color: #00BFFF;
+      font-size: 1.3rem;
+    }
+
+    .blue-box a {
+      color: #FFD700;
+      text-decoration: underline;
+    }
+
+    .blue-box ul {
+      padding-left: 1.2rem;
+    }
+  </style>
+
+  <!-- Locked Token Release Schedule -->
+  <div class="blue-box">
+    <h3>Locked Token Release Schedule</h3>
+    <ul>
+      <li>2026: 5%</li>
+      <li>2027: 5%</li>
+      <li>2028: 5%</li>
+      <li>2029: 5%</li>
+      <li>2030: 5%</li>
+      <li>2031: 5%</li>
+    </ul>
+  </div>
+
+  <!-- Join Our Community -->
+  <div class="blue-box">
+    <h3>Join Our Community</h3>
+    <p>
+      <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">X (Twitter)</a> | 
+      <a href="https://t.me/freedogeaiFDAI" target="_blank">Telegram</a>
+    </p>
+  </div>
+
+  <!-- Download Whitepaper -->
+  <div class="blue-box">
+    <a href="FreeDogeAI%20-%20Whitepaper.pdf" download>Click here to download the whitepaper</a>
+
+        </section>
+
+    <script>
+        const CONFIG = {
+            RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
+            TOKENS_PER_BNB: 120000000000,
+            TOKENS_PER_USDT: 200000000,
+            BSC_CHAIN_ID: 56,
+            USDT_CONTRACT: "0x55d398326f99059fF775485246999027B3197955"
         };
-        
-        const receipt = await web3.eth.sendTransaction(tx);
-        alert(`✅ ${bnbAmount} BNB başarıyla gönderildi!\n\nAlacağınız miktar: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
-    } catch (error) {
-        console.error("BNB gönderim hatası:", error);
-        alert("BNB gönderimi başarısız oldu: " + (error.message || error));
-    }
-}
 
-async function sendUSDT() {
-    const usdtAmount = parseFloat(document.getElementById('usdtAmount').value);
-    
-    if (!usdtAmount || usdtAmount <= 0) {
-        alert("Lütfen geçerli bir USDT miktarı girin!");
-        return;
-    }
-    
-    try {
-        const weiAmount = web3.utils.toWei(usdtAmount.toString(), 'ether');
-        
-        const receipt = await usdtContract.methods.transfer(
-            CONFIG.RECEIVE_WALLET,
-            weiAmount
-        ).send({
-            from: userAddress,
-            gas: 200000,
-            gasPrice: await web3.eth.getGasPrice()
-        });
-        
-        alert(`✅ ${usdtAmount} USDT başarıyla gönderildi!\n\nAlacağınız miktar: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
-    } catch (error) {
-        console.error("USDT gönderim hatası:", error);
-        alert("USDT gönderimi başarısız oldu: " + (error.message || error));
-    }
-}
+        let web3;
+        let userAddress = "";
+        let usdtContract;
 
-if (window.ethereum) {
-    window.ethereum.on('accountsChanged', (accounts) => {
-        if (accounts.length > 0) {
-            userAddress = accounts[0];
-            updateWalletUI();
-        } else {
-            document.getElementById('walletInfo').style.display = 'none';
-            document.getElementById('connectWalletBtn').textContent = '🔗 MetaMask ile Bağlan';
-            document.getElementById('buyBtn').disabled = true;
-        }
-    });
-    
-    window.ethereum.on('chainChanged', () => window.location.reload());
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+            document.getElementById('buyBtn').addEventListener('click', sendPayment);
+            document.getElementById('amount').addEventListener('input', calculateFDAI);
+            document.getElementById('paymentMethod').addEventListener('change', togglePaymentMethod);
+            
+            if (window.ethereum?.selectedAddress) {
+                connectWallet();
             }
+        });
+
+        function togglePaymentMethod() {
+            const method = document.getElementById('paymentMethod').value;
+            if (method === 'bnb') {
+                document.getElementById('rateInfo').textContent = '1 BNB = 120,000,000,000 FDAI';
+                document.getElementById('amount').placeholder = 'Enter amount (e.g., 0.1 BNB)';
+                document.getElementById('amount').step = '0.01';
+                document.getElementById('amount').min = '0.01';
+            } else {
+                document.getElementById('rateInfo').textContent = '1 USDT = 200,000,000 FDAI';
+                document.getElementById('amount').placeholder = 'Enter amount (e.g., 1 USDT)';
+                document.getElementById('amount').step = '1';
+                document.getElementById('amount').min = '1';
+            }
+            calculateFDAI();
+        }
+
+        async function connectWallet() {
+            try {
+                if (!window.ethereum) {
+                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        const currentUrl = window.location.href.replace(/^https?:\/\//, '');
+                        window.location.href = `https://metamask.app.link/dapp/${currentUrl}`;
+                    } else {
+                        window.open("https://metamask.io/download.html", "_blank");
+                    }
+                    return;
+                }
+                
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                userAddress = accounts[0];
+                web3 = new Web3(window.ethereum);
+                
+                const usdtAbi = [{
+                    "constant": true,
+                    "inputs": [{"name": "_owner", "type": "address"}],
+                    "name": "balanceOf",
+                    "outputs": [{"name": "balance", "type": "uint256"}],
+                    "type": "function"
+                }, {
+                    "constant": false,
+                    "inputs": [
+                        {"name": "_to", "type": "address"},
+                        {"name": "_value", "type": "uint256"}
+                    ],
+                    "name": "transfer",
+                    "outputs": [{"name": "", "type": "bool"}],
+                    "type": "function"
+                }];
+                usdtContract = new web3.eth.Contract(usdtAbi, CONFIG.USDT_CONTRACT);
+                
+                try {
+                    const chainId = Number(await web3.eth.getChainId());
+                    if (chainId !== CONFIG.BSC_CHAIN_ID) {
+                
