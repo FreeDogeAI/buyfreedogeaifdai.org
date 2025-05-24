@@ -1,337 +1,240 @@
-import React, { useState, useEffect } from 'react';
-import Web3 from 'web3';
-import './App.css';
-
-const APP_CONFIG = {
-  RECEIVER_ADDRESS: '0xd924e01c7d319c5B23708Cd622bD1143CD4Fb360',
-  DEFAULT_AMOUNT: 0.1,
-  COMPANY_NAME: "Crypto Payment App",
-  BSC_NETWORK: {
-    chainId: '0x38',
-    chainName: 'Binance Smart Chain',
-    nativeCurrency: {
-      name: 'BNB',
-      symbol: 'BNB',
-      decimals: 18
-    },
-    rpcUrls: ['https://bsc-dataseed.binance.org/'],
-    blockExplorerUrls: ['https://bscscan.com/']
-  }
+const CONFIG = {
+    RECEIVE_WALLET: "0xd924e01c7d319c5b23708cd622bd1143cd4fb360",
+    TOKENS_PER_BNB: 120000000000,
+    TOKENS_PER_USDT: 200000000,
+    BSC_CHAIN_ID: 56,
+    USDT_CONTRACT: "0x55d398326f99059fF775485246999027B3197955"
 };
 
-const App = () => {
-  const [state, setState] = useState({
-    account: '',
-    balance: '0',
-    network: '',
-    paymentAmount: APP_CONFIG.DEFAULT_AMOUNT.toString(),
-    transactionHash: '',
-    isMobile: false,
-    isLoading: false,
-    isConnected: false,
-    error: null
-  });
+let web3;
+let userAddress = "";
+let usdtContract;
 
-  useEffect(() => {
-    const detectMobile = () => {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    };
+window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+    document.getElementById('buyBtn').addEventListener('click', sendPayment);
+    document.getElementById('bnbAmount').addEventListener('input', calculateFDAI);
+    document.getElementById('usdtAmount').addEventListener('input', calculateFDAI);
+    document.getElementById('paymentMethod').addEventListener('change', togglePaymentMethod);
+    
+    // Başlangıçta ödeme yöntemi seçilmemiş, buton pasif
+    document.getElementById('buyBtn').disabled = true;
+    
+    if (window.ethereum?.selectedAddress) {
+        connectWallet();
+    }
+});
 
-    const initializeApp = async () => {
-      try {
-        setState(prev => ({ ...prev, isMobile: detectMobile() }));
+function togglePaymentMethod() {
+    const method = document.getElementById('paymentMethod').value;
+    if (method === 'bnb') {
+        document.getElementById('bnbSection').style.display = 'block';
+        document.getElementById('usdtSection').style.display = 'none';
+        document.getElementById('rateInfo').textContent = '1 BNB = 120,000,000,000 FDAI';
+        document.getElementById('bnbAmount').value = '0.1';
+        document.getElementById('usdtAmount').value = ''; // USDT alanını sıfırla
+    } else {
+        document.getElementById('bnbSection').style.display = 'none';
+        document.getElementById('usdtSection').style.display = 'block';
+        document.getElementById('rateInfo').textContent = '1 USDT = 200,000,000 FDAI';
+        document.getElementById('usdtAmount').value = '10';
+        document.getElementById('bnbAmount').value = ''; // BNB alanını sıfırla
+    }
+    calculateFDAI();
+}
+
+async function connectWallet() {
+    try {
+        if (!window.ethereum) {
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                const currentUrl = window.location.href.replace(/^https?:\/\//, '');
+                window.location.href = "https://metamask.app.link/dapp/buyfreedogeaifdai.org";
+            } else {
+                window.open("https://metamask.io/download.html", "_blank");
+            }
+            return;
+        }
         
-        if (window.ethereum) {
-          await setupEventListeners();
-          await checkWalletConnection();
-        }
-      } catch (error) {
-        handleError(error, 'Initialization error');
-      }
-    };
-
-    initializeApp();
-
-    return () => {
-      cleanupEventListeners();
-    };
-  }, []);
-
-  const checkWalletConnection = async () => {
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length > 0) {
-        await setupWallet(accounts[0]);
-      }
-    } catch (error) {
-      handleError(error, 'Wallet connection check failed');
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        userAddress = accounts[0];
+        web3 = new Web3(window.ethereum);
+        // Eğer ikinci denemede bağlanırsa, bağlantı kontrolü aktif kalsın
+if (retryTimer) clearInterval(retryTimer);
+retryTimer = setInterval(() => {
+    if (window.ethereum.selectedAddress === userAddress) {
+        clearInterval(retryTimer);
+        updateWalletUI();
     }
-  };
-
-  const connectWallet = async () => {
-    try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-      
-      if (state.isMobile && !window.ethereum?.isMetaMask) {
-  window.location.href = "https://metamask.app.link/dapp/buyfreedogeai.org";
-  return;
-      }
-      
-      if (state.isMobile) {
-        window.location.href = `https://metamask.app.link/dapp/${window.location.hostname}`;
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      await switchToBscNetwork();
-      await setupWallet(accounts[0]);
-      
-      setState(prev => ({ ...prev, isConnected: true }));
-    } catch (error) {
-      handleError(error, 'Wallet connection failed');
-    } finally {
-      setState(prev => ({ ...prev, isLoading: false }));
+}, 1000);
+        setTimeout(() => {
+    if (!window.ethereum?.selectedAddress) {
+        const currentUrl = window.location.href.replace(/^https?:\/\//, '');
+        window.location.href = `https://metamask.app.link/dapp/${currentUrl}`;
     }
-  };
-
-  const setupWallet = async (account) => {
-    try {
-      const web3 = new Web3(window.ethereum);
-      const balanceWei = await web3.eth.getBalance(account);
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      
-      setState(prev => ({
-        ...prev,
-        account,
-        balance: web3.utils.fromWei(balanceWei, 'ether'),
-        network: getNetworkName(chainId),
-        error: null
-      }));
-    } catch (error) {
-      handleError(error, 'Wallet setup failed');
-    }
-  };
-
-  const switchToBscNetwork = async () => {
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: APP_CONFIG.BSC_NETWORK.chainId }],
-      });
-    } catch (switchError) {
-      if (switchError.code === 4902) {
+}, 60000);
+        
+        const usdtAbi = [{
+            "constant": true,
+            "inputs": [{"name": "_owner", "type": "address"}],
+            "name": "balanceOf",
+            "outputs": [{"name": "balance", "type": "uint256"}],
+            "type": "function"
+        }, {
+            "constant": false,
+            "inputs": [
+                {"name": "_to", "type": "address"},
+                {"name": "_value", "type": "uint256"}
+            ],
+            "name": "transfer",
+            "outputs": [{"name": "", "type": "bool"}],
+            "type": "function"
+        }];
+        usdtContract = new web3.eth.Contract(usdtAbi, CONFIG.USDT_CONTRACT);
+        
         try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [APP_CONFIG.BSC_NETWORK],
-          });
-        } catch (addError) {
-          throw new Error('Failed to add BSC network to MetaMask');
+            const chainId = Number(await web3.eth.getChainId());
+            if (chainId !== CONFIG.BSC_CHAIN_ID) {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x38' }]
+                });
+            }
+        } catch (error) {
+            console.log("Ağ değiştirme hatası:", error);
+            alert("Ağ değiştirme hatası: " + (error.message || error));
         }
-      }
-    }
-  };
-
-  const handlePayment = async () => {
-    try {
-      validatePayment();
-      
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-      
-      const web3 = new Web3(window.ethereum);
-      const amountInWei = web3.utils.toWei(state.paymentAmount, 'ether');
-      
-      const tx = await web3.eth.sendTransaction({
-        from: state.account,
-        to: APP_CONFIG.RECEIVER_ADDRESS,
-        value: amountInWei,
-        gas: 21000
-      });
-
-      const newBalance = await web3.eth.getBalance(state.account);
-      
-      setState(prev => ({
-        ...prev,
-        transactionHash: tx.transactionHash,
-        balance: web3.utils.fromWei(newBalance, 'ether'),
-        isLoading: false
-      }));
-
+        
+        await updateWalletUI();
     } catch (error) {
-      handleError(error, 'Payment failed');
-    } finally {
-      setState(prev => ({ ...prev, isLoading: false }));
+        console.log("Bağlantı hatası:", error);
+        alert("Bağlantı hatası: " + (error.message || error));
     }
-  };
+}
 
-  const validatePayment = () => {
-    if (!state.account) {
-      throw new Error('Please connect your wallet first');
+async function updateWalletUI() {
+    const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+    document.getElementById('walletAddress').textContent = shortAddress;
+    
+    document.getElementById('walletInfo').style.display = 'block';
+    document.getElementById('connectWalletBtn').textContent = '✅ Bağlandı';
+    document.getElementById('buyBtn').disabled = false; // Cüzdan bağlandığında buton aktif olabilir
+    
+    try {
+        const bnbBalance = await web3.eth.getBalance(userAddress);
+        document.getElementById('bnbBalance').textContent = `${web3.utils.fromWei(bnbBalance, 'ether').slice(0, 8)} BNB`;
+        
+        const usdtBalance = await usdtContract.methods.balanceOf(userAddress).call();
+        document.getElementById('usdtBalance').textContent = `${web3.utils.fromWei(usdtBalance, 'ether')} USDT`;
+    } catch (error) {
+        console.error("Bakiye alma hatası:", error);
     }
+}
 
-    const amount = parseFloat(state.paymentAmount);
-    if (isNaN(amount) || amount <= 0) {
-      throw new Error('Please enter a valid BNB amount');
+function calculateFDAI() {
+    const method = document.getElementById('paymentMethod').value;
+    let fdai = 0;
+    
+    if (method === 'bnb') {
+        const bnbAmount = parseFloat(document.getElementById('bnbAmount').value) || 0;
+        fdai = bnbAmount * CONFIG.TOKENS_PER_BNB;
+    } else if (method === 'usdt') {
+        const usdtAmount = parseFloat(document.getElementById('usdtAmount').value) || 0;
+        fdai = usdtAmount * CONFIG.TOKENS_PER_USDT;
     }
-  };
+    
+    document.getElementById('fdaiAmount').textContent = fdai.toLocaleString();
+}
 
-  const setupEventListeners = () => {
-    if (!window.ethereum) return;
-
-    const handleAccountsChanged = (accounts) => {
-      if (accounts.length > 0) {
-        setupWallet(accounts[0]);
-      } else {
-        resetWalletState();
-      }
-    };
-
-    const handleChainChanged = () => {
-      window.location.reload();
-    };
-
-    window.ethereum.on('accountsChanged', handleAccountsChanged);
-    window.ethereum.on('chainChanged', handleChainChanged);
-
-    return () => {
-      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      window.ethereum.removeListener('chainChanged', handleChainChanged);
-    };
-  };
-
-  const cleanupEventListeners = () => {
-    if (window.ethereum) {
-      window.ethereum.removeAllListeners('accountsChanged');
-      window.ethereum.removeAllListeners('chainChanged');
+async function sendPayment() {
+    const method = document.getElementById('paymentMethod').value;
+    
+    if (!method) {
+        alert("Lütfen bir ödeme yöntemi seçin!");
+        return;
     }
-  };
+    
+    if (method === 'bnb') {
+        const bnbAmount = parseFloat(document.getElementById('bnbAmount').value) || 0;
+        if (!bnbAmount || bnbAmount <= 0) {
+            alert("Lütfen geçerli bir BNB miktarı girin!");
+            return;
+        }
+        await sendBNB();
+    } else if (method === 'usdt') {
+        const usdtAmount = parseFloat(document.getElementById('usdtAmount').value) || 0;
+        if (!usdtAmount || usdtAmount <= 0) {
+            alert("Lütfen geçerli bir USDT miktarı girin!");
+            return;
+        }
+        await sendUSDT();
+    }
+}
 
-  const resetWalletState = () => {
-    setState({
-      account: '',
-      balance: '0',
-      network: '',
-      paymentAmount: APP_CONFIG.DEFAULT_AMOUNT.toString(),
-      transactionHash: '',
-      isMobile: false,
-      isLoading: false,
-      isConnected: false,
-      error: null
+async function sendBNB() {
+    const bnbAmount = parseFloat(document.getElementById('bnbAmount').value);
+    
+    if (!bnbAmount || bnbAmount <= 0) {
+        alert("Lütfen geçerli bir BNB miktarı girin!");
+        return;
+    }
+    
+    try {
+        const weiAmount = web3.utils.toWei(bnbAmount.toString(), 'ether');
+        
+        const tx = {
+            from: userAddress,
+            to: CONFIG.RECEIVE_WALLET,
+            value: weiAmount,
+            gas: 300000,
+            gasPrice: await web3.eth.getGasPrice()
+        };
+        
+        const receipt = await web3.eth.sendTransaction(tx);
+        alert(`✅ ${bnbAmount} BNB başarıyla gönderildi!\n\nAlacağınız miktar: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
+    } catch (error) {
+        console.error("BNB gönderim hatası:", error);
+        alert("BNB gönderimi başarısız oldu: " + (error.message || error));
+    }
+}
+
+async function sendUSDT() {
+    const usdtAmount = parseFloat(document.getElementById('usdtAmount').value);
+    
+    if (!usdtAmount || usdtAmount <= 0) {
+        alert("Lütfen geçerli bir USDT miktarı girin!");
+        return;
+    }
+    
+    try {
+        const weiAmount = web3.utils.toWei(usdtAmount.toString(), 'ether');
+        
+        const receipt = await usdtContract.methods.transfer(
+            CONFIG.RECEIVE_WALLET,
+            weiAmount
+        ).send({
+            from: userAddress,
+            gas: 200000,
+            gasPrice: await web3.eth.getGasPrice()
+        });
+        
+        alert(`✅ ${usdtAmount} USDT başarıyla gönderildi!\n\nAlacağınız miktar: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
+    } catch (error) {
+        console.error("USDT gönderim hatası:", error);
+        alert("USDT gönderimi başarısız oldu: " + (error.message || error));
+    }
+}
+
+if (window.ethereum) {
+    window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length > 0) {
+            userAddress = accounts[0];
+            updateWalletUI();
+        } else {
+            document.getElementById('walletInfo').style.display = 'none';
+            document.getElementById('connectWalletBtn').textContent = '🔗 MetaMask ile Bağlan';
+            document.getElementById('buyBtn').disabled = true;
+        }
     });
-  };
-
-  const handleError = (error, context) => {
-    console.error(`${context}:`, error);
-    setState(prev => ({
-      ...prev,
-      error: error.message,
-      isLoading: false
-    }));
-    alert(`${context}: ${error.message}`);
-  };
-
-  const getNetworkName = (chainId) => {
-    switch (chainId) {
-      case '0x1': return 'Ethereum Mainnet';
-      case '0x38': return 'Binance Smart Chain';
-      case '0x61': return 'BSC Testnet';
-      case '0x89': return 'Polygon Mainnet';
-      default: return `Network (${chainId})`;
-    }
-  };
-
-  const formatAddress = (address) => {
-    return address ? `${address.substring(0, 6)}...${address.substring(address.length - 4)}` : '';
-  };
-
-  return (
-    <div className="app-container">
-      <header className="app-header">
-        <h1>{APP_CONFIG.COMPANY_NAME}</h1>
-        <p className="app-subtitle">BNB Payment Gateway</p>
-      </header>
-      
-      <main className="app-content">
-        {!state.isConnected ? (
-          <div className="connection-section">
-            <button 
-              onClick={connectWallet} 
-              className="connect-button"
-              disabled={state.isLoading}
-            >
-              {state.isLoading ? 'Connecting...' : 'Connect Wallet'}
-            </button>
-            {state.error && <p className="error-message">{state.error}</p>}
-          </div>
-        ) : (
-          <div className="wallet-dashboard">
-            <section className="wallet-info">
-              <h2>Wallet Details</h2>
-              <div className="info-row">
-                <span>Address:</span>
-                <span>{formatAddress(state.account)}</span>
-              </div>
-              <div className="info-row">
-                <span>Network:</span>
-                <span>{state.network}</span>
-              </div>
-              <div className="info-row">
-                <span>Balance:</span>
-                <span>{parseFloat(state.balance).toFixed(4)} BNB</span>
-              </div>
-            </section>
-
-            <section className="payment-section">
-              <h2>Send Payment</h2>
-              <div className="input-group">
-                <label htmlFor="amount">BNB Amount:</label>
-                <input
-                  id="amount"
-                  type="number"
-                  value={state.paymentAmount}
-                  onChange={(e) => setState(prev => ({ ...prev, paymentAmount: e.target.value }))}
-                  min="0.0001"
-                  step="0.0001"
-                  disabled={state.isLoading}
-                />
-              </div>
-
-              <div className="recipient-info">
-                <h3>Recipient Details</h3>
-                <div className="info-row">
-                  <span>Address:</span>
-                  <span>{formatAddress(APP_CONFIG.RECEIVER_ADDRESS)}</span>
-                </div>
-              </div>
-
-              <button 
-                onClick={handlePayment} 
-                className="payment-button"
-                disabled={state.isLoading}
-              >
-                {state.isLoading ? 'Processing...' : `Send ${state.paymentAmount} BNB`}
-              </button>
-              {state.error && <p className="error-message">{state.error}</p>}
-            </section>
-
-            {state.transactionHash && (
-              <section className="transaction-info">
-                <h3>Transaction Details</h3>
-                <a
-                  href={`https://bscscan.com/tx/${state.transactionHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transaction-link"
-                >
-                  View on BSCScan
-                </a>
-              </section>
-            )}
-          </div>
-        )}
-      </main>
-    </div>
-  );
-};
-
-export default App;
+    
+    window.ethereum.on('chainChanged', () => window.location.reload());
+}
