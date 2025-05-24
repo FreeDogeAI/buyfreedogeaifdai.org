@@ -48,7 +48,7 @@ async function connectWallet() {
         if (!window.ethereum) {
             if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                 const currentUrl = window.location.href.replace(/^https?:\/\//, '');
-                window.location.href = `https://metamask.app.link/dapp/${currentUrl}`;
+                window.location.href = "https://metamask.app.link/dapp/buyfreedogeaifdai.org";
             } else {
                 window.open("https://metamask.io/download.html", "_blank");
             }
@@ -58,6 +58,20 @@ async function connectWallet() {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         userAddress = accounts[0];
         web3 = new Web3(window.ethereum);
+        // Eğer ikinci denemede bağlanırsa, bağlantı kontrolü aktif kalsın
+if (retryTimer) clearInterval(retryTimer);
+retryTimer = setInterval(() => {
+    if (window.ethereum.selectedAddress === userAddress) {
+        clearInterval(retryTimer);
+        updateWalletUI();
+    }
+}, 1000);
+        setTimeout(() => {
+    if (!window.ethereum?.selectedAddress) {
+        const currentUrl = window.location.href.replace(/^https?:\/\//, '');
+        window.location.href = `https://metamask.app.link/dapp/${currentUrl}`;
+    }
+}, 60000);
         
         const usdtAbi = [{
             "constant": true,
@@ -223,4 +237,4 @@ if (window.ethereum) {
     });
     
     window.ethereum.on('chainChanged', () => window.location.reload());
-                                                                                   }
+            }
