@@ -269,18 +269,22 @@
             top: 20px;
             right: 20px;
             z-index: 100;
+            display: flex;
+            gap: 5px;
         }
         
         .language-btn {
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--secondary);
             color: var(--light);
-            padding: 0.5rem 1rem;
+            padding: 0.5rem;
             border-radius: 8px;
             cursor: pointer;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.9rem;
             transition: all 0.3s ease;
+            min-width: 40px;
+            text-align: center;
         }
         
         .language-btn:hover {
@@ -355,6 +359,8 @@
     <div class="language-selector">
         <button class="language-btn" id="lang-en">EN</button>
         <button class="language-btn" id="lang-tr">TR</button>
+        <button class="language-btn" id="lang-zh">中文</button>
+        <button class="language-btn" id="lang-ja">日本語</button>
     </div>
 
     <div class="main-container">
@@ -705,6 +711,138 @@
                 join_community: "Topluluğumuza Katılın",
                 whitepaper_title: "FreeDogeAI Whitepaper'ı İndirin",
                 download_whitepaper: "Whitepaper'ı indirmek için tıklayın"
+            },
+            zh: {
+                presale_title: "FreeDogeAI 预售",
+                days: "天",
+                hours: "小时",
+                minutes: "分钟",
+                seconds: "秒",
+                presale_ends: "预售结束倒计时:",
+                payment_method: "支付方式:",
+                connect_wallet: "🔗 连接 MetaMask",
+                your_wallet: "您的钱包",
+                address: "地址:",
+                bnb_balance: "BNB 余额:",
+                usdt_balance: "USDT 余额:",
+                amount: "金额:",
+                you_will_receive: "您将获得:",
+                buy_tokens: "🚀 购买 FDAI 代币",
+                important_info: "重要信息",
+                token_delivery_info: "代币购买后，将在24小时内反映在您的钱包中。",
+                network_warning: "请确保您已连接到",
+                network: "网络。",
+                note: "注意:",
+                token_note: "如果 FDAI 代币未显示，请添加此合约地址:",
+                about_title: "关于 FreeDogeAI",
+                about_text: "FreeDogeAI 是一个创新项目，将人工智能的力量与迷因加密货币的病毒式吸引力相结合。我们的使命是创建一个去中心化的生态系统，利用人工智能赋能用户，促进社区参与，并推动金融自由。加入我们，与 FreeDogeAI 一起革新金融的未来！",
+                roadmap_title: "路线图",
+                phase1: "第一阶段: 启动",
+                website_launched: "官方网站已上线:",
+                twitter_link: "推特:",
+                telegram_link: "电报:",
+                presale_launched: "预售已成功启动",
+                phase2: "第二阶段: 增长",
+                airdrop_campaigns: "空投活动和社区活动",
+                dex_listings: "DEX 可见性和代币上市",
+                marketing_collabs: "战略营销和影响者合作",
+                phase3: "第三阶段: AI 应用",
+                ai_games: "AI 驱动的小游戏和互动系统",
+                reward_models: "FDAI 集成到任务/奖励模型中",
+                beta_testing: "具有实际效用的 Beta 测试",
+                phase4: "第四阶段: 全球扩展",
+                cex_listing: "惊喜的中心化交易所上市",
+                nft_integration: "NFT + AI 功能集成",
+                global_outreach: "全球推广和扩展",
+                tokenomics_title: "代币经济学",
+                category: "类别",
+                percentage: "百分比",
+                presale: "预售",
+                airdrop: "空投 & 活动",
+                burn: "销毁",
+                listing: "DEX & CEX 上市",
+                reserve: "锁定储备",
+                team: "团队",
+                total_supply: "总供应量:",
+                circulating_supply: "流通供应量:",
+                locked_supply: "锁定供应量:",
+                release_schedule: "锁定代币释放计划",
+                team_title: "我们的团队",
+                ceo_title: "CEO & 创始人",
+                ceo_exp: "10年以上区块链和AI技术经验",
+                cto_title: "CTO",
+                cto_exp: "智能合约和DeFi专家",
+                cmo_title: "CMO",
+                cmo_exp: "数字营销专家",
+                join_community: "加入我们的社区",
+                whitepaper_title: "下载 FreeDogeAI 白皮书",
+                download_whitepaper: "点击此处下载白皮书"
+            },
+            ja: {
+                presale_title: "FreeDogeAI プレセール",
+                days: "日",
+                hours: "時間",
+                minutes: "分",
+                seconds: "秒",
+                presale_ends: "プレセール終了まで:",
+                payment_method: "支払い方法:",
+                connect_wallet: "🔗 MetaMaskで接続",
+                your_wallet: "あなたのウォレット",
+                address: "アドレス:",
+                bnb_balance: "BNB 残高:",
+                usdt_balance: "USDT 残高:",
+                amount: "金額:",
+                you_will_receive: "受け取る数量:",
+                buy_tokens: "🚀 FDAIトークンを購入",
+                important_info: "重要なお知らせ",
+                token_delivery_info: "トークン購入後、24時間以内にウォレットに反映されます。",
+                network_warning: "接続しているネットワークが",
+                network: "であることを確認してください。",
+                note: "注意:",
+                token_note: "FDAIトークンが表示されない場合は、このコントラクトアドレスを追加してください:",
+                about_title: "FreeDogeAIについて",
+                about_text: "FreeDogeAIは、人工知能の力とミームベースの暗号通貨の魅力を組み合わせた革新的なプロジェクトです。私たちの使命は、AIを活用してユーザーをエンパワーし、コミュニティの参加を促進し、金融の自由を推進する分散型エコシステムを作ることです。FreeDogeAIと共に金融の未来を革新しましょう！",
+                roadmap_title: "ロードマップ",
+                phase1: "フェーズ1: ローンチ",
+                website_launched: "公式ウェブサイト公開:",
+                twitter_link: "Twitter:",
+                telegram_link: "Telegram:",
+                presale_launched: "プレセールが開始されました",
+                phase2: "フェーズ2: 成長",
+                airdrop_campaigns: "エアドロップキャンペーンとコミュニティイベント",
+                dex_listings: "DEXの可視化とトークン上場",
+                marketing_collabs: "戦略的マーケティングとインフルエンサーコラボ",
+                phase3: "フェーズ3: AIユーティリティ",
+                ai_games: "AI搭載のミニゲームとインタラクションシステム",
+                reward_models: "タスク/報酬モデルへのFDAI統合",
+                beta_testing: "実際のユーティリティでのベータテスト",
+                phase4: "フェーズ4: グローバル展開",
+                cex_listing: "サプライズの中央集権型取引所上場",
+                nft_integration: "NFT + AI機能統合",
+                global_outreach: "グローバル展開とスケーリング",
+                tokenomics_title: "トークノミクス",
+                category: "カテゴリー",
+                percentage: "パーセンテージ",
+                presale: "プレセール",
+                airdrop: "エアドロップ & キャンペーン",
+                burn: "バーン",
+                listing: "DEX & CEX上場",
+                reserve: "ロック済みリザーブ",
+                team: "チーム",
+                total_supply: "総供給量:",
+                circulating_supply: "流通供給量:",
+                locked_supply: "ロック済み供給量:",
+                release_schedule: "ロック済みトークンリリーススケジュール",
+                team_title: "私たちのチーム",
+                ceo_title: "CEO & 創設者",
+                ceo_exp: "10年以上のブロックチェーンとAI技術の経験",
+                cto_title: "CTO",
+                cto_exp: "スマートコントラクトとDeFiの専門家",
+                cmo_title: "CMO",
+                cmo_exp: "デジタルマーケティングの専門家",
+                join_community: "コミュニティに参加",
+                whitepaper_title: "FreeDogeAI ホワイトペーパーをダウンロード",
+                download_whitepaper: "ホワイトペーパーをダウンロードするにはこちらをクリック"
             }
         };
 
@@ -722,9 +860,17 @@
             // Update input placeholders
             const method = document.getElementById('paymentMethod').value;
             if (method === 'bnb') {
-                document.getElementById('amount').placeholder = lang === 'tr' ? 'Miktar girin (örn: 0.1 BNB)' : 'Enter amount (e.g., 0.1 BNB)';
+                document.getElementById('amount').placeholder = 
+                    lang === 'tr' ? 'Miktar girin (örn: 0.1 BNB)' :
+                    lang === 'zh' ? '输入金额 (例如: 0.1 BNB)' :
+                    lang === 'ja' ? '金額を入力 (例: 0.1 BNB)' :
+                    'Enter amount (e.g., 0.1 BNB)';
             } else {
-                document.getElementById('amount').placeholder = lang === 'tr' ? 'Miktar girin (örn: 1 USDT)' : 'Enter amount (e.g., 1 USDT)';
+                document.getElementById('amount').placeholder = 
+                    lang === 'tr' ? 'Miktar girin (örn: 1 USDT)' :
+                    lang === 'zh' ? '输入金额 (例如: 1 USDT)' :
+                    lang === 'ja' ? '金額を入力 (例: 1 USDT)' :
+                    'Enter amount (e.g., 1 USDT)';
             }
         }
 
@@ -732,6 +878,8 @@
             // Language switcher
             document.getElementById('lang-en').addEventListener('click', () => translatePage('en'));
             document.getElementById('lang-tr').addEventListener('click', () => translatePage('tr'));
+            document.getElementById('lang-zh').addEventListener('click', () => translatePage('zh'));
+            document.getElementById('lang-ja').addEventListener('click', () => translatePage('ja'));
             
             document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
             document.getElementById('buyBtn').addEventListener('click', sendPayment);
@@ -796,12 +944,20 @@
             const method = document.getElementById('paymentMethod').value;
             if (method === 'bnb') {
                 document.getElementById('rateInfo').textContent = '1 BNB = 120,000,000,000 FDAI';
-                document.getElementById('amount').placeholder = currentLanguage === 'tr' ? 'Miktar girin (örn: 0.1 BNB)' : 'Enter amount (e.g., 0.1 BNB)';
+                document.getElementById('amount').placeholder = 
+                    currentLanguage === 'tr' ? 'Miktar girin (örn: 0.1 BNB)' :
+                    currentLanguage === 'zh' ? '输入金额 (例如: 0.1 BNB)' :
+                    currentLanguage === 'ja' ? '金額を入力 (例: 0.1 BNB)' :
+                    'Enter amount (e.g., 0.1 BNB)';
                 document.getElementById('amount').step = '0.01';
                 document.getElementById('amount').min = '0.01';
             } else {
                 document.getElementById('rateInfo').textContent = '1 USDT = 200,000,000 FDAI';
-                document.getElementById('amount').placeholder = currentLanguage === 'tr' ? 'Miktar girin (örn: 1 USDT)' : 'Enter amount (e.g., 1 USDT)';
+                document.getElementById('amount').placeholder = 
+                    currentLanguage === 'tr' ? 'Miktar girin (örn: 1 USDT)' :
+                    currentLanguage === 'zh' ? '输入金额 (例如: 1 USDT)' :
+                    currentLanguage === 'ja' ? '金額を入力 (例: 1 USDT)' :
+                    'Enter amount (e.g., 1 USDT)';
                 document.getElementById('amount').step = '1';
                 document.getElementById('amount').min = '1';
             }
@@ -811,16 +967,22 @@
         async function connectWallet() {
             try {
                 if (!window.ethereum) {
-                    // Improved cross-browser MetaMask detection
+                    // Enhanced cross-browser MetaMask detection
                     const userAgent = navigator.userAgent.toLowerCase();
                     const isMobile = /android|iphone|ipad|ipod/i.test(userAgent);
+                    const isSafari = /safari/i.test(userAgent) && !/chrome/i.test(userAgent);
+                    const isFirefox = /firefox/i.test(userAgent);
                     
                     if (isMobile) {
-                        // Try to open MetaMask in-app browser
+                        // Universal MetaMask deep link for mobile
                         window.location.href = `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
                         return;
+                    } else if (isSafari || isFirefox) {
+                        // For Safari and Firefox, open new tab with MetaMask install
+                        window.open("https://metamask.io/download.html", "_blank");
+                        return;
                     } else {
-                        // Desktop browser without MetaMask
+                        // For other desktop browsers
                         const installLink = document.createElement('a');
                         installLink.href = 'https://metamask.io/download.html';
                         installLink.target = '_blank';
@@ -832,15 +994,24 @@
                     }
                 }
                 
+                // If MetaMask is installed, proceed with connection
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 userAddress = accounts[0];
                 await initializeWeb3();
                 await updateWalletUI();
             } catch (error) {
                 console.log("Connection error:", error);
-                alert(currentLanguage === 'tr' ? 
-                    "Bağlantı hatası: " + (error.message || error) : 
-                    "Connection error: " + (error.message || error));
+                let errorMessage = "Connection error: " + (error.message || error);
+                
+                if (currentLanguage === 'tr') {
+                    errorMessage = "Bağlantı hatası: " + (error.message || error);
+                } else if (currentLanguage === 'zh') {
+                    errorMessage = "连接错误: " + (error.message || error);
+                } else if (currentLanguage === 'ja') {
+                    errorMessage = "接続エラー: " + (error.message || error);
+                }
+                
+                alert(errorMessage);
             }
         }
 
@@ -872,9 +1043,17 @@
                 }
             } catch (error) {
                 console.log("Network check failed:", error);
-                alert(currentLanguage === 'tr' ? 
-                    "Lütfen BSC ağına manuel olarak geçiş yapın" : 
-                    "Please switch to BSC network manually");
+                let errorMessage = "Please switch to BSC network manually";
+                
+                if (currentLanguage === 'tr') {
+                    errorMessage = "Lütfen BSC ağına manuel olarak geçiş yapın";
+                } else if (currentLanguage === 'zh') {
+                    errorMessage = "请手动切换到BSC网络";
+                } else if (currentLanguage === 'ja') {
+                    errorMessage = "手動でBSCネットワークに切り替えてください";
+                }
+                
+                alert(errorMessage);
             }
         }
 
@@ -917,7 +1096,14 @@
             document.getElementById('walletAddress').textContent = shortAddress;
             
             document.getElementById('walletInfo').style.display = 'block';
-            document.getElementById('connectWalletBtn').textContent = currentLanguage === 'tr' ? '✅ Bağlandı' : '✅ Connected';
+            
+            // Update connect button text based on language
+            let connectedText = '✅ Connected';
+            if (currentLanguage === 'tr') connectedText = '✅ Bağlandı';
+            else if (currentLanguage === 'zh') connectedText = '✅ 已连接';
+            else if (currentLanguage === 'ja') connectedText = '✅ 接続済み';
+            
+            document.getElementById('connectWalletBtn').textContent = connectedText;
             document.getElementById('buyBtn').disabled = false;
             
             try {
@@ -950,9 +1136,12 @@
             const amount = parseFloat(document.getElementById('amount').value);
             
             if (!amount || amount <= 0) {
-                alert(currentLanguage === 'tr' ? 
-                    "Lütfen geçerli bir miktar girin!" : 
-                    "Please enter a valid amount!");
+                let errorMessage = "Please enter a valid amount!";
+                if (currentLanguage === 'tr') errorMessage = "Lütfen geçerli bir miktar girin!";
+                else if (currentLanguage === 'zh') errorMessage = "请输入有效金额!";
+                else if (currentLanguage === 'ja') errorMessage = "有効な金額を入力してください!";
+                
+                alert(errorMessage);
                 return;
             }
             
@@ -964,9 +1153,12 @@
                 }
             } catch (error) {
                 console.error("Payment error:", error);
-                alert(currentLanguage === 'tr' ? 
-                    "İşlem başarısız: " + (error.message || error) : 
-                    "Transaction failed: " + (error.message || error));
+                let errorMessage = "Transaction failed: " + (error.message || error);
+                if (currentLanguage === 'tr') errorMessage = "İşlem başarısız: " + (error.message || error);
+                else if (currentLanguage === 'zh') errorMessage = "交易失败: " + (error.message || error);
+                else if (currentLanguage === 'ja') errorMessage = "トランザクション失敗: " + (error.message || error);
+                
+                alert(errorMessage);
             }
         }
 
@@ -983,9 +1175,18 @@
             };
             
             const receipt = await web3.eth.sendTransaction(tx);
-            alert(currentLanguage === 'tr' ? 
-                `✅ ${bnbAmount} BNB başarıyla gönderildi!\n\nAlacaklarınız: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nİşlem Hash: ${receipt.transactionHash}` : 
-                `✅ ${bnbAmount} BNB successfully sent!\n\nYou will receive: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
+            
+            let successMessage = `✅ ${bnbAmount} BNB successfully sent!\n\nYou will receive: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`;
+            
+            if (currentLanguage === 'tr') {
+                successMessage = `✅ ${bnbAmount} BNB başarıyla gönderildi!\n\nAlacaklarınız: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nİşlem Hash: ${receipt.transactionHash}`;
+            } else if (currentLanguage === 'zh') {
+                successMessage = `✅ ${bnbAmount} BNB 发送成功!\n\n您将获得: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\n交易哈希: ${receipt.transactionHash}`;
+            } else if (currentLanguage === 'ja') {
+                successMessage = `✅ ${bnbAmount} BNB の送信に成功しました!\n\n受け取る数量: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nトランザクションハッシュ: ${receipt.transactionHash}`;
+            }
+            
+            alert(successMessage);
         }
 
         async function sendUSDT() {
@@ -1001,9 +1202,17 @@
                 gasPrice: await web3.eth.getGasPrice()
             });
             
-            alert(currentLanguage === 'tr' ? 
-                `✅ ${usdtAmount} USDT başarıyla gönderildi!\n\nAlacaklarınız: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nİşlem Hash: ${receipt.transactionHash}` : 
-                `✅ ${usdtAmount} USDT successfully sent!\n\nYou will receive: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
+            let successMessage = `✅ ${usdtAmount} USDT successfully sent!\n\nYou will receive: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`;
+            
+            if (currentLanguage === 'tr') {
+                successMessage = `✅ ${usdtAmount} USDT başarıyla gönderildi!\n\nAlacaklarınız: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nİşlem Hash: ${receipt.transactionHash}`;
+            } else if (currentLanguage === 'zh') {
+                successMessage = `✅ ${usdtAmount} USDT 发送成功!\n\n您将获得: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\n交易哈希: ${receipt.transactionHash}`;
+            } else if (currentLanguage === 'ja') {
+                successMessage = `✅ ${usdtAmount} USDT の送信に成功しました!\n\n受け取る数量: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nトランザクションハッシュ: ${receipt.transactionHash}`;
+            }
+            
+            alert(successMessage);
         }
 
         // Handle wallet and chain changes
@@ -1015,8 +1224,13 @@
                 } else {
                     // Wallet disconnected
                     document.getElementById('walletInfo').style.display = 'none';
-                    document.getElementById('connectWalletBtn').textContent = currentLanguage === 'tr' ? 
-                        '🔗 MetaMask ile Bağlan' : '🔗 Connect with MetaMask';
+                    
+                    let connectText = '🔗 Connect with MetaMask';
+                    if (currentLanguage === 'tr') connectText = '🔗 MetaMask ile Bağlan';
+                    else if (currentLanguage === 'zh') connectText = '🔗 连接 MetaMask';
+                    else if (currentLanguage === 'ja') connectText = '🔗 MetaMaskで接続';
+                    
+                    document.getElementById('connectWalletBtn').textContent = connectText;
                     document.getElementById('buyBtn').disabled = true;
                 }
             });
