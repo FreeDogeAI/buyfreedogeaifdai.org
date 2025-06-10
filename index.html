@@ -446,45 +446,175 @@
                 <p data-i18n="about_text">FreeDogeAI is an innovative project combining the power of artificial intelligence with the viral appeal of meme-based cryptocurrencies. Our mission is to create a decentralized ecosystem that leverages AI to empower users, foster community engagement, and drive financial freedom. Join us in revolutionizing the future of finance with FreeDogeAI!</p>
             </div>
 
-            <!-- Roadmap Section -->
-            <div class="container">
-                <h3 data-i18n="roadmap_title">Roadmap</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                    <div>
-                        <h4 data-i18n="phase1">Phase 1: Launch</h4>
-                        <ul>
-                            <li data-i18n="website_launched">Official website launched: <a href="https://freedogeai.com" target="_blank">freedogeai.com</a></li>
-                            <li data-i18n="twitter_link">Twitter: <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">@FreeDogeAI_FDAI</a></li>
-                            <li data-i18n="telegram_link">Telegram: <a href="https://t.me/freedogeaiFDAI" target="_blank">@freedogeaiFDAI</a></li>
-                            <li data-i18n="presale_launched">Presale was successfully launched</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 data-i18n="phase2">Phase 2: Growth</h4>
-                        <ul>
-                            <li data-i18n="airdrop_campaigns">Airdrop campaigns and community events</li>
-                            <li data-i18n="dex_listings">DEX visibility and token listings</li>
-                            <li data-i18n="marketing_collabs">Strategic marketing and influencer collaborations</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 data-i18n="phase3">Phase 3: AI Utility</h4>
-                        <ul>
-                            <li data-i18n="ai_games">AI-powered mini-game and interaction system</li>
-                            <li data-i18n="reward_models">FDAI integrated into task/reward models</li>
-                            <li data-i18n="beta_testing">Beta testing with real utility</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 data-i18n="phase4">Phase 4: Global Expansion</h4>
-                        <ul>
-                            <li data-i18n="cex_listing">Surprise centralized exchange listing</li>
-                            <li data-i18n="nft_integration">NFT + AI feature integration</li>
-                            <li data-i18n="global_outreach">Global outreach and scaling</li>
-                        </ul>
-                    </div>
-                </div>
+        
+           <!-- Roadmap Section - Güncellenmiş Versiyon -->
+<div class="container">
+    <h3 data-i18n="roadmap_title">Roadmap</h3>
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h4 data-i18n="phase1">Phase 1: Launch</h4>
+                <ul>
+                    <li data-i18n="website_launched">Official website launched: <a href="https://freedogeai.com" target="_blank">freedogeai.com</a></li>
+                    <li data-i18n="twitter_link">Twitter: <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">@FreeDogeAI_FDAI</a></li>
+                    <li data-i18n="telegram_link">Telegram: <a href="https://t.me/freedogeaiFDAI" target="_blank">@freedogeaiFDAI</a></li>
+                    <li data-i18n="presale_launched">Presale was successfully launched</li>
+                </ul>
             </div>
+            <div class="timeline-marker"></div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h4 data-i18n="phase2">Phase 2: Growth</h4>
+                <ul>
+                    <li data-i18n="airdrop_campaigns">Airdrop campaigns and community events</li>
+                    <li data-i18n="dex_listings">DEX visibility and token listings</li>
+                    <li data-i18n="marketing_collabs">Strategic marketing and influencer collaborations</li>
+                </ul>
+            </div>
+            <div class="timeline-marker"></div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h4 data-i18n="phase3">Phase 3: AI Utility</h4>
+                <ul>
+                    <li data-i18n="ai_games">AI-powered mini-game and interaction system</li>
+                    <li data-i18n="reward_models">FDAI integrated into task/reward models</li>
+                    <li data-i18n="beta_testing">Beta testing with real utility</li>
+                </ul>
+            </div>
+            <div class="timeline-marker"></div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h4 data-i18n="phase4">Phase 4: Global Expansion</h4>
+                <ul>
+                    <li data-i18n="cex_listing">Surprise centralized exchange listing</li>
+                    <li data-i18n="nft_integration">NFT + AI feature integration</li>
+                    <li data-i18n="global_outreach">Global outreach and scaling</li>
+                </ul>
+            </div>
+            <div class="timeline-marker"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Timeline Styling */
+    .timeline {
+        position: relative;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding-left: 50px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 20px;
+        width: 4px;
+        background: linear-gradient(to bottom, var(--primary), var(--accent));
+        border-radius: 10px;
+        z-index: 1;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 40px;
+        padding-left: 30px;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--gradient);
+        border: 3px solid var(--secondary);
+        z-index: 2;
+        box-shadow: 0 0 0 4px rgba(0, 184, 255, 0.2);
+    }
+
+    .timeline-content {
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 25px;
+        position: relative;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 25px rgba(0, 255, 102, 0.1);
+    }
+
+    .timeline-content:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 255, 102, 0.2);
+        border-color: var(--primary);
+    }
+
+    .timeline-content h4 {
+        color: var(--secondary);
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        position: relative;
+    }
+
+    .timeline-content h4::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--gradient);
+        border-radius: 3px;
+    }
+
+    .timeline-content ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .timeline-content li {
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+
+    .timeline-content li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+        font-weight: bold;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .timeline {
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            left: 10px;
+        }
+        
+        .timeline-marker {
+            width: 20px;
+            height: 20px;
+            left: -5px;
+        }
+        
+        .timeline-content {
+            padding: 20px;
+        }
+    }
+</style>
 
             <!-- Tokenomics Section -->
             <div class="container">
