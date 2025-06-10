@@ -263,6 +263,65 @@
             margin: 0 auto 1rem;
         }
 
+        /* Language Selector */
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .language-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--secondary);
+            color: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .language-btn:hover {
+            background: rgba(0, 184, 255, 0.3);
+        }
+
+        /* Countdown Styles */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            min-width: 90px;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.15);
+            text-align: center;
+        }
+
+        .countdown-item span:first-child {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--secondary);
+            display: block;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .countdown-item span:last-child {
+            font-size: 0.9rem;
+            color: #ccc;
+            opacity: 0.8;
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .main-container {
@@ -283,113 +342,54 @@
             .container {
                 padding: 1.5rem;
             }
+            
+            .language-selector {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="language-btn" id="lang-en">EN</button>
+        <button class="language-btn" id="lang-tr">TR</button>
+    </div>
+
     <div class="main-container">
         <div class="left-column">
             <div class="container">
                 <div class="logo-container">
                     <img src="logo.png" alt="FreeDogeAI Logo">
                 </div>
-                <h1>FreeDogeAI Presale</h1>
-                <!-- Countdown Timer Start -->
-<div class="countdown-container">
-  <div class="countdown-item">
-    <span id="countdown-days">00</span>
-    <span>Days</span>
-  </div>
-  <div class="countdown-item">
-    <span id="countdown-hours">00</span>
-    <span>Hours</span>
-  </div>
-  <div class="countdown-item">
-    <span id="countdown-minutes">00</span>
-    <span>Minutes</span>
-  </div>
-  <div class="countdown-item">
-    <span id="countdown-seconds">00</span>
-    <span>Seconds</span>
-  </div>
-</div>
-<p style="text-align: center; margin-top: 1rem; font-size: 1rem; color: var(--secondary); font-weight: bold;">
-  Presale ends in:
-</p>
-
-<style>
-.countdown-container {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin: 2rem 0;
-  flex-wrap: wrap;
-}
-
-.countdown-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--primary);
-  border-radius: 16px;
-  padding: 1.5rem 1rem;
-  min-width: 90px;
-  box-shadow: 0 0 20px rgba(0, 255, 102, 0.15);
-  text-align: center;
-}
-
-.countdown-item span:first-child {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 2.2rem;
-  font-weight: bold;
-  color: var(--secondary);
-  display: block;
-  margin-bottom: 0.3rem;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-}
-
-.countdown-item span:last-child {
-  font-size: 0.9rem;
-  color: #ccc;
-  opacity: 0.8;
-}
-</style>
-
-<script>
-(function startCountdown() {
-  // Sayfa yayına alındığı andan itibaren 100 gün
-  const startTime = new Date("2025-06-09T00:00:00Z").getTime();
-  const endTime = startTime + 100 * 24 * 60 * 60 * 1000;
-
-  function updateCountdown() {
-    const now = Date.now();
-    const distance = endTime - now;
-
-    if (distance < 0) {
-      document.getElementById("countdown-days").textContent = "00";
-      document.getElementById("countdown-hours").textContent = "00";
-      document.getElementById("countdown-minutes").textContent = "00";
-      document.getElementById("countdown-seconds").textContent = "00";
-      return;
-    }
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById("countdown-days").textContent = String(days).padStart(2, '0');
-    document.getElementById("countdown-hours").textContent = String(hours).padStart(2, '0');
-    document.getElementById("countdown-minutes").textContent = String(minutes).padStart(2, '0');
-    document.getElementById("countdown-seconds").textContent = String(seconds).padStart(2, '0');
-  }
-
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-})();
-</script>
-<!-- Countdown Timer End -->
+                <h1 data-i18n="presale_title">FreeDogeAI Presale</h1>
+                
+                <!-- Countdown Timer -->
+                <div class="countdown-container">
+                    <div class="countdown-item">
+                        <span id="countdown-days">00</span>
+                        <span data-i18n="days">Days</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span id="countdown-hours">00</span>
+                        <span data-i18n="hours">Hours</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span id="countdown-minutes">00</span>
+                        <span data-i18n="minutes">Minutes</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span id="countdown-seconds">00</span>
+                        <span data-i18n="seconds">Seconds</span>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 1rem; font-size: 1rem; color: var(--secondary); font-weight: bold;" data-i18n="presale_ends">
+                    Presale ends in:
+                </p>
 
                 <div class="payment-method">
-                    <label for="paymentMethod"><strong>Payment Method:</strong></label>
+                    <label for="paymentMethod"><strong data-i18n="payment_method">Payment Method:</strong></label>
                     <select id="paymentMethod">
                         <option value="bnb">BNB</option>
                         <option value="usdt">USDT (BEP-20)</option>
@@ -397,35 +397,35 @@
                 </div>
                 
                 <p id="rateInfo">1 BNB = 120,000,000,000 FDAI</p>
-                <button id="connectWalletBtn">🔗 Connect with MetaMask</button>
+                <button id="connectWalletBtn" data-i18n="connect_wallet">🔗 Connect with MetaMask</button>
 
                 <div id="walletInfo" style="display: none;">
-                    <h3>Your Wallet</h3>
+                    <h3 data-i18n="your_wallet">Your Wallet</h3>
                     <div class="wallet-info">
-                        <p><strong>Address:</strong> <span id="walletAddress"></span></p>
-                        <p><strong>BNB Balance:</strong> <span id="bnbBalance"></span></p>
-                        <p><strong>USDT Balance:</strong> <span id="usdtBalance"></span></p>
+                        <p><strong data-i18n="address">Address:</strong> <span id="walletAddress"></span></p>
+                        <p><strong data-i18n="bnb_balance">BNB Balance:</strong> <span id="bnbBalance"></span></p>
+                        <p><strong data-i18n="usdt_balance">USDT Balance:</strong> <span id="usdtBalance"></span></p>
                     </div>
                 </div>
                 
                 <div id="amountSection">
-                    <label for="amount"><strong>Amount:</strong></label>
+                    <label for="amount"><strong data-i18n="amount">Amount:</strong></label>
                     <input type="number" id="amount" placeholder="Enter amount (BNB or USDT)" step="0.01" min="0.01">
                 </div>
                 
                 <div class="calculation-result">
-                    <strong>You will receive:</strong> <span id="fdaiAmount">0</span> FDAI
+                    <strong data-i18n="you_will_receive">You will receive:</strong> <span id="fdaiAmount">0</span> FDAI
                 </div>
                 
-                <button id="buyBtn" disabled>🚀 Buy FDAI Tokens</button>
+                <button id="buyBtn" disabled data-i18n="buy_tokens">🚀 Buy FDAI Tokens</button>
                 
                 <div class="info-box">
-                    <h3>Important Information</h3>
-                    <p>After your token purchase, your tokens will be reflected in your wallet within 24 hours.</p>
+                    <h3 data-i18n="important_info">Important Information</h3>
+                    <p data-i18n="token_delivery_info">After your token purchase, your tokens will be reflected in your wallet within 24 hours.</p>
                     <div style="background:rgba(0, 184, 255, 0.2); color:var(--light); border: 1px solid var(--accent); border-radius: 12px; padding: 1rem; text-align: center; font-weight: bold; margin-top: 1rem;">
-                        Please make sure you are connected to the <span style="color:var(--accent);">BSC (Binance Smart Chain)</span> network.
+                        <span data-i18n="network_warning">Please make sure you are connected to the</span> <span style="color:var(--accent);">BSC (Binance Smart Chain)</span> <span data-i18n="network">network.</span>
                     </div>
-                    <p><strong>NOTE:</strong> If FDAI tokens do not appear, add this contract address:</p>
+                    <p><strong data-i18n="note">NOTE:</strong> <span data-i18n="token_note">If FDAI tokens do not appear, add this contract address:</span></p>
                     <div class="wallet-info" style="background: rgba(0, 0, 0, 0.5); border: 2px dashed var(--secondary); color: var(--accent); font-weight: bold; padding: 1rem; border-radius: 12px; text-align: center; margin-top: 1rem;">
                         0x8161698A74F2ea0035B9912ED60140893Ac0f39C
                     </div>
@@ -436,45 +436,45 @@
         <div class="right-column">
             <!-- About Section -->
             <div class="container">
-                <h3>About FreeDogeAI</h3>
-                <p>FreeDogeAI is an innovative project combining the power of artificial intelligence with the viral appeal of meme-based cryptocurrencies. Our mission is to create a decentralized ecosystem that leverages AI to empower users, foster community engagement, and drive financial freedom. Join us in revolutionizing the future of finance with FreeDogeAI!</p>
+                <h3 data-i18n="about_title">About FreeDogeAI</h3>
+                <p data-i18n="about_text">FreeDogeAI is an innovative project combining the power of artificial intelligence with the viral appeal of meme-based cryptocurrencies. Our mission is to create a decentralized ecosystem that leverages AI to empower users, foster community engagement, and drive financial freedom. Join us in revolutionizing the future of finance with FreeDogeAI!</p>
             </div>
 
             <!-- Roadmap Section -->
             <div class="container">
-                <h3>Roadmap</h3>
+                <h3 data-i18n="roadmap_title">Roadmap</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                     <div>
-                        <h4>Phase 1: Launch</h4>
+                        <h4 data-i18n="phase1">Phase 1: Launch</h4>
                         <ul>
-                            <li>Official website launched: <a href="https://freedogeai.com" target="_blank">freedogeai.com</a></li>
-                            <li>Twitter: <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">@FreeDogeAI_FDAI</a></li>
-                            <li>Telegram: <a href="https://t.me/freedogeaiFDAI" target="_blank">@freedogeaiFDAI</a></li>
-                            <li>Presale was successfully launched</li>
+                            <li data-i18n="website_launched">Official website launched: <a href="https://freedogeai.com" target="_blank">freedogeai.com</a></li>
+                            <li data-i18n="twitter_link">Twitter: <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">@FreeDogeAI_FDAI</a></li>
+                            <li data-i18n="telegram_link">Telegram: <a href="https://t.me/freedogeaiFDAI" target="_blank">@freedogeaiFDAI</a></li>
+                            <li data-i18n="presale_launched">Presale was successfully launched</li>
                         </ul>
                     </div>
                     <div>
-                        <h4>Phase 2: Growth</h4>
+                        <h4 data-i18n="phase2">Phase 2: Growth</h4>
                         <ul>
-                            <li>Airdrop campaigns and community events</li>
-                            <li>DEX visibility and token listings</li>
-                            <li>Strategic marketing and influencer collaborations</li>
+                            <li data-i18n="airdrop_campaigns">Airdrop campaigns and community events</li>
+                            <li data-i18n="dex_listings">DEX visibility and token listings</li>
+                            <li data-i18n="marketing_collabs">Strategic marketing and influencer collaborations</li>
                         </ul>
                     </div>
                     <div>
-                        <h4>Phase 3: AI Utility</h4>
+                        <h4 data-i18n="phase3">Phase 3: AI Utility</h4>
                         <ul>
-                            <li>AI-powered mini-game and interaction system</li>
-                            <li>FDAI integrated into task/reward models</li>
-                            <li>Beta testing with real utility</li>
+                            <li data-i18n="ai_games">AI-powered mini-game and interaction system</li>
+                            <li data-i18n="reward_models">FDAI integrated into task/reward models</li>
+                            <li data-i18n="beta_testing">Beta testing with real utility</li>
                         </ul>
                     </div>
                     <div>
-                        <h4>Phase 4: Global Expansion</h4>
+                        <h4 data-i18n="phase4">Phase 4: Global Expansion</h4>
                         <ul>
-                            <li>Surprise centralized exchange listing</li>
-                            <li>NFT + AI feature integration</li>
-                            <li>Global outreach and scaling</li>
+                            <li data-i18n="cex_listing">Surprise centralized exchange listing</li>
+                            <li data-i18n="nft_integration">NFT + AI feature integration</li>
+                            <li data-i18n="global_outreach">Global outreach and scaling</li>
                         </ul>
                     </div>
                 </div>
@@ -482,30 +482,30 @@
 
             <!-- Tokenomics Section -->
             <div class="container">
-                <h3>Tokenomics</h3>
+                <h3 data-i18n="tokenomics_title">Tokenomics</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                     <div>
                         <table>
-                            <tr><th>Category</th><th>Percentage</th></tr>
-                            <tr><td>Presale</td><td>15%</td></tr>
-                            <tr><td>Airdrop & Campaigns</td><td>15%</td></tr>
-                            <tr><td>Burn</td><td>15%</td></tr>
-                            <tr><td>DEX & CEX Listing</td><td>20%</td></tr>
-                            <tr><td>Locked Reserve</td><td>30%</td></tr>
-                            <tr><td>Team</td><td>5%</td></tr>
+                            <tr><th data-i18n="category">Category</th><th data-i18n="percentage">Percentage</th></tr>
+                            <tr><td data-i18n="presale">Presale</td><td>15%</td></tr>
+                            <tr><td data-i18n="airdrop">Airdrop & Campaigns</td><td>15%</td></tr>
+                            <tr><td data-i18n="burn">Burn</td><td>15%</td></tr>
+                            <tr><td data-i18n="listing">DEX & CEX Listing</td><td>20%</td></tr>
+                            <tr><td data-i18n="reserve">Locked Reserve</td><td>30%</td></tr>
+                            <tr><td data-i18n="team">Team</td><td>5%</td></tr>
                         </table>
                     </div>
                     <div>
-                        <p><strong>Total Supply:</strong> 2,000,000,000,000,000 (Two Quadrillion)</p>
-                        <p><strong>Circulating Supply:</strong> 1,400,000,000,000,000</p>
-                        <p><strong>Locked Supply:</strong> 600,000,000,000,000 FDAI</p>
+                        <p><strong data-i18n="total_supply">Total Supply:</strong> 2,000,000,000,000,000 (Two Quadrillion)</p>
+                        <p><strong data-i18n="circulating_supply">Circulating Supply:</strong> 1,400,000,000,000,000</p>
+                        <p><strong data-i18n="locked_supply">Locked Supply:</strong> 600,000,000,000,000 FDAI</p>
                     </div>
                 </div>
             </div>
 
             <!-- Locked Release Schedule -->
             <div class="container">
-                <h3>Locked Token Release Schedule</h3>
+                <h3 data-i18n="release_schedule">Locked Token Release Schedule</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
                     <div>2026: 5%</div>
                     <div>2027: 5%</div>
@@ -518,32 +518,32 @@
 
             <!-- Team Section -->
             <div class="container">
-                <h3>Our Team</h3>
+                <h3 data-i18n="team_title">Our Team</h3>
                 <div class="team-grid">
                     <div class="team-member">
                         <img src="ceo.jpg" alt="CEO" class="team-photo">
                         <h4>John Dogeson</h4>
-                        <p>CEO & Founder</p>
-                        <p>10+ years in blockchain and AI technology</p>
+                        <p data-i18n="ceo_title">CEO & Founder</p>
+                        <p data-i18n="ceo_exp">10+ years in blockchain and AI technology</p>
                     </div>
                     <div class="team-member">
                         <img src="cto.jpg" alt="CTO" class="team-photo">
                         <h4>Sarah Blockchain</h4>
-                        <p>CTO</p>
-                        <p>Smart contract and DeFi expert</p>
+                        <p data-i18n="cto_title">CTO</p>
+                        <p data-i18n="cto_exp">Smart contract and DeFi expert</p>
                     </div>
                     <div class="team-member">
                         <img src="cmo.jpg" alt="CMO" class="team-photo">
                         <h4>Mike Cryptoworth</h4>
-                        <p>CMO</p>
-                        <p>Digital marketing specialist</p>
+                        <p data-i18n="cmo_title">CMO</p>
+                        <p data-i18n="cmo_exp">Digital marketing specialist</p>
                     </div>
                 </div>
             </div>
 
             <!-- Community Section -->
             <div class="container">
-                <h3>Join Our Community</h3>
+                <h3 data-i18n="join_community">Join Our Community</h3>
                 <div style="display: flex; gap: 20px; justify-content: center;">
                     <a href="https://x.com/FreeDogeAI_FDAI" target="_blank">X (Twitter)</a>
                     <a href="https://t.me/freedogeaiFDAI" target="_blank">Telegram</a>
@@ -552,8 +552,8 @@
 
             <!-- Whitepaper Download -->
             <div class="container">
-                <h3>Download FreeDogeAI Whitepaper</h3>
-                <p style="text-align: center;"><a href="FreeDogeAI%20-%20Whitepaper.pdf" download>Click here to download the whitepaper</a></p>
+                <h3 data-i18n="whitepaper_title">Download FreeDogeAI Whitepaper</h3>
+                <p style="text-align: center;"><a href="FreeDogeAI%20-%20Whitepaper.pdf" download data-i18n="download_whitepaper">Click here to download the whitepaper</a></p>
             </div>
         </div>
     </div>
@@ -570,18 +570,214 @@
         let web3;
         let userAddress = "";
         let usdtContract;
+        let currentLanguage = 'en';
+
+        // Translation dictionary
+        const translations = {
+            en: {
+                presale_title: "FreeDogeAI Presale",
+                days: "Days",
+                hours: "Hours",
+                minutes: "Minutes",
+                seconds: "Seconds",
+                presale_ends: "Presale ends in:",
+                payment_method: "Payment Method:",
+                connect_wallet: "🔗 Connect with MetaMask",
+                your_wallet: "Your Wallet",
+                address: "Address:",
+                bnb_balance: "BNB Balance:",
+                usdt_balance: "USDT Balance:",
+                amount: "Amount:",
+                you_will_receive: "You will receive:",
+                buy_tokens: "🚀 Buy FDAI Tokens",
+                important_info: "Important Information",
+                token_delivery_info: "After your token purchase, your tokens will be reflected in your wallet within 24 hours.",
+                network_warning: "Please make sure you are connected to the",
+                network: "network.",
+                note: "NOTE:",
+                token_note: "If FDAI tokens do not appear, add this contract address:",
+                about_title: "About FreeDogeAI",
+                about_text: "FreeDogeAI is an innovative project combining the power of artificial intelligence with the viral appeal of meme-based cryptocurrencies. Our mission is to create a decentralized ecosystem that leverages AI to empower users, foster community engagement, and drive financial freedom. Join us in revolutionizing the future of finance with FreeDogeAI!",
+                roadmap_title: "Roadmap",
+                phase1: "Phase 1: Launch",
+                website_launched: "Official website launched:",
+                twitter_link: "Twitter:",
+                telegram_link: "Telegram:",
+                presale_launched: "Presale was successfully launched",
+                phase2: "Phase 2: Growth",
+                airdrop_campaigns: "Airdrop campaigns and community events",
+                dex_listings: "DEX visibility and token listings",
+                marketing_collabs: "Strategic marketing and influencer collaborations",
+                phase3: "Phase 3: AI Utility",
+                ai_games: "AI-powered mini-game and interaction system",
+                reward_models: "FDAI integrated into task/reward models",
+                beta_testing: "Beta testing with real utility",
+                phase4: "Phase 4: Global Expansion",
+                cex_listing: "Surprise centralized exchange listing",
+                nft_integration: "NFT + AI feature integration",
+                global_outreach: "Global outreach and scaling",
+                tokenomics_title: "Tokenomics",
+                category: "Category",
+                percentage: "Percentage",
+                presale: "Presale",
+                airdrop: "Airdrop & Campaigns",
+                burn: "Burn",
+                listing: "DEX & CEX Listing",
+                reserve: "Locked Reserve",
+                team: "Team",
+                total_supply: "Total Supply:",
+                circulating_supply: "Circulating Supply:",
+                locked_supply: "Locked Supply:",
+                release_schedule: "Locked Token Release Schedule",
+                team_title: "Our Team",
+                ceo_title: "CEO & Founder",
+                ceo_exp: "10+ years in blockchain and AI technology",
+                cto_title: "CTO",
+                cto_exp: "Smart contract and DeFi expert",
+                cmo_title: "CMO",
+                cmo_exp: "Digital marketing specialist",
+                join_community: "Join Our Community",
+                whitepaper_title: "Download FreeDogeAI Whitepaper",
+                download_whitepaper: "Click here to download the whitepaper"
+            },
+            tr: {
+                presale_title: "FreeDogeAI Ön Satış",
+                days: "Gün",
+                hours: "Saat",
+                minutes: "Dakika",
+                seconds: "Saniye",
+                presale_ends: "Ön satış bitmesine kalan süre:",
+                payment_method: "Ödeme Yöntemi:",
+                connect_wallet: "🔗 MetaMask ile Bağlan",
+                your_wallet: "Cüzdanınız",
+                address: "Adres:",
+                bnb_balance: "BNB Bakiyesi:",
+                usdt_balance: "USDT Bakiyesi:",
+                amount: "Miktar:",
+                you_will_receive: "Alacaklarınız:",
+                buy_tokens: "🚀 FDAI Token Satın Al",
+                important_info: "Önemli Bilgiler",
+                token_delivery_info: "Token satın alımınızın ardından, tokenleriniz 24 saat içinde cüzdanınıza yansıyacaktır.",
+                network_warning: "Lütfen bağlı olduğunuz ağın",
+                network: "olduğundan emin olun.",
+                note: "NOT:",
+                token_note: "Eğer FDAI tokenleri görünmüyorsa, bu kontrat adresini ekleyin:",
+                about_title: "FreeDogeAI Hakkında",
+                about_text: "FreeDogeAI, yapay zeka gücünü meme tabanlı kripto paraların viral çekiciliğiyle birleştiren yenilikçi bir projedir. Misyonumuz, kullanıcıları güçlendiren, topluluk katılımını teşvik eden ve finansal özgürlüğü destekleyen merkeziyetsiz bir ekosistem yaratmaktır. FreeDogeAI ile finansın geleceğini yeniden şekillendirmek için bize katılın!",
+                roadmap_title: "Yol Haritası",
+                phase1: "Aşama 1: Başlangıç",
+                website_launched: "Resmi web sitesi yayınlandı:",
+                twitter_link: "Twitter:",
+                telegram_link: "Telegram:",
+                presale_launched: "Ön satış başarıyla başlatıldı",
+                phase2: "Aşama 2: Büyüme",
+                airdrop_campaigns: "Airdrop kampanyaları ve topluluk etkinlikleri",
+                dex_listings: "DEX görünürlüğü ve token listeleri",
+                marketing_collabs: "Stratejik pazarlama ve influencer işbirlikleri",
+                phase3: "Aşama 3: AI Kullanımı",
+                ai_games: "AI destekli mini oyun ve etkileşim sistemi",
+                reward_models: "FDAI görev/ödül modellerine entegre edildi",
+                beta_testing: "Gerçek kullanım ile beta testi",
+                phase4: "Aşama 4: Küresel Genişleme",
+                cex_listing: "Sürpriz merkezi borsa listeleme",
+                nft_integration: "NFT + AI özellik entegrasyonu",
+                global_outreach: "Küresel erişim ve ölçeklendirme",
+                tokenomics_title: "Tokenomik",
+                category: "Kategori",
+                percentage: "Yüzde",
+                presale: "Ön Satış",
+                airdrop: "Airdrop & Kampanyalar",
+                burn: "Yakım",
+                listing: "DEX & CEX Listeleme",
+                reserve: "Kilitli Rezerv",
+                team: "Ekip",
+                total_supply: "Toplam Arz:",
+                circulating_supply: "Dolaşımdaki Arz:",
+                locked_supply: "Kilitli Arz:",
+                release_schedule: "Kilitli Token Çıkış Takvimi",
+                team_title: "Ekibimiz",
+                ceo_title: "CEO & Kurucu",
+                ceo_exp: "10+ yıllık blockchain ve AI teknolojisi deneyimi",
+                cto_title: "CTO",
+                cto_exp: "Akıllı kontrat ve DeFi uzmanı",
+                cmo_title: "CMO",
+                cmo_exp: "Dijital pazarlama uzmanı",
+                join_community: "Topluluğumuza Katılın",
+                whitepaper_title: "FreeDogeAI Whitepaper'ı İndirin",
+                download_whitepaper: "Whitepaper'ı indirmek için tıklayın"
+            }
+        };
+
+        // Function to translate the page
+        function translatePage(lang) {
+            currentLanguage = lang;
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update input placeholders
+            const method = document.getElementById('paymentMethod').value;
+            if (method === 'bnb') {
+                document.getElementById('amount').placeholder = lang === 'tr' ? 'Miktar girin (örn: 0.1 BNB)' : 'Enter amount (e.g., 0.1 BNB)';
+            } else {
+                document.getElementById('amount').placeholder = lang === 'tr' ? 'Miktar girin (örn: 1 USDT)' : 'Enter amount (e.g., 1 USDT)';
+            }
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
+            // Language switcher
+            document.getElementById('lang-en').addEventListener('click', () => translatePage('en'));
+            document.getElementById('lang-tr').addEventListener('click', () => translatePage('tr'));
+            
             document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
             document.getElementById('buyBtn').addEventListener('click', sendPayment);
             document.getElementById('amount').addEventListener('input', calculateFDAI);
             document.getElementById('paymentMethod').addEventListener('change', togglePaymentMethod);
+            
+            // Initialize countdown
+            startCountdown();
             
             // Check if wallet is already connected
             if (window.ethereum) {
                 checkConnectedWallet();
             }
         });
+
+        function startCountdown() {
+            // Sayfa yayına alındığı andan itibaren 100 gün
+            const startTime = new Date("2025-06-09T00:00:00Z").getTime();
+            const endTime = startTime + 100 * 24 * 60 * 60 * 1000;
+
+            function updateCountdown() {
+                const now = Date.now();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    document.getElementById("countdown-days").textContent = "00";
+                    document.getElementById("countdown-hours").textContent = "00";
+                    document.getElementById("countdown-minutes").textContent = "00";
+                    document.getElementById("countdown-seconds").textContent = "00";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("countdown-days").textContent = String(days).padStart(2, '0');
+                document.getElementById("countdown-hours").textContent = String(hours).padStart(2, '0');
+                document.getElementById("countdown-minutes").textContent = String(minutes).padStart(2, '0');
+                document.getElementById("countdown-seconds").textContent = String(seconds).padStart(2, '0');
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
 
         async function checkConnectedWallet() {
             try {
@@ -600,12 +796,12 @@
             const method = document.getElementById('paymentMethod').value;
             if (method === 'bnb') {
                 document.getElementById('rateInfo').textContent = '1 BNB = 120,000,000,000 FDAI';
-                document.getElementById('amount').placeholder = 'Enter amount (e.g., 0.1 BNB)';
+                document.getElementById('amount').placeholder = currentLanguage === 'tr' ? 'Miktar girin (örn: 0.1 BNB)' : 'Enter amount (e.g., 0.1 BNB)';
                 document.getElementById('amount').step = '0.01';
                 document.getElementById('amount').min = '0.01';
             } else {
                 document.getElementById('rateInfo').textContent = '1 USDT = 200,000,000 FDAI';
-                document.getElementById('amount').placeholder = 'Enter amount (e.g., 1 USDT)';
+                document.getElementById('amount').placeholder = currentLanguage === 'tr' ? 'Miktar girin (örn: 1 USDT)' : 'Enter amount (e.g., 1 USDT)';
                 document.getElementById('amount').step = '1';
                 document.getElementById('amount').min = '1';
             }
@@ -615,13 +811,23 @@
         async function connectWallet() {
             try {
                 if (!window.ethereum) {
-                    // Mobile cihazlarda doğrudan MetaMask linki aç
-                    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                        const currentUrl = window.location.href.replace(/^https?:\/\//, '');
-                        window.location.href = `https://metamask.app.link/dapp/${currentUrl}`;
+                    // Improved cross-browser MetaMask detection
+                    const userAgent = navigator.userAgent.toLowerCase();
+                    const isMobile = /android|iphone|ipad|ipod/i.test(userAgent);
+                    
+                    if (isMobile) {
+                        // Try to open MetaMask in-app browser
+                        window.location.href = `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
                         return;
                     } else {
-                        window.open("https://metamask.io/download.html", "_blank");
+                        // Desktop browser without MetaMask
+                        const installLink = document.createElement('a');
+                        installLink.href = 'https://metamask.io/download.html';
+                        installLink.target = '_blank';
+                        installLink.rel = 'noopener noreferrer';
+                        document.body.appendChild(installLink);
+                        installLink.click();
+                        document.body.removeChild(installLink);
                         return;
                     }
                 }
@@ -632,7 +838,9 @@
                 await updateWalletUI();
             } catch (error) {
                 console.log("Connection error:", error);
-                alert("Connection error: " + (error.message || error));
+                alert(currentLanguage === 'tr' ? 
+                    "Bağlantı hatası: " + (error.message || error) : 
+                    "Connection error: " + (error.message || error));
             }
         }
 
@@ -664,7 +872,9 @@
                 }
             } catch (error) {
                 console.log("Network check failed:", error);
-                alert("Please switch to BSC network manually");
+                alert(currentLanguage === 'tr' ? 
+                    "Lütfen BSC ağına manuel olarak geçiş yapın" : 
+                    "Please switch to BSC network manually");
             }
         }
 
@@ -707,7 +917,7 @@
             document.getElementById('walletAddress').textContent = shortAddress;
             
             document.getElementById('walletInfo').style.display = 'block';
-            document.getElementById('connectWalletBtn').textContent = '✅ Connected';
+            document.getElementById('connectWalletBtn').textContent = currentLanguage === 'tr' ? '✅ Bağlandı' : '✅ Connected';
             document.getElementById('buyBtn').disabled = false;
             
             try {
@@ -740,7 +950,9 @@
             const amount = parseFloat(document.getElementById('amount').value);
             
             if (!amount || amount <= 0) {
-                alert("Please enter a valid amount!");
+                alert(currentLanguage === 'tr' ? 
+                    "Lütfen geçerli bir miktar girin!" : 
+                    "Please enter a valid amount!");
                 return;
             }
             
@@ -752,7 +964,9 @@
                 }
             } catch (error) {
                 console.error("Payment error:", error);
-                alert("Transaction failed: " + (error.message || error));
+                alert(currentLanguage === 'tr' ? 
+                    "İşlem başarısız: " + (error.message || error) : 
+                    "Transaction failed: " + (error.message || error));
             }
         }
 
@@ -769,7 +983,9 @@
             };
             
             const receipt = await web3.eth.sendTransaction(tx);
-            alert(`✅ ${bnbAmount} BNB successfully sent!\n\nYou will receive: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
+            alert(currentLanguage === 'tr' ? 
+                `✅ ${bnbAmount} BNB başarıyla gönderildi!\n\nAlacaklarınız: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nİşlem Hash: ${receipt.transactionHash}` : 
+                `✅ ${bnbAmount} BNB successfully sent!\n\nYou will receive: ${(bnbAmount * CONFIG.TOKENS_PER_BNB).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
         }
 
         async function sendUSDT() {
@@ -785,7 +1001,9 @@
                 gasPrice: await web3.eth.getGasPrice()
             });
             
-            alert(`✅ ${usdtAmount} USDT successfully sent!\n\nYou will receive: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
+            alert(currentLanguage === 'tr' ? 
+                `✅ ${usdtAmount} USDT başarıyla gönderildi!\n\nAlacaklarınız: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nİşlem Hash: ${receipt.transactionHash}` : 
+                `✅ ${usdtAmount} USDT successfully sent!\n\nYou will receive: ${(usdtAmount * CONFIG.TOKENS_PER_USDT).toLocaleString()} FDAI\nTX Hash: ${receipt.transactionHash}`);
         }
 
         // Handle wallet and chain changes
@@ -797,7 +1015,8 @@
                 } else {
                     // Wallet disconnected
                     document.getElementById('walletInfo').style.display = 'none';
-                    document.getElementById('connectWalletBtn').textContent = '🔗 Connect with MetaMask';
+                    document.getElementById('connectWalletBtn').textContent = currentLanguage === 'tr' ? 
+                        '🔗 MetaMask ile Bağlan' : '🔗 Connect with MetaMask';
                     document.getElementById('buyBtn').disabled = true;
                 }
             });
